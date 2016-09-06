@@ -1,3 +1,4 @@
 #!/bin/bash
 
-gcc pat.c -lavcodec -lavformat -lSDL2 -o pat
+gcc pat.c -Wall -lavcodec -lavformat -lavutil -lSDL2 -o pat
+
