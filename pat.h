@@ -7,4 +7,3 @@ enum pat_error {
     PAT_OPEN_DEVICE_ERROR,
     PAT_OPEN_FILE_ERROR
 };
-

@@ -1,11 +1,20 @@
-#include "serpentaudio.h"
+#include "pat.h"
+#include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <SDL2/SDL.h>
+
+typedef struct PATAudioStream {
+    AVStream* audio_stream;
+    AVFormatContext* format_context;
+    AVCodecContext* codec_context;
+} PATAudioStream;
 
 SDL_AudioDeviceID output_device;
 SDL_AudioSpec actual_output_spec;
 
 int get_audio_format_context(const char* audio_file_path);
+
+void free_pat_audio_stream(PATAudioStream** pat_audio_stream);
 
 int pat_init() {
     if(SDL_Init(SDL_INIT_AUDIO) != 0) {
@@ -33,6 +42,28 @@ int pat_init() {
     av_register_all();
     
     return PAT_SUCCESS;
+}
+
+int get_audio_stream(const char* audio_file_path) {
+    return PAT_SUCCESS;
+}
+
+void free_pat_audio_stream(PATAudioStream** pat_audio_stream) {
+    if(*pat_audio_stream == NULL) {
+        return;
+    }
+    
+    AVCodecContext* codec_context = (*pat_audio_stream)->codec_context;
+    
+    if(codec_context != NULL) {
+        avcodec_free_context(&codec_context);
+    }
+    
+    AVFormatContext* format_context = (*pat_audio_stream)->format_context;
+    
+    if(format_context != NULL) {
+        avformat_close_input(&format_context);
+    }
 }
 
 int pat_quit() {
