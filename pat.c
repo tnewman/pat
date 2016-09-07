@@ -15,6 +15,8 @@ int init_called = 0;
 
 int get_pat_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio_stream);
 
+int play_pat_audio_stream(PATAudioStream* pat_audio_stream);
+
 void free_pat_audio_stream(PATAudioStream** pat_audio_stream);
 
 int pat_init() {
@@ -74,7 +76,7 @@ int get_pat_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio
     
     (*pat_audio_stream)->format_context = format_context;
     
-    if(avformat_find_stream_info(format_context, NULL) != 0) {
+    if(avformat_find_stream_info(format_context, NULL) < 0) {
         free_pat_audio_stream(pat_audio_stream);
         return PAT_OPEN_FILE_ERROR;
     }
@@ -111,10 +113,54 @@ int get_pat_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio
         return PAT_CODEC_ERROR;
     }
     
+    (*pat_audio_stream)->codec_context = codec_context;
+    
     if(avcodec_parameters_to_context(codec_context, codec_parameters) < 0) {
         free_pat_audio_stream(pat_audio_stream);
         return PAT_CODEC_ERROR;
     }
+    
+    if(avcodec_open2(codec_context, codec_context->codec, NULL) != 0) {
+        free_pat_audio_stream(pat_audio_stream);
+        return PAT_CODEC_ERROR;
+    }
+    
+    return PAT_SUCCESS;
+}
+
+int play_pat_audio_stream(PATAudioStream* pat_audio_stream) {
+    SDL_PauseAudioDevice(output_device, 0);
+        
+    AVPacket packet;
+    av_init_packet(&packet);
+    
+    AVFrame* frame = av_frame_alloc();
+    
+    if(frame == NULL) {
+        return PAT_CODEC_ERROR;
+    }
+    
+    while(av_read_frame(pat_audio_stream->format_context, &packet) == 0) {
+        if(packet.stream_index == pat_audio_stream->audio_stream->index) {
+            if(avcodec_send_packet(pat_audio_stream->codec_context, &packet) != 0) {
+                av_free(frame);
+                av_packet_unref(&packet);
+                return PAT_CODEC_ERROR;
+            }
+            
+            if(avcodec_receive_frame(pat_audio_stream->codec_context, frame) != 0) {
+                av_free(frame);
+                av_packet_unref(&packet);
+                return PAT_CODEC_ERROR;
+            }
+            
+            av_frame_unref(frame);
+        }
+        
+        av_packet_unref(&packet);
+    }
+    
+    av_free(frame);
     
     return PAT_SUCCESS;
 }
