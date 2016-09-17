@@ -90,3 +90,4 @@ static char* pat_map_error_to_string(PATError error) {
             return "Unknown error.";
     }
 }
+
