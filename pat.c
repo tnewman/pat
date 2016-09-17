@@ -57,19 +57,23 @@ int pat_init(void) {
 int pat_play(const char* audio_file_path) {
     PATAudioStream* pat_audio_stream = NULL;
     
-    if(get_pat_audio_stream(audio_file_path, &pat_audio_stream) == PAT_SUCCESS) {
-        play_pat_audio_stream(pat_audio_stream);
+    int result = get_pat_audio_stream(audio_file_path, &pat_audio_stream);
+    
+    if(result == PAT_SUCCESS) {
+        result = play_pat_audio_stream(pat_audio_stream);
         
-        while(SDL_GetQueuedAudioSize(output_device) > 0) {
-            SDL_Delay(100);
+        if(result == PAT_SUCCESS) {
+            while(SDL_GetQueuedAudioSize(output_device) > 0) {
+                SDL_Delay(100);
+            }
         }
-
-        SDL_ClearQueuedAudio(output_device);
     }
+    
+    SDL_ClearQueuedAudio(output_device);
     
     free_pat_audio_stream(&pat_audio_stream);
     
-    return PAT_SUCCESS;
+    return result;
 }
 
 int get_pat_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio_stream) {
