@@ -32,7 +32,7 @@ int pat_init(void) {
     SDL_AudioSpec desired_output_spec;
     
     SDL_memset(&desired_output_spec, 0, sizeof(desired_output_spec));
-    desired_output_spec.freq = 48000;
+    desired_output_spec.freq = 44100;
     desired_output_spec.format = AUDIO_S16SYS;
     desired_output_spec.channels = 2;
     desired_output_spec.silence = 0;
@@ -234,20 +234,20 @@ int resample_pat_audio_stream(PATAudioStream* pat_audio_stream, AVFrame* frame,
     
     AVCodecContext* codec_context = pat_audio_stream->codec_context;
     
-    if(av_samples_alloc(resampled_data, NULL, codec_context->channels, 
-        frame->nb_samples, AV_SAMPLE_FMT_S16, 0) < 0) {
+    if(av_samples_alloc(resampled_data, NULL, codec_context->channels, frame->nb_samples, 
+        AV_SAMPLE_FMT_S16, 0) < 0) {
         return PAT_RESAMPLE_ERROR;
     }
     
-    int resampled_samples_count = swr_convert(pat_audio_stream->resample_context, resampled_data, 
+    int resample_count = swr_convert(pat_audio_stream->resample_context, resampled_data, 
         frame->nb_samples, (const uint8_t **) frame->extended_data, frame->nb_samples);
     
-    if(resampled_samples_count < 0) {
+    if(resample_count < 0) {
         return PAT_RESAMPLE_ERROR;
     }
     
     *resampled_data_size = av_samples_get_buffer_size(NULL, codec_context->channels, 
-        resampled_samples_count, AV_SAMPLE_FMT_S16, 0);
+        resample_count, AV_SAMPLE_FMT_S16, 0);
     
     if(*resampled_data_size < 0) {
         return PAT_RESAMPLE_ERROR;
