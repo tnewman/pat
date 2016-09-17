@@ -1,8 +1,4 @@
-int pat_init(void);
-int pat_quit(void);
-int pat_play(const char* audio_file_path);
-
-enum pat_error {
+typedef enum PATError {
     PAT_SUCCESS,
     PAT_NOT_INITIALIZED_ERROR,
     PAT_INIT_ERROR,
@@ -12,4 +8,8 @@ enum pat_error {
     PAT_CODEC_ERROR,
     PAT_RESAMPLE_ERROR,
     PAT_PLAYBACK_ERROR
-};
+} PATError;
+
+PATError pat_init(void);
+void pat_quit(void);
+PATError pat_play(const char* audio_file_path);

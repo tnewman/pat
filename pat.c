@@ -15,16 +15,16 @@ SDL_AudioDeviceID output_device;
 SDL_AudioSpec actual_output_spec;
 int init_called = 0;
 
-static int get_pat_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio_stream);
+static PATError get_pat_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio_stream);
 
-static int play_pat_audio_stream(PATAudioStream* pat_audio_stream);
+static PATError play_pat_audio_stream(PATAudioStream* pat_audio_stream);
 
-static int resample_pat_audio_stream(PATAudioStream* pat_audio_stream, AVFrame* frame,
+static PATError resample_pat_audio_stream(PATAudioStream* pat_audio_stream, AVFrame* frame,
     uint8_t** resampled_data, int* resampled_data_size);
 
 static void free_pat_audio_stream(PATAudioStream** pat_audio_stream);
 
-int pat_init(void) {
+PATError pat_init(void) {
     if(SDL_Init(SDL_INIT_AUDIO) != 0) {
         return PAT_INIT_ERROR;
     }
@@ -54,7 +54,7 @@ int pat_init(void) {
     return PAT_SUCCESS;
 }
 
-int pat_play(const char* audio_file_path) {
+PATError pat_play(const char* audio_file_path) {
     PATAudioStream* pat_audio_stream = NULL;
     
     int result = get_pat_audio_stream(audio_file_path, &pat_audio_stream);
@@ -76,7 +76,7 @@ int pat_play(const char* audio_file_path) {
     return result;
 }
 
-int get_pat_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio_stream) {
+PATError get_pat_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio_stream) {
     free_pat_audio_stream(pat_audio_stream);    
     
     if(init_called == 0) {
@@ -173,7 +173,7 @@ int get_pat_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio
     return PAT_SUCCESS;
 }
 
-int play_pat_audio_stream(PATAudioStream* pat_audio_stream) {
+PATError play_pat_audio_stream(PATAudioStream* pat_audio_stream) {
     SDL_PauseAudioDevice(output_device, 0);
         
     AVPacket packet;
@@ -233,7 +233,7 @@ int play_pat_audio_stream(PATAudioStream* pat_audio_stream) {
     return PAT_SUCCESS;
 }
 
-int resample_pat_audio_stream(PATAudioStream* pat_audio_stream, AVFrame* frame,
+PATError resample_pat_audio_stream(PATAudioStream* pat_audio_stream, AVFrame* frame,
     uint8_t** resampled_data, int* resampled_data_size) {
     
     AVCodecContext* codec_context = pat_audio_stream->codec_context;
@@ -288,11 +288,11 @@ void free_pat_audio_stream(PATAudioStream** pat_audio_stream) {
     *pat_audio_stream = NULL;
 }
 
-int pat_quit(void) {
+void pat_quit(void) {
     SDL_CloseAudioDevice(output_device);
     
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
     
-    return 0;
+    return;
 }
 

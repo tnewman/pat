@@ -20,7 +20,7 @@ static struct PyModuleDef patmodule = {
     PatMethods
 };
 
-static PyObject* PATException;
+static PyObject* PatException;
 
 PyMODINIT_FUNC PyInit_pat(void) {
     if(!pat_cleanup_registered) {
@@ -35,7 +35,7 @@ PyMODINIT_FUNC PyInit_pat(void) {
         return NULL;
     }
     
-    PATException = PyErr_NewException("PATException", NULL, NULL);
+    PatException = PyErr_NewException("pat.PATException", NULL, NULL);
     Py_INCREF(PatException);
     
     return pat_instance;
@@ -48,7 +48,13 @@ static PyObject* pat_python_play(PyObject* self, PyObject* args) {
         return NULL;
     }
     
-    if(pat_play(audio_file_path) != PAT_SUCCESS) {
+    int status;
+    
+    Py_BEGIN_ALLOW_THREADS
+        status = pat_play(audio_file_path);    
+    Py_END_ALLOW_THREADS
+    
+    if(status != PAT_SUCCESS) {
         PyErr_SetString(PatException, "PAT could not play back audio!");
         return NULL;
     }
