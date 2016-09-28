@@ -39,7 +39,9 @@ PyMODINIT_FUNC PyInit_pat(void) {
     
     PatException = PyErr_NewException("pat.PATException", NULL, NULL);
     Py_INCREF(PatException);
+    PyModule_AddObject(pat_instance, "PATException", PatException);
     
+
     return pat_instance;
 }
 
