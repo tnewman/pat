@@ -3,6 +3,8 @@
 
 static PyObject* pat_python_play(PyObject* self, PyObject* args);
 
+static PyObject* pat_python_stop(PyObject* self, PyObject* args);
+
 static void pat_cleanup(void);
 
 static char* pat_map_error_to_string(PATError);
@@ -11,6 +13,7 @@ int pat_cleanup_registered = 0;
 
 static PyMethodDef PatMethods[] = {
     {"play", pat_python_play, METH_VARARGS, "Play"},
+    {"stop", pat_python_stop, METH_VARARGS, "Stop"},
     {NULL, NULL, 0, NULL}
 };
 
@@ -63,6 +66,12 @@ static PyObject* pat_python_play(PyObject* self, PyObject* args) {
         return NULL;
     }
     
+    Py_RETURN_NONE;
+}
+
+static PyObject* pat_python_stop(PyObject* self, PyObject* args) {
+    pat_stop();
+
     Py_RETURN_NONE;
 }
 

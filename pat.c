@@ -78,6 +78,10 @@ PATError pat_play(const char* audio_file_path) {
     return result;
 }
 
+void pat_stop() {
+    SDL_ClearQueuedAudio(output_device);
+}
+
 PATError pat_get_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio_stream) {
     pat_free_audio_stream(pat_audio_stream);    
     

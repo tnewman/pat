@@ -11,5 +11,6 @@ typedef enum PATError {
 } PATError;
 
 PATError pat_init(void);
+void pat_stop(void);
 void pat_quit(void);
 PATError pat_play(const char* audio_file_path);
