@@ -69,15 +69,7 @@ PATError pat_play(const char* audio_file_path) {
     
     if(result == PAT_SUCCESS) {
         result = pat_play_audio_stream(pat_audio_stream);
-        
-        if(result == PAT_SUCCESS) {
-            while(SDL_GetQueuedAudioSize(output_device) > 0) {
-                SDL_Delay(100);
-            }
-        }
     }
-    
-    SDL_ClearQueuedAudio(output_device);
     
     pat_free_audio_stream(&pat_audio_stream);
     
