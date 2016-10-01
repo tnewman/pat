@@ -8,9 +8,12 @@ Everything is written in C, but the Python C Extension interface allows PAT to b
 CPython interpreter.
 
 ## How do I use it?
+PAT is currently under very active development, and the API WILL BREAK on occasion; however, one 
+can currently play audio files.
+```python
 import pat
 
-# Play an Audio File
+# Play an Audio File Asynchronously
 pat.play('deerdance.m4a')
 
 # Stop Playback
