@@ -28,7 +28,7 @@ static PATError pat_set_codec_context(PATAudioStream** pat_audio_stream);
 static PATError pat_set_resample_context(PATAudioStream** pat_audio_stream);
 
 static PATError pat_resample_audio_stream(PATAudioStream* pat_audio_stream, AVFrame* frame,
-    uint8_t** resampled_data, int* resampled_data_size);
+    int resampled_sample_count, uint8_t** resampled_data, int* resampled_data_size);
 
 static void pat_free_audio_stream(PATAudioStream** pat_audio_stream);
 
@@ -40,7 +40,8 @@ PATError pat_init(void) {
     SDL_AudioSpec desired_output_spec;
     
     SDL_memset(&desired_output_spec, 0, sizeof(desired_output_spec));
-    desired_output_spec.freq = 44100;
+    
+    desired_output_spec.freq = 48000;
     desired_output_spec.format = AUDIO_S16SYS;
     desired_output_spec.channels = 2;
     desired_output_spec.silence = 0;
@@ -64,8 +65,6 @@ PATError pat_init(void) {
 
 PATError pat_play(const char* audio_file_path) {
     PATAudioStream* pat_audio_stream = NULL;
-    
-    SDL_ClearQueuedAudio(output_device);
     
     int result = pat_get_audio_stream(audio_file_path, &pat_audio_stream);
     
@@ -234,26 +233,36 @@ PATError pat_play_audio_stream(PATAudioStream* pat_audio_stream) {
         return PAT_CODEC_ERROR;
     }
     
+    int result;
+    
     while(av_read_frame(pat_audio_stream->format_context, &packet) == 0) {
         if(packet.stream_index == pat_audio_stream->audio_stream->index) {
             if(avcodec_send_packet(pat_audio_stream->codec_context, &packet) != 0) {
-                av_free(frame);
                 av_packet_unref(&packet);
+                av_frame_unref(frame);
+                av_free(frame);
                 return PAT_CODEC_ERROR;
             }
         }
         
-        if(avcodec_receive_frame(pat_audio_stream->codec_context, frame) != 0) {
-            av_free(frame);
+        result = avcodec_receive_frame(pat_audio_stream->codec_context, frame);
+        
+        if(result != 0) {
             av_packet_unref(&packet);
-            return PAT_CODEC_ERROR;
+            av_frame_unref(frame);
+            continue;
+            
+            if(result != EAGAIN) {
+                av_free(frame);
+                return PAT_CODEC_ERROR;
+            }
         }
         
         uint8_t* resampled_data;
         int resampled_data_size;
         
-        int result = pat_resample_audio_stream(pat_audio_stream, frame, &resampled_data, 
-            &resampled_data_size);
+        result = pat_resample_audio_stream(pat_audio_stream, frame, frame->nb_samples, 
+            &resampled_data, &resampled_data_size);
         
         if(result != PAT_SUCCESS) {
             av_packet_unref(&packet);
@@ -274,6 +283,30 @@ PATError pat_play_audio_stream(PATAudioStream* pat_audio_stream) {
         av_frame_unref(frame);
         av_freep(&resampled_data);
         av_packet_unref(&packet);
+        
+        while(swr_get_delay(pat_audio_stream->resample_context, 1) > 0) {
+            uint8_t* flushed_data;
+            int flushed_data_size;
+            
+            frame->extended_data = NULL;
+            frame->nb_samples = 0;
+            
+            result = pat_resample_audio_stream(pat_audio_stream, frame, 1024, 
+                &flushed_data, &flushed_data_size);
+            
+            if(result != PAT_SUCCESS) {
+                av_free(frame);
+                av_freep(&flushed_data);
+                return result;
+            }
+            
+            if(SDL_QueueAudio(output_device, flushed_data, (uint32_t) flushed_data_size) != 0) {
+                av_freep(&flushed_data);
+                return PAT_PLAYBACK_ERROR;
+            }
+            
+            av_freep(&flushed_data);
+        }
     }
     
     av_free(frame);
@@ -282,19 +315,21 @@ PATError pat_play_audio_stream(PATAudioStream* pat_audio_stream) {
 }
 
 PATError pat_resample_audio_stream(PATAudioStream* pat_audio_stream, AVFrame* frame,
-    uint8_t** resampled_data, int* resampled_data_size) {
+    int resampled_sample_count, uint8_t** resampled_data, int* resampled_data_size) {
     
     AVCodecContext* codec_context = pat_audio_stream->codec_context;
     
-    if(av_samples_alloc(resampled_data, NULL, codec_context->channels, frame->nb_samples, 
+    if(av_samples_alloc(resampled_data, NULL, codec_context->channels, resampled_sample_count, 
         AV_SAMPLE_FMT_S16, 0) < 0) {
+        av_freep(&resampled_data);
         return PAT_RESAMPLE_ERROR;
     }
     
     int resample_count = swr_convert(pat_audio_stream->resample_context, resampled_data, 
-        frame->nb_samples, (const uint8_t **) frame->extended_data, frame->nb_samples);
+        resampled_sample_count, (const uint8_t **) frame->extended_data, frame->nb_samples);
     
     if(resample_count < 0) {
+        av_freep(&resampled_data);
         return PAT_RESAMPLE_ERROR;
     }
     
@@ -302,6 +337,7 @@ PATError pat_resample_audio_stream(PATAudioStream* pat_audio_stream, AVFrame* fr
         resample_count, AV_SAMPLE_FMT_S16, 0);
     
     if(*resampled_data_size < 0) {
+        av_freep(&resampled_data);
         return PAT_RESAMPLE_ERROR;
     }
     
