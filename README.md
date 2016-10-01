@@ -13,7 +13,7 @@ can currently play audio files.
 ```python
 import pat
 
-# Queue an Adio File for Playback
+# Queue an Audio File for Playback
 pat.play('deerdance.m4a')
 
 # Stop Playback
