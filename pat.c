@@ -65,6 +65,8 @@ PATError pat_init(void) {
 PATError pat_play(const char* audio_file_path) {
     PATAudioStream* pat_audio_stream = NULL;
     
+    SDL_ClearQueuedAudio(output_device);
+    
     int result = pat_get_audio_stream(audio_file_path, &pat_audio_stream);
     
     if(result == PAT_SUCCESS) {
