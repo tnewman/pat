@@ -1,7 +1,7 @@
 #include <Python.h>
 #include "pat.h"
 
-static PyObject* pat_python_play(PyObject* self, PyObject* args);
+static PyObject* pat_python_queue(PyObject* self, PyObject* args);
 
 static PyObject* pat_python_stop(PyObject* self, PyObject* args);
 
@@ -12,7 +12,7 @@ static char* pat_map_error_to_string(PATError);
 int pat_cleanup_registered = 0;
 
 static PyMethodDef PatMethods[] = {
-    {"play", pat_python_play, METH_VARARGS, "Play"},
+    {"queue", pat_python_queue, METH_VARARGS, "Queue"},
     {"stop", pat_python_stop, METH_VARARGS, "Stop"},
     {NULL, NULL, 0, NULL}
 };
@@ -48,7 +48,7 @@ PyMODINIT_FUNC PyInit_pat(void) {
     return pat_instance;
 }
 
-static PyObject* pat_python_play(PyObject* self, PyObject* args) {
+static PyObject* pat_python_queue(PyObject* self, PyObject* args) {
     const char* audio_file_path;
     
     if(!PyArg_ParseTuple(args, "s", &audio_file_path)) {
@@ -58,7 +58,7 @@ static PyObject* pat_python_play(PyObject* self, PyObject* args) {
     PATError status;
     
     Py_BEGIN_ALLOW_THREADS
-        status = pat_play(audio_file_path);    
+        status = pat_queue(audio_file_path);    
     Py_END_ALLOW_THREADS
     
     if(status != PAT_SUCCESS) {

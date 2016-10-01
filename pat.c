@@ -21,7 +21,7 @@ static PATError pat_set_format_context(const char* audio_file_path, PATAudioStre
 
 static PATError pat_set_audio_stream(PATAudioStream** pat_audio_stream);
 
-static PATError pat_play_audio_stream(PATAudioStream* pat_audio_stream);
+static PATError pat_queue_audio_stream(PATAudioStream* pat_audio_stream);
 
 static PATError pat_set_codec_context(PATAudioStream** pat_audio_stream);
 
@@ -63,13 +63,13 @@ PATError pat_init(void) {
     return PAT_SUCCESS;
 }
 
-PATError pat_play(const char* audio_file_path) {
+PATError pat_queue(const char* audio_file_path) {
     PATAudioStream* pat_audio_stream = NULL;
     
     int result = pat_get_audio_stream(audio_file_path, &pat_audio_stream);
     
     if(result == PAT_SUCCESS) {
-        result = pat_play_audio_stream(pat_audio_stream);
+        result = pat_queue_audio_stream(pat_audio_stream);
     }
     
     pat_free_audio_stream(&pat_audio_stream);
@@ -220,7 +220,7 @@ PATError pat_set_resample_context(PATAudioStream** pat_audio_stream) {
     return PAT_SUCCESS;
 }
 
-PATError pat_play_audio_stream(PATAudioStream* pat_audio_stream) {
+PATError pat_queue_audio_stream(PATAudioStream* pat_audio_stream) {
     SDL_PauseAudioDevice(output_device, 0);
         
     AVPacket packet;
