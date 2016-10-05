@@ -20,7 +20,6 @@ pat.play('deerdance.m4a')
 pat.stop()
 ```
 
-## License
-PAT is licensed under the LGPLv2.1 or later as it requires ffmpeg. Note that you must link against 
-an LGPL version of ffmpeg if you wish to bound by the terms of the LGPL.
+## Licensing Considerations
+You must link against an LGPL version of ffmpeg if you wish to bound by the terms of the LGPL.
 
