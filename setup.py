@@ -6,7 +6,7 @@ with open('VERSION') as version_file:
 pat_extension = Extension('pat', sources=['patmodule.c', 'pat.c'], 
     libraries=['avcodec', 'avformat', 'swresample', 'avutil', 'SDL2'])
 
-setup(name='pythonaudiotechnician', 
+setup(name='pataudiotechnician', 
       description='PAT Audio Technician (PAT)',
       version=version,
       license='LGPLv3+',
