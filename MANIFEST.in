@@ -1,4 +1,4 @@
 include *.md
 include *.c
 include *.h
-VERSION
+include VERSION
