@@ -1,6 +1,0 @@
-[submodule "ffmpeg"]
-	path = ffmpeg
-	url = https://git.ffmpeg.org/ffmpeg.git
-[submodule "sdl"]
-	path = sdl
-	url = https://github.com/spurious/SDL-mirror
