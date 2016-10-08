@@ -1,7 +1,7 @@
 from setuptools import setup, Extension
 
 with open('VERSION') as version_file:
-    version = version_file.read()
+    version = version_file.read().strip()
 
 pat_extension = Extension('pat', sources=['patmodule.c', 'pat.c'], 
     libraries=['avcodec', 'avformat', 'swresample', 'avutil', 'SDL2'])
