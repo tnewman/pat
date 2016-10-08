@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: pythonaudiotechnician
+Version: 0.0.5
+Summary: PAT Audio Technician (PAT)
+Home-page: https://github.com/tnewman/pat
+Author: Thomas Newman
+Author-email: tnewman1@ltu.edu
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: Microsoft :: Windows

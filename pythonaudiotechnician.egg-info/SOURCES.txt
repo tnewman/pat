@@ -1,0 +1,11 @@
+LICENSE.md
+MANIFEST.in
+README.md
+pat.c
+pat.h
+patmodule.c
+setup.py
+pythonaudiotechnician.egg-info/PKG-INFO
+pythonaudiotechnician.egg-info/SOURCES.txt
+pythonaudiotechnician.egg-info/dependency_links.txt
+pythonaudiotechnician.egg-info/top_level.txt
