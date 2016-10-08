@@ -11,10 +11,14 @@ CPython interpreter.
 PAT is currently under very active development, and the API WILL BREAK on occasion; however, one 
 can currently play audio files.
 ```python
-import pat
+>>> import pat
 
 # Queue an Audio File for Playback
-pat.play('deerdance.m4a')
+>>> pat.play('deerdance.m4a')
+
+# Find Out How Many Bytes are Queued in the Audio Buffer
+>>> len(pat)
+41848832
 
 # Stop Playback
 pat.stop()

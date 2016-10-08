@@ -81,6 +81,18 @@ void pat_stop() {
     SDL_ClearQueuedAudio(output_device);
 }
 
+int pat_get_queue_len() {
+    return SDL_GetQueuedAudioSize(output_device);
+}
+
+void pat_quit(void) {
+    SDL_CloseAudioDevice(output_device);
+    
+    SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    
+    return;
+}
+
 PATError pat_get_audio_stream(const char* audio_file_path, PATAudioStream** pat_audio_stream) {
     pat_free_audio_stream(pat_audio_stream);    
     
@@ -370,13 +382,5 @@ void pat_free_audio_stream(PATAudioStream** pat_audio_stream) {
     free(*pat_audio_stream);
     
     *pat_audio_stream = NULL;
-}
-
-void pat_quit(void) {
-    SDL_CloseAudioDevice(output_device);
-    
-    SDL_QuitSubSystem(SDL_INIT_AUDIO);
-    
-    return;
 }
 

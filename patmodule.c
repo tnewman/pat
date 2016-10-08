@@ -5,6 +5,8 @@ static PyObject* pat_python_queue(PyObject* self, PyObject* args);
 
 static PyObject* pat_python_stop(PyObject* self, PyObject* args);
 
+static PyObject* pat_python_get_queue_len(PyObject* self, PyObject* args);
+
 static void pat_cleanup(void);
 
 static char* pat_map_error_to_string(PATError);
@@ -13,6 +15,7 @@ int pat_cleanup_registered = 0;
 
 static PyMethodDef PatMethods[] = {
     {"queue", pat_python_queue, METH_VARARGS, "Queue"},
+    {"get_queue_len", pat_python_get_queue_len, METH_VARARGS, "Get Queue Length"},
     {"stop", pat_python_stop, METH_VARARGS, "Stop"},
     {NULL, NULL, 0, NULL}
 };
@@ -73,6 +76,11 @@ static PyObject* pat_python_stop(PyObject* self, PyObject* args) {
     pat_stop();
 
     Py_RETURN_NONE;
+}
+
+static PyObject* pat_python_get_queue_len(PyObject* self, PyObject* args) {
+    int queue_len = pat_get_queue_len();    
+    return Py_BuildValue("i", queue_len);
 }
 
 void pat_cleanup(void) {
