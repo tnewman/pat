@@ -14,7 +14,7 @@ can currently play audio files.
 >>> import pat
 
 # Queue an Audio File for Playback
->>> pat.play('deerdance.m4a')
+>>> pat.queue('deerdance.m4a')
 
 # Find Out How Many Bytes are Queued in the Audio Buffer
 >>> len(pat)
