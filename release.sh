@@ -23,7 +23,7 @@ if [ $confirm == "yes" ]; then
 
     git push origin $VERSION
 
-    if [ $? -ne 0]; then
+    if [ $? -ne 0 ]; then
         echo "Failed to push $VERSION to Git! Aborting release!"
         
         git tag -d $VERSION
@@ -34,7 +34,7 @@ if [ $confirm == "yes" ]; then
 
     python3 setup.py sdist upload
 
-    if [ $? -ne 0]; then
+    if [ $? -ne 0 ]; then
         echo "Failed to upload $VERSION to PyPi! Aborting release!"
         exit -1
     fi
