@@ -1,5 +1,9 @@
-# PAT executable
-pat
+# PAT Egg
+pythonaudiotechnician.egg-info
+
+# Python
+dist
+build
 
 # Prerequisites
 *.d

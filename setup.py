@@ -1,11 +1,14 @@
 from setuptools import setup, Extension
 
+with open('VERSION') as version_file:
+    version = version_file.readline()
+
 pat_extension = Extension('pat', sources=['patmodule.c', 'pat.c'], 
     libraries=['avcodec', 'avformat', 'swresample', 'avutil', 'SDL2'])
 
 setup(name='pythonaudiotechnician', 
       description='PAT Audio Technician (PAT)',
-      version='0.0.6',
+      version=,
       license='LGPLv3+',
       author='Thomas Newman',
       author_email='tnewman1@ltu.edu',
