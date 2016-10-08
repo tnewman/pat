@@ -21,8 +21,13 @@ can currently play audio files.
 41848832
 
 # Stop Playback
-pat.stop()
+>>> pat.stop()
 ```
+
+## Can PAT be used with programming languages other than Python?
+All of the Python-specific code is just a wrapper, so porting PAT would be relatively easy. If 
+you are using C/C++, you can use the functions declared in pat.h and link with ffmpeg. Any other 
+programming languages can use the Python wrapper as a guide for porting efforts.
 
 ## Licensing Considerations
 You must link against an LGPL version of ffmpeg if you wish to bound by the terms of the LGPL.
