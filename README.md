@@ -7,6 +7,14 @@ PAT uses ffmpeg for audio decoding and resampling. SDL is used to play audio usi
 Everything is written in C, but the Python C Extension interface allows PAT to be used through the 
 CPython interpreter.
 
+## How do I install it?
+1.  Install Python
+2.  Install ffmpeg
+3.  Make sure the ffmpeg shared libraries (.dll/.so) are available for linking with PAT (On Linux, 
+    this means that they are in a shared library location. On Windows, this means that they are on 
+    the PATH.)
+4. Install pataudiotechnician using PIP
+
 ## How do I use it?
 PAT is currently under very active development, and the API WILL BREAK on occasion; however, one 
 can currently play audio files.
