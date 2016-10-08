@@ -8,7 +8,7 @@ pat_extension = Extension('pat', sources=['patmodule.c', 'pat.c'],
 
 setup(name='pythonaudiotechnician', 
       description='PAT Audio Technician (PAT)',
-      version=,
+      version=version,
       license='LGPLv3+',
       author='Thomas Newman',
       author_email='tnewman1@ltu.edu',
