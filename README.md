@@ -13,10 +13,9 @@ CPython interpreter.
 It is very difficult to get PAT working on Windows. Detailed instructions will 
 be provided at a later date.
 
-### Installation Steps
-1.  Install Python
-2.  Install ffmpeg
-3. Install pataudiotechnician using PIP
+### Installation
+- [Windows Installation Instructions](https://github.com/tnewman/pat/blob/master/INSTALL_WINDOWS.md)
+- Linux Installation Instructions (coming soon)
 
 ## How do I use it?
 PAT is currently under very active development, and the API WILL BREAK on occasion; however, one 
