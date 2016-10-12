@@ -18,8 +18,8 @@ be provided at a later date.
 - Linux Installation Instructions (coming soon)
 
 ## How do I use it?
-PAT is currently under very active development, and the API WILL BREAK on occasion; however, one 
-can currently play audio files.
+PAT is currently under very active development, and the API WILL BREAK on occasion; however, the 
+core functionality to play audio files is there.
 ```python
 >>> import pat
 
