@@ -5,18 +5,19 @@ quickly by the author when PAT was tested on Windows. If you have any
 suggestions to improve this document, please let us know.
 
 ## Installation Steps
-1. Download ffmpeg, including all development files
-2. Add YOUR_FFMPEG_PATH/bin to the PATH
-3. Download SDL, including all development files
-4. Add SDL to the PATH
-5. Add YOUR_SDL_PATH/lib/x64 to the PATH
-6. Clone pat
-7. Open the Windows Command Prompt
-7. Run `python setup.py build_ext --include-dirs=D:/ffmpeg/include;D:/sdl2/include --library-dirs=D:/ffmpeg/lib;D:/sdl2/lib/x64`, 
-   replacing the directories above with the locations of ffmpeg and SDL on your 
-   machine.
-8. Open the Windows Command Prompt as an Administrator
-9. Run `python setup.py install`
+1.  Download ffmpeg, including all development files
+2.  Add YOUR_FFMPEG_PATH/bin to the PATH
+3.  Download SDL, including all development files
+4.  Add SDL to the PATH
+5.  Add YOUR_SDL_PATH/lib/x64 to the PATH
+7.  Open the Windows Command Prompt
+8.  cd to a directory where you can clone PAT to
+9.  Clone PAT with `git clone https://github.com/tnewman/pat`
+10. Run `python setup.py build_ext --include-dirs=D:/ffmpeg/include;D:/sdl2/include --library-dirs=D:/ffmpeg/lib;D:/sdl2/lib/x64`, 
+    replacing the directories above with the locations of ffmpeg and SDL on your 
+    machine.
+11. Open the Windows Command Prompt as an Administrator
+12. Run `python setup.py install`
 
 ## Troubleshooting
 ### Build Problems
