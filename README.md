@@ -15,7 +15,7 @@ be provided at a later date.
 
 ### Installation
 - [Windows Installation Instructions](https://github.com/tnewman/pat/blob/master/INSTALL_WINDOWS.md)
-- Linux Installation Instructions (coming soon)
+- [Linux Installation Instructions](https://github.com/tnewman/pat/blob/master/INSTALL_LINUX.md)
 
 ## How do I use it?
 PAT is currently under very active development, and the API WILL BREAK on occasion; however, the 
