@@ -13,7 +13,7 @@ static AVFormatContext* pat_open_format_context(const char* audio_path);
 
 static AVCodecContext* pat_open_codec_context(AVCodec* decoder);
 
-PATDecoder* pat_open_audio_decoder(const char* audio_path) {
+PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char* audio_path) {
     av_register_all();
     avformat_network_init();
 

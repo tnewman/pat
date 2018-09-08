@@ -42,7 +42,6 @@ PATAudioDevice* pat_open_audio_device() {
     pat_audio_device->samples = have.samples;
 
     SDL_PauseAudioDevice(device_id, 0);
-    SDL_Delay(5000);
 
     return pat_audio_device;
 }
