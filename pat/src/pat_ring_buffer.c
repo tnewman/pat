@@ -13,7 +13,7 @@ PATRingBuffer* pat_ring_buffer_create(size_t capacity) {
         return NULL;
     }
 
-    uint8_t* data = calloc(capacity, sizeof(uint8_t));
+    uint32_t* data = calloc(capacity, sizeof(uint32_t));
 
     if(data == NULL) {
         free(ring_buffer);
@@ -29,7 +29,7 @@ PATRingBuffer* pat_ring_buffer_create(size_t capacity) {
     return ring_buffer;
 }
 
-size_t pat_ring_buffer_read(PATRingBuffer *ring_buffer, uint8_t *data, size_t data_size) {
+size_t pat_ring_buffer_read(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size) {
     if(data_size < 1) {
         return 0;
     }
@@ -56,7 +56,7 @@ size_t pat_ring_buffer_read(PATRingBuffer *ring_buffer, uint8_t *data, size_t da
     return read_size;
 }
 
-size_t pat_ring_buffer_write(PATRingBuffer *ring_buffer, uint8_t *data, size_t data_size) {
+size_t pat_ring_buffer_write(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size) {
     if(data_size < 1) {
         return 0;
     }

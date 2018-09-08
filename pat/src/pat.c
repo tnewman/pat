@@ -1,7 +1,8 @@
 #include "pat_decode.h"
+#include "pat_audio_device.h"
 
 int main(void) {
-    PATDecoder* pat_decoder = pat_open_audio_decoder("/home/tnewman/Downloads/bulletproof.aac");
-    pat_free_audio_decoder(pat_decoder);
+    PATAudioDevice* pat_audio_device = pat_open_audio_device();
+    pat_free_audio_device(pat_audio_device);
     return 0;
 }
