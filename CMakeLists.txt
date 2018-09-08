@@ -21,4 +21,4 @@ if(NOT ${SDL2_FOUND})
     message(FATAL_ERROR "SDL2 not found!")
 endif()
 
-add_subdirectory(src)
+add_subdirectory(pat)
