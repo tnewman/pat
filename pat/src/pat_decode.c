@@ -18,6 +18,8 @@ static AVCodecContext* pat_open_codec_context(AVCodec* decoder);
 
 static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCodecContext* decoder_context);
 
+static int64_t pat_get_ffmpeg_sample_format(uint16_t pat_channels);
+
 PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char* audio_path) {
     av_register_all();
     avformat_network_init();
@@ -112,21 +114,7 @@ static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCode
             return NULL;
     }
 
-    enum AVSampleFormat out_format;
-
-    switch(pat_audio_device->format) {
-        case AUDIO_U8:
-            out_format = AV_SAMPLE_FMT_U8;
-            break;
-        case AUDIO_S16SYS:
-            out_format = AV_SAMPLE_FMT_S16;
-            break;
-        case AUDIO_S32SYS:
-            out_format = AV_SAMPLE_FMT_S32;
-            break;
-        default:
-            return NULL;
-    }
+    enum AVSampleFormat out_format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
 
     SwrContext* swr_context = swr_alloc_set_opts(NULL, out_channel_layout, out_format, pat_audio_device->frequency,
             decoder_context->channel_layout, decoder_context->sample_fmt, decoder_context->sample_rate, 0, NULL);
@@ -138,7 +126,59 @@ static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCode
     return swr_context;
 }
 
+static int64_t pat_get_ffmpeg_sample_format(uint16_t pat_channels) {
+    switch(pat_channels) {
+        case AUDIO_U8:
+            return AV_SAMPLE_FMT_U8;
+        case AUDIO_S16SYS:
+            return AV_SAMPLE_FMT_S16;
+        case AUDIO_S32SYS:
+        default:
+            return AV_SAMPLE_FMT_S32;
+    }
+}
+
 void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder) {
+    AVPacket av_packet;
+    av_init_packet(&av_packet);
+
+    AVFrame* av_frame = av_frame_alloc();
+
+    if(av_frame == NULL) {
+        return;
+    }
+
+    int result;
+
+    while(av_read_frame(pat_decoder->format_context, &av_packet) == 0) {
+        if(avcodec_send_packet(pat_decoder->decoder_context, &av_packet) != 0) {
+            av_packet_unref(&av_packet);
+            av_frame_free(&av_frame);
+            return;
+        }
+
+        result = avcodec_receive_frame(pat_decoder->decoder_context, av_frame);
+
+        if(result != 0) {
+            av_packet_unref(&av_packet);
+            av_frame_free(&av_frame);
+            return;
+        }
+
+        int64_t format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
+
+        uint8_t* resampled_data;
+
+        if(av_samples_alloc(&resampled_data, NULL, pat_decoder->decoder_context->channels, av_frame->nb_samples,
+                format, 0) < 0) {
+            av_packet_unref(&av_packet);
+            av_frame_free(&av_frame);
+            return;
+        }
+
+        av_packet_unref(&av_packet);
+        av_frame_unref(av_frame);
+    }
 
 }
 

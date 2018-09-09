@@ -18,7 +18,7 @@ PATAudioDevice* pat_open_audio_device() {
     want.freq = 48000;
     want.format = AUDIO_S32SYS;
     want.channels = 6;
-    want.samples = 4096;
+    want.samples = 1024;
     want.callback = pat_audio_callback;
     want.userdata = pat_ring_buffer;
 

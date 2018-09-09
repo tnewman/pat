@@ -18,6 +18,8 @@ size_t pat_read_ring_buffer(PATRingBuffer *ring_buffer, uint32_t *data, size_t d
 
 size_t pat_write_ring_buffer(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size);
 
+size_t pat_get_ring_buffer_size(PATRingBuffer* ring_buffer);
+
 void pat_free_ring_buffer(PATRingBuffer *ring_buffer);
 
 #endif
