@@ -2,7 +2,7 @@
 #include <string.h>
 #include "pat_ring_buffer.h"
 
-PATRingBuffer* pat_ring_buffer_create(size_t capacity) {
+PATRingBuffer* pat_create_ring_buffer(size_t capacity) {
     if(capacity < 1) {
         return NULL;
     }
@@ -29,7 +29,7 @@ PATRingBuffer* pat_ring_buffer_create(size_t capacity) {
     return ring_buffer;
 }
 
-size_t pat_ring_buffer_read(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size) {
+size_t pat_read_ring_buffer(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size) {
     if(data_size < 1) {
         return 0;
     }
@@ -56,7 +56,7 @@ size_t pat_ring_buffer_read(PATRingBuffer *ring_buffer, uint32_t *data, size_t d
     return read_size;
 }
 
-size_t pat_ring_buffer_write(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size) {
+size_t pat_write_ring_buffer(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size) {
     if(data_size < 1) {
         return 0;
     }
@@ -84,7 +84,7 @@ size_t pat_ring_buffer_write(PATRingBuffer *ring_buffer, uint32_t *data, size_t 
     return write_size;
 }
 
-void pat_ring_buffer_free(PATRingBuffer *ring_buffer) {
+void pat_free_ring_buffer(PATRingBuffer *ring_buffer) {
     if(ring_buffer != NULL) {
         free(ring_buffer->data);
         free(ring_buffer);

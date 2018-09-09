@@ -1,3 +1,6 @@
+#ifndef PAT_RING_BUFFER_H
+#define PAT_RING_BUFFER_H
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -9,10 +12,12 @@ typedef struct PATRingBuffer {
     size_t capacity;
 } PATRingBuffer;
 
-PATRingBuffer* pat_ring_buffer_create(size_t capacity);
+PATRingBuffer* pat_create_ring_buffer(size_t capacity);
 
-size_t pat_ring_buffer_read(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size);
+size_t pat_read_ring_buffer(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size);
 
-size_t pat_ring_buffer_write(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size);
+size_t pat_write_ring_buffer(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size);
 
-void pat_ring_buffer_free(PATRingBuffer *ring_buffer);
+void pat_free_ring_buffer(PATRingBuffer *ring_buffer);
+
+#endif

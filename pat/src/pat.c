@@ -1,5 +1,5 @@
-#include "pat_decode.h"
 #include "pat_audio_device.h"
+#include "pat_decode.h"
 #include <stdlib.h>
 
 int main(void) {
