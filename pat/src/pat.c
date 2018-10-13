@@ -18,6 +18,8 @@ int main(void) {
 
     pat_decode_audio(pat_audio_device, pat_decoder);
 
+    sleep(100);
+
     pat_free_audio_decoder(pat_decoder);
     pat_free_audio_device(pat_audio_device);
 

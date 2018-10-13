@@ -4,19 +4,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct PATRingBuffer {
-    uint32_t* data;
-    size_t read_position;
-    size_t write_position;
-    size_t size;
-    size_t capacity;
-} PATRingBuffer;
+typedef struct PATRingBuffer PATRingBuffer;
 
 PATRingBuffer* pat_create_ring_buffer(size_t capacity);
 
-size_t pat_read_ring_buffer(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size);
+size_t pat_read_ring_buffer(PATRingBuffer *ring_buffer, uint8_t *data, size_t data_size, uint32_t timeout);
 
-size_t pat_write_ring_buffer(PATRingBuffer *ring_buffer, uint32_t *data, size_t data_size);
+size_t pat_write_ring_buffer(PATRingBuffer *ring_buffer, uint8_t *data, size_t data_size, uint32_t timeout);
 
 size_t pat_get_ring_buffer_size(PATRingBuffer* ring_buffer);
 
