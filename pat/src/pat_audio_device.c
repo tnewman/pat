@@ -5,7 +5,7 @@
 void pat_audio_callback(void* userdata, Uint8* stream, int len);
 
 PATAudioDevice* pat_open_audio_device() {
-    PATRingBuffer* pat_ring_buffer = pat_create_ring_buffer(65536);
+    PATRingBuffer* pat_ring_buffer = pat_create_ring_buffer(32768);
 
     if(pat_ring_buffer == NULL) {
         return NULL;
@@ -53,12 +53,7 @@ PATAudioDevice* pat_open_audio_device() {
 
 void pat_audio_callback(void* userdata, Uint8* stream, int len) {
     PATRingBuffer* pat_ring_buffer = (PATRingBuffer*) userdata;
-
-    size_t read;
-
-    do {
-        read = pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 1000);
-    } while(read == 0);
+    pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 1000);
 }
 
 void pat_free_audio_device(PATAudioDevice* pat_audio_device) {

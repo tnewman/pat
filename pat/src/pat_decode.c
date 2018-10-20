@@ -22,6 +22,7 @@ static int64_t pat_get_ffmpeg_sample_format(uint16_t format);
 
 PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char* audio_path) {
     av_register_all();
+    avcodec_register_all();
     avformat_network_init();
 
     AVFormatContext* format_context = pat_open_format_context(audio_path);
@@ -65,14 +66,12 @@ static AVFormatContext* pat_open_format_context(const char* audio_path) {
     AVFormatContext* format_context = NULL;
 
     if(avformat_open_input(&format_context, audio_path, NULL, NULL) != 0) {
-        printf("Could not open %s\n", audio_path);
         return NULL;
     }
 
     printf("Opened %s\n", audio_path);
 
     if(avformat_find_stream_info(format_context, NULL) < 0) {
-        printf("Could not find stream info in %s\n", audio_path);
         avformat_close_input(&format_context);
         return NULL;
     }
@@ -164,17 +163,9 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
             if(result != 0) {
                 av_packet_unref(&av_packet);
                 av_frame_unref(av_frame);
+                av_frame_free(&av_frame);
 
-                if(result != EAGAIN) {
-                    char error[1024];
-                    av_strerror(result, error, sizeof(error));
-                    printf("%s\n", error);
-
-                    av_frame_free(&av_frame);
-                    return;
-                }
-
-                continue;
+                return;
             }
 
             uint8_t* resampled_data = NULL;
