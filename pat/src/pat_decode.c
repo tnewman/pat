@@ -189,8 +189,7 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
                 av_freep(&resampled_data);
                 return;
             }
-
-            // TODO: Find out why this works and the built-in FFMPEG function does not
+            
             int64_t buffer_size = output_samples * pat_audio_device->channels * av_get_bytes_per_sample(format);
             int64_t written;
 
