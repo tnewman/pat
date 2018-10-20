@@ -24,6 +24,7 @@ PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char*
     av_register_all();
     avcodec_register_all();
     avformat_network_init();
+    av_log_set_level(AV_LOG_QUIET);
 
     AVFormatContext* format_context = pat_open_format_context(audio_path);
 
@@ -68,8 +69,6 @@ static AVFormatContext* pat_open_format_context(const char* audio_path) {
     if(avformat_open_input(&format_context, audio_path, NULL, NULL) != 0) {
         return NULL;
     }
-
-    printf("Opened %s\n", audio_path);
 
     if(avformat_find_stream_info(format_context, NULL) < 0) {
         avformat_close_input(&format_context);
@@ -189,13 +188,13 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
                 av_freep(&resampled_data);
                 return;
             }
-            
+
             int64_t buffer_size = output_samples * pat_audio_device->channels * av_get_bytes_per_sample(format);
             int64_t written;
 
             do {
                 written = pat_write_ring_buffer(pat_audio_device->pat_ring_buffer, resampled_data,
-                                                (size_t) buffer_size, 1000);
+                        (size_t) buffer_size, 100);
             } while(written == 0);
 
             av_freep(&resampled_data);

@@ -53,7 +53,7 @@ PATAudioDevice* pat_open_audio_device() {
 
 void pat_audio_callback(void* userdata, Uint8* stream, int len) {
     PATRingBuffer* pat_ring_buffer = (PATRingBuffer*) userdata;
-    pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 1000);
+    pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 100);
 }
 
 void pat_free_audio_device(PATAudioDevice* pat_audio_device) {
