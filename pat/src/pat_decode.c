@@ -105,24 +105,7 @@ static AVCodecContext* pat_open_codec_context(AVStream* stream) {
 }
 
 static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCodecContext* decoder_context) {
-    int64_t out_channel_layout;
-
-    switch(pat_audio_device->channels) {
-        case 1:
-            out_channel_layout = AV_CH_LAYOUT_MONO;
-            break;
-        case 2:
-            out_channel_layout = AV_CH_LAYOUT_STEREO;
-            break;
-        case 4:
-            out_channel_layout = AV_CH_LAYOUT_QUAD;
-            break;
-        case 6:
-            out_channel_layout = AV_CH_LAYOUT_5POINT1;
-            break;
-        default:
-            return NULL;
-    }
+    int64_t out_channel_layout = av_get_default_channel_layout(pat_audio_device->channels);
 
     enum AVSampleFormat out_format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
 
@@ -175,48 +158,59 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
                 av_frame_free(&av_frame);
                 return;
             }
-        }
 
-        result = avcodec_receive_frame(pat_decoder->decoder_context, av_frame);
+            result = avcodec_receive_frame(pat_decoder->decoder_context, av_frame);
 
-        if(result != 0) {
-            av_packet_unref(&av_packet);
-            av_frame_unref(av_frame);
+            if(result != 0) {
+                av_packet_unref(&av_packet);
+                av_frame_unref(av_frame);
 
-            if(result != EAGAIN) {
+                if(result != EAGAIN) {
+                    char error[1024];
+                    av_strerror(result, error, sizeof(error));
+                    printf("%s\n", error);
+
+                    av_frame_free(&av_frame);
+                    return;
+                }
+
+                continue;
+            }
+
+            uint8_t* resampled_data = NULL;
+
+            int64_t output_samples = av_rescale_rnd(swr_get_delay(pat_decoder->swr_context,
+                    pat_decoder->decoder_context->sample_rate) + av_frame->nb_samples, pat_audio_device->frequency,
+                            pat_decoder->decoder_context->sample_rate, AV_ROUND_UP);
+
+            if(av_samples_alloc(&resampled_data, NULL, pat_audio_device->channels, (int) output_samples,
+                    format, 0) < 0) {
+                av_packet_unref(&av_packet);
+                av_frame_unref(av_frame);
                 av_frame_free(&av_frame);
                 return;
             }
 
-            continue;
-        }
+            output_samples = swr_convert(pat_decoder->swr_context, &resampled_data, (int) output_samples,
+                    (const uint8_t **) av_frame->extended_data, av_frame->nb_samples);
 
-        uint8_t* resampled_data = NULL;
+            if(output_samples < 0) {
+                av_freep(&resampled_data);
+                return;
+            }
 
-        int64_t output_samples = 1024;
+            // TODO: Find out why this works and the built-in FFMPEG function does not
+            int64_t buffer_size = output_samples * pat_audio_device->channels * av_get_bytes_per_sample(format);
+            int64_t written;
 
-        if(av_samples_alloc(&resampled_data, NULL, pat_audio_device->channels, (int) output_samples,
-                format, 0) < 0) {
-            av_packet_unref(&av_packet);
-            av_frame_unref(av_frame);
-            av_frame_free(&av_frame);
-            return;
-        }
+            do {
+                written = pat_write_ring_buffer(pat_audio_device->pat_ring_buffer, resampled_data,
+                                                (size_t) buffer_size, 1000);
+            } while(written == 0);
 
-        output_samples = swr_convert(pat_decoder->swr_context, &resampled_data, (int) output_samples,
-                (const uint8_t **) av_frame->data, av_frame->nb_samples);
-
-        if(output_samples < 0) {
             av_freep(&resampled_data);
-            return;
         }
 
-        int buffer_size = av_samples_get_buffer_size(NULL, pat_decoder->decoder_context->channels,
-                (int) output_samples, format, 0);
-
-        pat_write_ring_buffer(pat_audio_device->pat_ring_buffer, resampled_data, (size_t) buffer_size, 100);
-
-        av_freep(&resampled_data);
         av_packet_unref(&av_packet);
         av_frame_unref(av_frame);
     }

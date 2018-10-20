@@ -5,7 +5,7 @@
 void pat_audio_callback(void* userdata, Uint8* stream, int len);
 
 PATAudioDevice* pat_open_audio_device() {
-    PATRingBuffer* pat_ring_buffer = pat_create_ring_buffer(16384);
+    PATRingBuffer* pat_ring_buffer = pat_create_ring_buffer(65536);
 
     if(pat_ring_buffer == NULL) {
         return NULL;
@@ -17,7 +17,7 @@ PATAudioDevice* pat_open_audio_device() {
     SDL_memset(&want, 0, sizeof(want));
     want.freq = 48000;
     want.format = AUDIO_S16SYS;
-    want.channels = 2; // TODO: Why does this have to be 2?
+    want.channels = 6;
     want.samples = 1024;
     want.silence = 0;
     want.callback = pat_audio_callback;
@@ -54,11 +54,11 @@ PATAudioDevice* pat_open_audio_device() {
 void pat_audio_callback(void* userdata, Uint8* stream, int len) {
     PATRingBuffer* pat_ring_buffer = (PATRingBuffer*) userdata;
 
-    size_t read = pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 100);
+    size_t read;
 
-    if(read < len) {
-        memset(stream, 0, len - read);
-    }
+    do {
+        read = pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 1000);
+    } while(read == 0);
 }
 
 void pat_free_audio_device(PATAudioDevice* pat_audio_device) {

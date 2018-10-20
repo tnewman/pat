@@ -63,16 +63,21 @@ size_t pat_read_ring_buffer(PATRingBuffer *ring_buffer, uint8_t *data, size_t da
         return 0;
     }
 
-    size_t read_size = data_size < ring_buffer->size ? data_size : ring_buffer->size;
-
-    if(read_size < 1) {
+    if(ring_buffer->size < data_size) {
         int status = SDL_CondWaitTimeout(ring_buffer->condition, ring_buffer->lock, timeout);
 
         if(status != 0) {
             SDL_UnlockMutex(ring_buffer->lock);
             return 0;
         }
+
+        if(ring_buffer->size < data_size) {
+            SDL_UnlockMutex(ring_buffer->lock);
+            return 0;
+        }
     }
+
+    size_t read_size = data_size < ring_buffer->size ? data_size : ring_buffer->size;
 
     if(read_size <= ring_buffer->capacity - ring_buffer->read_position) {
         memcpy(data, ring_buffer->data + ring_buffer->read_position, read_size);
@@ -112,6 +117,11 @@ size_t pat_write_ring_buffer(PATRingBuffer *ring_buffer, uint8_t *data, size_t d
         int status = SDL_CondWaitTimeout(ring_buffer->condition, ring_buffer->lock, timeout);
 
         if(status != 0) {
+            SDL_UnlockMutex(ring_buffer->lock);
+            return 0;
+        }
+
+        if(ring_buffer->capacity - ring_buffer->size < data_size) {
             SDL_UnlockMutex(ring_buffer->lock);
             return 0;
         }
