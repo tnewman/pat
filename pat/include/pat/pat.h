@@ -1,11 +1,13 @@
 #ifndef PAT_H
 #define PAT_H
 
+#include "pat/pat_error.h"
+
 typedef struct PAT PAT;
 
-PAT* pat_open();
+PATError pat_open(PAT** pat_out);
 
-void pat_play(PAT* pat, char* pat_audio_path);
+PATError pat_play(const PAT* pat, const char* pat_audio_path);
 
 void pat_close(PAT* pat);
 

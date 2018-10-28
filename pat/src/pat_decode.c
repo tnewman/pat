@@ -1,19 +1,21 @@
+#include "pat/pat_error.h"
 #include "pat_decode.h"
 #include <SDL.h>
 #include <stdlib.h>
 
-static AVFormatContext* pat_open_format_context(const char* audio_path);
+static PATError pat_open_format_context(AVFormatContext** format_context_out, const char* audio_path);
 
-static AVCodecContext* pat_open_codec_context(AVStream* stream);
+static PATError pat_open_codec_context(AVCodecContext** decoder_context_out, AVStream* stream);
 
-static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCodecContext* decoder_context);
+static PATError pat_open_swr_context(SwrContext** swr_context_out, PATAudioDevice* pat_audio_device,
+        AVCodecContext* decoder_context);
 
 static enum AVSampleFormat pat_get_ffmpeg_sample_format(uint16_t format);
 
 static void pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
         enum AVSampleFormat format, AVFrame* av_frame);
 
-static void pat_flush(const PATAudioDevice *pat_audio_device, const PATDecoder *pat_decoder,
+static void pat_flush(const PATAudioDevice* pat_audio_device, const PATDecoder *pat_decoder,
         enum AVSampleFormat format, AVPacket *av_packet, AVFrame *av_frame);
 
 void pat_init_audio_decoder() {
@@ -23,86 +25,116 @@ void pat_init_audio_decoder() {
     av_log_set_level(AV_LOG_QUIET);
 }
 
-PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char* audio_path) {
-    AVFormatContext* format_context = pat_open_format_context(audio_path);
+PATError pat_open_audio_decoder(PATDecoder** pat_decoder_out, PATAudioDevice* pat_audio_device,
+        const char* audio_path) {
+    *pat_decoder_out = NULL;
+    PATError status;
 
-    if(format_context == NULL) {
-        return NULL;
+    AVFormatContext* format_context;
+
+    if((status = pat_open_format_context(&format_context, audio_path)) != PAT_SUCCESS) {
+        *pat_decoder_out = NULL;
+        return status;
     }
 
     int64_t stream_index = av_find_best_stream(format_context, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
 
     if(stream_index < 0) {
         avformat_close_input(&format_context);
-        return NULL;
+        return PAT_DEMUX_ERROR;
     }
 
     AVStream* stream = format_context->streams[stream_index];
+    AVCodecContext* decoder_context = NULL;
 
-    AVCodecContext* decoder_context = pat_open_codec_context(stream);
-
-    if(decoder_context == NULL) {
+    if((status = pat_open_codec_context(&decoder_context, stream)) != PAT_SUCCESS) {
         avformat_close_input(&format_context);
-        return NULL;
+        return status;
     }
 
-    SwrContext* swr_context = pat_open_swr_context(pat_audio_device, decoder_context);
+    SwrContext* swr_context = NULL;
 
-    if(swr_context == NULL) {
+    if((status = pat_open_swr_context(&swr_context, pat_audio_device, decoder_context)) != PAT_SUCCESS) {
         avformat_close_input(&format_context);
         avcodec_free_context(&decoder_context);
-        return NULL;
+        return PAT_RESAMPLE_ERROR;
     }
 
     PATDecoder* pat_decoder = malloc(sizeof(PATDecoder));
+
+    if(pat_decoder == NULL) {
+        return PAT_MEMORY_ERROR;
+    }
+
     pat_decoder->format_context = format_context;
     pat_decoder->decoder_context = decoder_context;
     pat_decoder->swr_context = swr_context;
     pat_decoder->stream_index = stream_index;
 
-    return pat_decoder;
+    *pat_decoder_out = pat_decoder;
+
+    return status;
 }
 
-static AVFormatContext* pat_open_format_context(const char* audio_path) {
+static PATError pat_open_format_context(AVFormatContext** format_context_out, const char* audio_path) {
+    int status = 0;
     AVFormatContext* format_context = NULL;
 
-    if(avformat_open_input(&format_context, audio_path, NULL, NULL) != 0) {
-        return NULL;
+    if((status = avformat_open_input(&format_context, audio_path, NULL, NULL)) != 0) {
+        *format_context_out = NULL;
+
+        if(status == AVERROR(ENOENT) || status == AVERROR(EACCES) || status == AVERROR(EIO)) {
+            return PAT_FILE_OPEN_ERROR;
+        } else {
+            return PAT_DEMUX_ERROR;
+        }
     }
 
     if(avformat_find_stream_info(format_context, NULL) < 0) {
+        *format_context_out = NULL;
         avformat_close_input(&format_context);
-        return NULL;
+        return PAT_DEMUX_ERROR;
     }
 
-    return format_context;
+    *format_context_out = format_context;
+
+    return PAT_SUCCESS;
 }
 
-static AVCodecContext* pat_open_codec_context(AVStream* stream) {
+static PATError pat_open_codec_context(AVCodecContext** decoder_context_out, AVStream* stream) {
     AVCodec* decoder = avcodec_find_decoder(stream->codecpar->codec_id);
 
     if(decoder == NULL) {
-        return NULL;
+        *decoder_context_out = NULL;
+        return PAT_DECODE_ERROR;
     }
 
     AVCodecContext* decoder_context = avcodec_alloc_context3(decoder);
 
     if(decoder_context == NULL) {
-        return NULL;
+        *decoder_context_out = NULL;
+        return PAT_MEMORY_ERROR;
     }
 
     if(avcodec_parameters_to_context(decoder_context, stream->codecpar) < 0) {
+        *decoder_context_out = NULL;
         avcodec_free_context(&decoder_context);
+        return PAT_DECODE_ERROR;
     }
 
     if(avcodec_open2(decoder_context, decoder_context->codec, NULL) < 0) {
+        *decoder_context_out = NULL;
         avcodec_free_context(&decoder_context);
+        return PAT_DECODE_ERROR;
     }
 
-    return decoder_context;
+    *decoder_context_out = decoder_context;
+    return PAT_SUCCESS;
 }
 
-static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCodecContext* decoder_context) {
+static PATError pat_open_swr_context(SwrContext** swr_context_out, PATAudioDevice* pat_audio_device,
+        AVCodecContext* decoder_context) {
+    *swr_context_out = NULL;
     int64_t out_channel_layout = av_get_default_channel_layout(pat_audio_device->channels);
 
     enum AVSampleFormat out_format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
@@ -111,15 +143,17 @@ static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCode
             decoder_context->channel_layout, decoder_context->sample_fmt, decoder_context->sample_rate, 0, NULL);
 
     if(swr_context == NULL) {
-        return NULL;
+        return PAT_RESAMPLE_ERROR;
     }
 
     if(swr_init(swr_context) != 0) {
         swr_free(&swr_context);
-        return NULL;
+        return PAT_RESAMPLE_ERROR;
     }
 
-    return swr_context;
+    *swr_context_out = swr_context;
+
+    return PAT_SUCCESS;
 }
 
 static enum AVSampleFormat pat_get_ffmpeg_sample_format(const uint16_t format) {

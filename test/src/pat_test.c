@@ -1,15 +1,27 @@
 #include "pat/pat.h"
-#include <stdlib.h>
+#include "pat/pat_error.h"
+#include <stdio.h>
 
 int main(void) {
-    PAT* pat = pat_open();
+    PATError status;
+    PAT* pat;
 
-    if(pat == NULL) {
+    status = pat_open(&pat);
 
+    if(status != PAT_SUCCESS) {
+        const char* error_string = pat_error_to_string(status);
+        printf("%s", error_string);
+        return status;
     }
 
-    pat_play(pat, "/home/tnewman/Downloads/tilltheend.mpga");
+    status = pat_play(pat, "/home/tnewman/Downloads/tilltheend.mpga");
+
+    if(status != PAT_SUCCESS) {
+        const char* error_string = pat_error_to_string(status);
+        printf("%s", error_string);
+    }
 
     pat_close(pat);
-    return 0;
+
+    return status;
 }

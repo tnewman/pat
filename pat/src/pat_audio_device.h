@@ -1,6 +1,7 @@
 #ifndef PAT_AUDIO_DEVICE_H
 #define PAT_AUDIO_DEVICE_H
 
+#include "pat/pat_error.h"
 #include "pat_ring_buffer.h"
 #include <stdint.h>
 
@@ -12,7 +13,7 @@ typedef struct PATAudioDevice {
     PATRingBuffer* pat_ring_buffer;
 } PATAudioDevice;
 
-PATAudioDevice* pat_open_audio_device();
+PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out);
 
 void pat_free_audio_device(PATAudioDevice* pat_audio_device);
 

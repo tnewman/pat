@@ -9,11 +9,12 @@ static const int AUDIO_RING_BUFFER_SIZE = 65536; // Must be large enough to keep
 
 static void pat_audio_callback(void* userdata, Uint8* stream, int len);
 
-PATAudioDevice* pat_open_audio_device() {
+PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
     PATRingBuffer* pat_ring_buffer = pat_create_ring_buffer(AUDIO_RING_BUFFER_SIZE);
 
     if(pat_ring_buffer == NULL) {
-        return NULL;
+        *pat_audio_device_out = NULL;
+        return PAT_MEMORY_ERROR;
     }
 
     SDL_Init(SDL_INIT_AUDIO);
@@ -34,14 +35,17 @@ PATAudioDevice* pat_open_audio_device() {
 
     if(device_id < 0) {
         pat_free_ring_buffer(pat_ring_buffer);
-        return NULL;
+        *pat_audio_device_out = NULL;
+        return PAT_AUDIO_DEVICE_ERROR;
     }
 
     PATAudioDevice* pat_audio_device = malloc(sizeof(PATAudioDevice));
 
     if(pat_audio_device == NULL) {
         pat_free_ring_buffer(pat_ring_buffer);
-        return NULL;
+        SDL_CloseAudioDevice(device_id);
+        *pat_audio_device_out = NULL;
+        return PAT_MEMORY_ERROR;
     }
 
     pat_audio_device->device_id = device_id;
@@ -50,9 +54,11 @@ PATAudioDevice* pat_open_audio_device() {
     pat_audio_device->channels = have.channels;
     pat_audio_device->pat_ring_buffer = pat_ring_buffer;
 
+    *pat_audio_device_out = pat_audio_device;
+
     SDL_PauseAudioDevice(device_id, 0);
 
-    return pat_audio_device;
+    return PAT_SUCCESS;
 }
 
 static void pat_audio_callback(void* userdata, Uint8* stream, int len) {
