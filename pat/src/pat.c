@@ -10,6 +10,8 @@ typedef struct PAT {
 typedef struct PAT PAT;
 
 PAT* pat_open() {
+    pat_init_audio_decoder();
+
     PATAudioDevice* pat_audio_device = pat_open_audio_device();
 
     if(pat_audio_device == NULL) {

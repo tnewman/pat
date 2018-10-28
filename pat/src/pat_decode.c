@@ -10,12 +10,14 @@ static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCode
 
 static int64_t pat_get_ffmpeg_sample_format(uint16_t format);
 
-PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char* audio_path) {
+void pat_init_audio_decoder() {
     av_register_all();
     avcodec_register_all();
     avformat_network_init();
     av_log_set_level(AV_LOG_QUIET);
+}
 
+PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char* audio_path) {
     AVFormatContext* format_context = pat_open_format_context(audio_path);
 
     if(format_context == NULL) {
