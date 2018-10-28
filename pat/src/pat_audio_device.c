@@ -43,7 +43,6 @@ PATAudioDevice* pat_open_audio_device() {
     pat_audio_device->frequency = have.freq;
     pat_audio_device->format = have.format;
     pat_audio_device->channels = have.channels;
-    pat_audio_device->samples = have.samples;
     pat_audio_device->pat_ring_buffer = pat_ring_buffer;
 
     SDL_PauseAudioDevice(device_id, 0);

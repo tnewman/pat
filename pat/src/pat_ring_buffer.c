@@ -134,10 +134,6 @@ size_t pat_write_ring_buffer(PATRingBuffer *ring_buffer, uint8_t *data, size_t d
     return data_size;
 }
 
-size_t pat_get_ring_buffer_size(PATRingBuffer* ring_buffer) {
-    return ring_buffer->size;
-}
-
 void pat_free_ring_buffer(PATRingBuffer *ring_buffer) {
     if(ring_buffer != NULL) {
         free(ring_buffer->data);

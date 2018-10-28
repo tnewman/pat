@@ -22,3 +22,4 @@ if(NOT ${SDL2_FOUND})
 endif()
 
 add_subdirectory(pat)
+add_subdirectory(test)

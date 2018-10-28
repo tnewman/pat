@@ -9,7 +9,6 @@ typedef struct PATAudioDevice {
     int32_t frequency;
     uint16_t format;
     uint8_t channels;
-    uint16_t samples;
     PATRingBuffer* pat_ring_buffer;
 } PATAudioDevice;
 

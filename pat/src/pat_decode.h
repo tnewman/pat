@@ -1,10 +1,18 @@
 #ifndef PAT_DECODE_H
 #define PAT_DECODE_H
 
-#include "pat_audio_device.h"
-#include "pat_ring_buffer.h"
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libswresample/swresample.h>
 
-typedef struct PATDecoder PATDecoder;
+#include "pat_audio_device.h"
+
+typedef struct PATDecoder {
+    AVFormatContext* format_context;
+    AVCodecContext* decoder_context;
+    SwrContext* swr_context;
+    int64_t stream_index;
+} PATDecoder;
 
 PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char* audio_path);
 

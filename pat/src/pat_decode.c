@@ -1,16 +1,7 @@
 #include "pat_decode.h"
-#include "libavcodec/avcodec.h"
-#include "libavformat/avformat.h"
-#include "libswresample/swresample.h"
+
 #include "SDL.h"
 #include <stdio.h>
-
-typedef struct PATDecoder {
-    AVFormatContext* format_context;
-    AVCodecContext* decoder_context;
-    SwrContext* swr_context;
-    int64_t stream_index;
-} PATDecoder;
 
 static AVFormatContext* pat_open_format_context(const char* audio_path);
 
@@ -45,6 +36,7 @@ PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char*
 
     if(decoder_context == NULL) {
         avformat_close_input(&format_context);
+        return NULL;
     }
 
     SwrContext* swr_context = pat_open_swr_context(pat_audio_device, decoder_context);
@@ -52,6 +44,7 @@ PATDecoder* pat_open_audio_decoder(PATAudioDevice* pat_audio_device, const char*
     if(swr_context == NULL) {
         avformat_close_input(&format_context);
         avcodec_free_context(&decoder_context);
+        return NULL;
     }
 
     PATDecoder* pat_decoder = malloc(sizeof(PATDecoder));
