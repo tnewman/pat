@@ -8,7 +8,10 @@ static AVCodecContext* pat_open_codec_context(AVStream* stream);
 
 static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCodecContext* decoder_context);
 
-static int64_t pat_get_ffmpeg_sample_format(uint16_t format);
+static enum AVSampleFormat pat_get_ffmpeg_sample_format(uint16_t format);
+
+static void pat_resample_frame(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder, enum AVSampleFormat format,
+        AVFrame* av_frame);
 
 void pat_init_audio_decoder() {
     av_register_all();
@@ -116,7 +119,7 @@ static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCode
     return swr_context;
 }
 
-static int64_t pat_get_ffmpeg_sample_format(uint16_t format) {
+static enum AVSampleFormat pat_get_ffmpeg_sample_format(uint16_t format) {
     switch(format) {
         case AUDIO_U8:
             return AV_SAMPLE_FMT_U8;
@@ -129,7 +132,7 @@ static int64_t pat_get_ffmpeg_sample_format(uint16_t format) {
 }
 
 void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder) {
-    int64_t format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
+    enum AVSampleFormat format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
 
     AVPacket av_packet;
     av_init_packet(&av_packet);
@@ -161,37 +164,7 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
                 return;
             }
 
-            uint8_t* resampled_data = NULL;
-
-            int64_t output_samples = av_rescale_rnd(swr_get_delay(pat_decoder->swr_context,
-                    pat_decoder->decoder_context->sample_rate) + av_frame->nb_samples, pat_audio_device->frequency,
-                            pat_decoder->decoder_context->sample_rate, AV_ROUND_UP);
-
-            if(av_samples_alloc(&resampled_data, NULL, pat_audio_device->channels, (int) output_samples,
-                    format, 0) < 0) {
-                av_packet_unref(&av_packet);
-                av_frame_unref(av_frame);
-                av_frame_free(&av_frame);
-                return;
-            }
-
-            output_samples = swr_convert(pat_decoder->swr_context, &resampled_data, (int) output_samples,
-                    (const uint8_t **) av_frame->extended_data, av_frame->nb_samples);
-
-            if(output_samples < 0) {
-                av_freep(&resampled_data);
-                return;
-            }
-
-            int64_t buffer_size = output_samples * pat_audio_device->channels * av_get_bytes_per_sample(format);
-            int64_t written;
-
-            do {
-                written = pat_write_ring_buffer(pat_audio_device->pat_ring_buffer, resampled_data,
-                        (size_t) buffer_size, 100);
-            } while(written == 0);
-
-            av_freep(&resampled_data);
+            pat_resample_frame(pat_audio_device, pat_decoder, format, av_frame);
         }
 
         av_packet_unref(&av_packet);
@@ -199,7 +172,38 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
     }
 
     av_frame_free(&av_frame);
+}
 
+static void pat_resample_frame(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder, enum AVSampleFormat format,
+        AVFrame* av_frame) {
+    uint8_t* resampled_data = NULL;
+
+    int64_t output_samples = av_rescale_rnd(swr_get_delay(pat_decoder->swr_context,
+            pat_decoder->decoder_context->sample_rate) + av_frame->nb_samples,
+                    pat_audio_device->frequency, pat_decoder->decoder_context->sample_rate, AV_ROUND_UP);
+
+    if(av_samples_alloc(&resampled_data, NULL, pat_audio_device->channels, (int) output_samples,
+                        format, 0) < 0) {
+        return;
+    }
+
+    output_samples = swr_convert(pat_decoder->swr_context, &resampled_data, (int) output_samples,
+                                 (const uint8_t **) av_frame->extended_data, av_frame->nb_samples);
+
+    if(output_samples < 0) {
+        av_freep(&resampled_data);
+        return;
+    }
+
+    int64_t buffer_size = output_samples * pat_audio_device->channels * av_get_bytes_per_sample(format);
+    int64_t written;
+
+    do {
+        written = pat_write_ring_buffer(pat_audio_device->pat_ring_buffer, resampled_data,
+                                        (size_t) buffer_size, 100);
+    } while(written == 0);
+
+    av_freep(&resampled_data);
 }
 
 void pat_free_audio_decoder(PATDecoder* pat_decoder) {
