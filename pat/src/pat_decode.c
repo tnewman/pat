@@ -170,6 +170,8 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
     }
 
     pat_flush(pat_audio_device, pat_decoder, format, &av_packet, av_frame);
+
+    av_frame_free(&av_frame);
 }
 
 static void pat_flush(const PATAudioDevice *pat_audio_device, const PATDecoder *pat_decoder,
@@ -190,8 +192,6 @@ static void pat_flush(const PATAudioDevice *pat_audio_device, const PATDecoder *
     while(swr_get_delay(pat_decoder->swr_context, 1000) > 0) {
         pat_resample_frame(pat_audio_device, pat_decoder, format, av_frame);
     }
-
-    av_frame_free(&av_frame);
 }
 
 static void pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
