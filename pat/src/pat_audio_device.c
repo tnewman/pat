@@ -2,14 +2,15 @@
 #include <SDL.h>
 #include <stdlib.h>
 
-const int SAMPLES_PER_SECOND = 48000;
-const int AUDIO_CHANNELS = 6; // 6 means 5.1 channel sound
-const int AUDIO_BUFFER_SIZE = 1024; // SDL requires a power of 2 sized buffer
+static const int SAMPLES_PER_SECOND = 48000;
+static const int AUDIO_CHANNELS = 6; // 6 means 5.1 channel sound
+static const int AUDIO_BUFFER_SIZE = 1024; // SDL requires a power of 2 sized buffer
+static const int AUDIO_RING_BUFFER_SIZE = 65536; // Must be large enough to keep up with SDL's demand for audio data
 
-void pat_audio_callback(void* userdata, Uint8* stream, int len);
+static void pat_audio_callback(void* userdata, Uint8* stream, int len);
 
 PATAudioDevice* pat_open_audio_device() {
-    PATRingBuffer* pat_ring_buffer = pat_create_ring_buffer(32768);
+    PATRingBuffer* pat_ring_buffer = pat_create_ring_buffer(AUDIO_RING_BUFFER_SIZE);
 
     if(pat_ring_buffer == NULL) {
         return NULL;
@@ -54,7 +55,7 @@ PATAudioDevice* pat_open_audio_device() {
     return pat_audio_device;
 }
 
-void pat_audio_callback(void* userdata, Uint8* stream, int len) {
+static void pat_audio_callback(void* userdata, Uint8* stream, int len) {
     PATRingBuffer* pat_ring_buffer = (PATRingBuffer*) userdata;
     pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 100);
 }

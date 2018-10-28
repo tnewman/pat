@@ -10,8 +10,11 @@ static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCode
 
 static enum AVSampleFormat pat_get_ffmpeg_sample_format(uint16_t format);
 
-static void pat_resample_frame(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder, enum AVSampleFormat format,
-        AVFrame* av_frame);
+static void pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
+        enum AVSampleFormat format, AVFrame* av_frame);
+
+static void pat_flush(const PATAudioDevice *pat_audio_device, const PATDecoder *pat_decoder,
+        enum AVSampleFormat format, AVPacket *av_packet, AVFrame *av_frame);
 
 void pat_init_audio_decoder() {
     av_register_all();
@@ -119,7 +122,7 @@ static SwrContext* pat_open_swr_context(PATAudioDevice* pat_audio_device, AVCode
     return swr_context;
 }
 
-static enum AVSampleFormat pat_get_ffmpeg_sample_format(uint16_t format) {
+static enum AVSampleFormat pat_get_ffmpeg_sample_format(const uint16_t format) {
     switch(format) {
         case AUDIO_U8:
             return AV_SAMPLE_FMT_U8;
@@ -143,8 +146,6 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
         return;
     }
 
-    int result;
-
     while(av_read_frame(pat_decoder->format_context, &av_packet) == 0) {
         if(av_packet.stream_index == pat_decoder->stream_index) {
             if (avcodec_send_packet(pat_decoder->decoder_context, &av_packet) != 0) {
@@ -154,13 +155,10 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
                 return;
             }
 
-            result = avcodec_receive_frame(pat_decoder->decoder_context, av_frame);
-
-            if(result != 0) {
+            if(avcodec_receive_frame(pat_decoder->decoder_context, av_frame) != 0) {
                 av_packet_unref(&av_packet);
                 av_frame_unref(av_frame);
                 av_frame_free(&av_frame);
-
                 return;
             }
 
@@ -171,16 +169,39 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
         av_frame_unref(av_frame);
     }
 
+    pat_flush(pat_audio_device, pat_decoder, format, &av_packet, av_frame);
+}
+
+static void pat_flush(const PATAudioDevice *pat_audio_device, const PATDecoder *pat_decoder,
+        enum AVSampleFormat format, AVPacket *av_packet, AVFrame *av_frame) {
+    av_packet->data = NULL;
+    av_packet->size = 0;
+
+    avcodec_send_packet(pat_decoder->decoder_context, av_packet);
+
+    while(avcodec_receive_frame(pat_decoder->decoder_context, av_frame) == 0) {
+        pat_resample_frame(pat_audio_device, pat_decoder, format, av_frame);
+        av_frame_unref(av_frame);
+    }
+
+    av_frame->extended_data = NULL;
+    av_frame->nb_samples = 0;
+
+    while(swr_get_delay(pat_decoder->swr_context, 1000) > 0) {
+        pat_resample_frame(pat_audio_device, pat_decoder, format, av_frame);
+    }
+
     av_frame_free(&av_frame);
 }
 
-static void pat_resample_frame(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder, enum AVSampleFormat format,
-        AVFrame* av_frame) {
+static void pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
+        const enum AVSampleFormat format, AVFrame* av_frame) {
     uint8_t* resampled_data = NULL;
 
+    // https://www.ffmpeg.org/doxygen/3.1/group__lswr.html documents the output samples calculation
     int64_t output_samples = av_rescale_rnd(swr_get_delay(pat_decoder->swr_context,
-            pat_decoder->decoder_context->sample_rate) + av_frame->nb_samples,
-                    pat_audio_device->frequency, pat_decoder->decoder_context->sample_rate, AV_ROUND_UP);
+            pat_decoder->decoder_context->sample_rate) + av_frame->nb_samples, pat_audio_device->frequency,
+                    pat_decoder->decoder_context->sample_rate, AV_ROUND_UP);
 
     if(av_samples_alloc(&resampled_data, NULL, pat_audio_device->channels, (int) output_samples,
                         format, 0) < 0) {
@@ -191,6 +212,11 @@ static void pat_resample_frame(PATAudioDevice* pat_audio_device, PATDecoder* pat
                                  (const uint8_t **) av_frame->extended_data, av_frame->nb_samples);
 
     if(output_samples < 0) {
+        av_freep(&resampled_data);
+        return;
+    }
+
+    if(output_samples == 0) {
         av_freep(&resampled_data);
         return;
     }
