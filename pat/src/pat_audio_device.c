@@ -1,6 +1,10 @@
 #include "pat_decode.h"
-#include "SDL.h"
+#include <SDL.h>
 #include <stdlib.h>
+
+const int SAMPLES_PER_SECOND = 48000;
+const int AUDIO_CHANNELS = 6; // 6 means 5.1 channel sound
+const int AUDIO_BUFFER_SIZE = 1024; // SDL requires a power of 2 sized buffer
 
 void pat_audio_callback(void* userdata, Uint8* stream, int len);
 
@@ -15,10 +19,10 @@ PATAudioDevice* pat_open_audio_device() {
 
     SDL_AudioSpec want;
     SDL_memset(&want, 0, sizeof(want));
-    want.freq = 48000;
+    want.freq = SAMPLES_PER_SECOND;
     want.format = AUDIO_S16SYS;
-    want.channels = 6;
-    want.samples = 1024;
+    want.channels = AUDIO_CHANNELS;
+    want.samples = AUDIO_BUFFER_SIZE;
     want.silence = 0;
     want.callback = pat_audio_callback;
     want.userdata = pat_ring_buffer;

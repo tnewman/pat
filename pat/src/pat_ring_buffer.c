@@ -1,7 +1,8 @@
+#include "pat_ring_buffer.h"
+#include <SDL.h>
 #include <stdlib.h>
 #include <string.h>
-#include "pat_ring_buffer.h"
-#include "SDL.h"
+
 
 typedef struct PATRingBuffer {
     uint8_t *data;

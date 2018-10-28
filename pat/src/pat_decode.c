@@ -1,7 +1,6 @@
 #include "pat_decode.h"
-
-#include "SDL.h"
-#include <stdio.h>
+#include <SDL.h>
+#include <stdlib.h>
 
 static AVFormatContext* pat_open_format_context(const char* audio_path);
 

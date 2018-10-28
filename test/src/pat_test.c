@@ -9,7 +9,7 @@ int main(void) {
     }
 
     pat_play(pat, "/home/tnewman/Downloads/tilltheend.mpga");
-    
+
     pat_close(pat);
     return 0;
 }
