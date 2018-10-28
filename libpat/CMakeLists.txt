@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(pat C)
+project(libpat C)
 
 set(CMAKE_C_STANDARD 11)
 
@@ -21,5 +21,5 @@ if(NOT ${SDL2_FOUND})
     message(FATAL_ERROR "SDL2 not found!")
 endif()
 
-add_subdirectory(pat)
+add_subdirectory(libpat)
 add_subdirectory(test)
