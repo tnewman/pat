@@ -180,6 +180,9 @@ static enum AVSampleFormat pat_get_ffmpeg_sample_format(const uint16_t format) {
 }
 
 void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder) {
+    // TODO: Add proper return codes
+    // TODO: Add async playback, which requires skipping the current song without knowing the pat instance
+
     pat_audio_device->skip_current_song = false;
     pat_interrupted = false;
 
