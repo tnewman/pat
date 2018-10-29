@@ -1,3 +1,7 @@
+# Programming Languages
+- C/C++ (libpat)
+- Python (PyPAT)
+
 # Supported Platforms
 - Linux
 - Other Platforms to Come
