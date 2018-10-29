@@ -50,10 +50,16 @@ PATError pat_play(const PAT* pat, const char* pat_audio_path) {
     return status;
 }
 
+PATError pat_skip(const PAT* pat) {
+    return pat_skip_audio(pat->pat_audio_device);
+}
+
 void pat_close(PAT* pat) {
     if(pat == NULL) {
         return;
     }
+
+    pat_skip(pat);
 
     if(pat->pat_audio_device != NULL) {
         pat_free_audio_device(pat->pat_audio_device);

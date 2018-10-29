@@ -135,6 +135,19 @@ size_t pat_write_ring_buffer(PATRingBuffer *ring_buffer, uint8_t *data, size_t d
     return data_size;
 }
 
+bool pat_clear_ring_buffer(PATRingBuffer *ring_buffer) {
+    if(SDL_LockMutex(ring_buffer->lock) != 0) {
+        return false;
+    }
+
+    memset(ring_buffer->data, 0, ring_buffer->capacity);
+
+    SDL_CondSignal(ring_buffer->condition);
+    SDL_UnlockMutex(ring_buffer->lock);
+
+    return true;
+}
+
 void pat_free_ring_buffer(PATRingBuffer *ring_buffer) {
     if(ring_buffer != NULL) {
         free(ring_buffer->data);

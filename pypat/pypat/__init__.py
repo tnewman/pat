@@ -17,6 +17,17 @@ def play(audio_path: str):
         raise PATException('Could not play {}.\n{}'.format(audio_path, _error_to_str(pat_error)))
 
 
+def skip():
+    """
+    Skip playback of the current audio file. This method does nothing if there is not an audio file playing.
+    :raises PATException: Raised when PAT cannot skip playback.
+    """
+    pat_error = _libpat.pat_skip(_pat)
+
+    if pat_error != 0:
+        raise PATException('Could not skip playback.\n{}'.format(_error_to_str(pat_error)))
+
+
 class PATException(Exception):
     pass
 

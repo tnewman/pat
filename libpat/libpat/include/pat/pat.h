@@ -9,6 +9,8 @@ PATError pat_open(PAT** pat_out);
 
 PATError pat_play(const PAT* pat, const char* pat_audio_path);
 
+PATError pat_skip(const PAT* pat);
+
 void pat_close(PAT* pat);
 
 #endif

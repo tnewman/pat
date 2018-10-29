@@ -21,6 +21,8 @@ PATError pat_open_audio_decoder(PATDecoder** pat_decoder_out, PATAudioDevice* pa
 
 void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder);
 
+PATError pat_skip_audio(PATAudioDevice* pat_audio_device);
+
 void pat_free_audio_decoder(PATDecoder* pat_decoder);
 
 #endif
