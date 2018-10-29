@@ -1,3 +1,7 @@
+# Supported Platforms
+- Linux
+- Other Platforms to Come
+
 # Development Prerequisites
 ## Ubuntu
 ```bash
