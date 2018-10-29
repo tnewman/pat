@@ -20,7 +20,7 @@ char* pat_error_to_string(const PATError error) {
             return "Memory allocation failed. The system does not have an adequate amount of memory. "
                    "Consider enabling the swap file";
         case PAT_UNKNOWN_ERROR:
-            return "An unexpected error has occured. Please increase the log level to diagnose the error, and "
-                   "report the error to the maintainers if it should be handled by PAT.";
+        default:
+            return "An unexpected error has occurred.";
     }
 }
