@@ -195,7 +195,8 @@ static PATError pat_open_swr_context(SwrContext** swr_context_out, PATAudioDevic
     enum AVSampleFormat out_format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
 
     SwrContext* swr_context = swr_alloc_set_opts(NULL, out_channel_layout, out_format, pat_audio_device->frequency,
-                                                 decoder_context->channel_layout, decoder_context->sample_fmt, decoder_context->sample_rate, 0, NULL);
+                                                 decoder_context->channel_layout, decoder_context->sample_fmt,
+                                                 decoder_context->sample_rate, 0, NULL);
 
     if(swr_context == NULL) {
         return PAT_RESAMPLE_ERROR;
@@ -336,7 +337,7 @@ static PATError pat_resample_frame(const PATAudioDevice* pat_audio_device, const
 
     do {
         written = pat_write_ring_buffer(pat_audio_device->pat_ring_buffer, resampled_data,
-                                        (size_t) buffer_size, 100);
+                                        (size_t) buffer_size, 500);
     } while(written == 0);
 
     av_freep(&resampled_data);
