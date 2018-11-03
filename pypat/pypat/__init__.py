@@ -97,7 +97,3 @@ def _error_to_str(pat_error: int):
 _libpat = _load_libpat()
 _pat = _pat_open()
 atexit.register(_pat_close)
-
-
-if __name__ == '__main__':
-    play('/home/tnewman/Downloads/test.mp4')
