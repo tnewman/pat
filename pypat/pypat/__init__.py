@@ -15,7 +15,7 @@ def play(audio_path: str):
     """
     pat_error = _libpat.pat_play(_pat, c_char_p(audio_path.encode('ascii')))
 
-    if pat_error != _PATError.PAT_SUCCESS:
+    if pat_error == _PATError.PAT_SUCCESS:
         return
     elif pat_error == _PATError.PAT_INTERRUPTED_ERROR:
         os.kill(os.getpid(), signal.SIGINT)
