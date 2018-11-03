@@ -14,7 +14,7 @@ int main(void) {
         return status;
     }
 
-    status = pat_play(pat, "/home/tnewman/Downloads/test.mp4");
+    status = pat_play(pat, "/home/tnewman/Downloads/937354116178869607.mpga");
 
     if(status != PAT_SUCCESS) {
         const char* error_string = pat_error_to_string(status);

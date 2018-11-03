@@ -33,18 +33,7 @@ PATError pat_open(PAT** pat_out) {
 }
 
 PATError pat_play(const PAT* pat, const char* pat_audio_path) {
-    PATDecoder* pat_decoder;
-    PATError status;
-
-    if((status = pat_open_audio_decoder(&pat_decoder, pat->pat_audio_device, pat_audio_path)) != PAT_SUCCESS) {
-        return status;
-    }
-
-    status = pat_decode_audio(pat->pat_audio_device, pat_decoder);
-
-    pat_free_audio_decoder(pat_decoder);
-
-    return status;
+    return pat_decode_audio(pat->pat_audio_device, pat_audio_path);
 }
 
 PATError pat_skip(const PAT* pat) {
