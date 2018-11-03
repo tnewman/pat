@@ -13,6 +13,8 @@ static PATError pat_open_codec_context(AVCodecContext** decoder_context_out, AVS
 static PATError pat_open_swr_context(SwrContext** swr_context_out, PATAudioDevice* pat_audio_device,
         AVCodecContext* decoder_context);
 
+
+
 static enum AVSampleFormat pat_get_ffmpeg_sample_format(uint16_t format);
 
 static PATError pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
@@ -27,7 +29,7 @@ void pat_init_audio_decoder() {
     av_register_all();
     avcodec_register_all();
     avformat_network_init();
-    av_log_set_level(AV_LOG_VERBOSE);
+    av_log_set_level(AV_LOG_QUIET);
     signal(SIGINT, pat_sig_handler);
     signal(SIGTERM, pat_sig_handler);
 }
