@@ -7,9 +7,6 @@ typedef struct PAT {
     PATAudioDevice* pat_audio_device;
 } PAT;
 
-
-typedef struct PAT PAT;
-
 PATError pat_open(PAT** pat_out) {
     *pat_out = NULL;
     PATError status;
@@ -43,7 +40,7 @@ PATError pat_play(const PAT* pat, const char* pat_audio_path) {
         return status;
     }
 
-    pat_decode_audio(pat->pat_audio_device, pat_decoder);
+    status = pat_decode_audio(pat->pat_audio_device, pat_decoder);
 
     pat_free_audio_decoder(pat_decoder);
 

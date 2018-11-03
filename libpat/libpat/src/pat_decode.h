@@ -19,7 +19,7 @@ void pat_init_audio_decoder();
 PATError pat_open_audio_decoder(PATDecoder** pat_decoder_out, PATAudioDevice* pat_audio_device,
         const char* audio_path);
 
-void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder);
+PATError pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder);
 
 PATError pat_skip_audio(PATAudioDevice* pat_audio_device);
 

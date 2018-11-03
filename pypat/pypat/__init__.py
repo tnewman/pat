@@ -1,7 +1,9 @@
 from ctypes import *
 from ctypes.util import find_library
+from enum import auto, IntEnum, unique
 import atexit
 import os
+import signal
 import sys
 
 
@@ -13,7 +15,15 @@ def play(audio_path: str):
     """
     pat_error = _libpat.pat_play(_pat, c_char_p(audio_path.encode('ascii')))
 
-    if pat_error != 0:
+    if pat_error == _PATError.PAT_SUCCESS:
+        return
+    elif pat_error == _PATError.PAT_INTERRUPTED_ERROR:
+        os.kill(os.getpid(), signal.SIGINT)
+        return
+    elif pat_error == _PATError.PAT_TERMINATED_ERROR:
+        os.kill(os.getpid(), signal.SIGTERM)
+        return
+    else:
         raise PATException('Could not play {}.\n{}'.format(audio_path, _error_to_str(pat_error)))
 
 
@@ -24,8 +34,22 @@ def skip():
     """
     pat_error = _libpat.pat_skip(_pat)
 
-    if pat_error != 0:
+    if pat_error != _PATError.PAT_SUCCESS:
         raise PATException('Could not skip playback.\n{}'.format(_error_to_str(pat_error)))
+
+
+@unique
+class _PATError(IntEnum):
+    PAT_SUCCESS = 0
+    PAT_AUDIO_DEVICE_ERROR = 1
+    PAT_DEMUX_ERROR = 2
+    PAT_DECODE_ERROR = 3
+    PAT_FILE_OPEN_ERROR = 4
+    PAT_INTERRUPTED_ERROR = 5
+    PAT_MEMORY_ERROR = 6
+    PAT_RESAMPLE_ERROR = 7
+    PAT_TERMINATED_ERROR = 8
+    PAT_UNKNOWN_ERROR = 9
 
 
 class PATException(Exception):
@@ -74,3 +98,7 @@ def _error_to_str(pat_error: int):
 _libpat = _load_libpat()
 _pat = _pat_open()
 atexit.register(_pat_close)
+
+
+if __name__ == '__main__':
+    play('/home/tnewman/Downloads/test.mp4')

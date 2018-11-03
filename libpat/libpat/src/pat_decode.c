@@ -15,25 +15,25 @@ static PATError pat_open_swr_context(SwrContext** swr_context_out, PATAudioDevic
 
 static enum AVSampleFormat pat_get_ffmpeg_sample_format(uint16_t format);
 
-static void pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
+static PATError pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
         enum AVSampleFormat format, AVFrame* av_frame);
 
 static void pat_flush(const PATAudioDevice* pat_audio_device, const PATDecoder *pat_decoder,
         enum AVSampleFormat format, AVPacket *av_packet, AVFrame *av_frame);
 
-static volatile bool pat_interrupted = false;
+static volatile int pat_signal = 0;
 
 void pat_init_audio_decoder() {
     av_register_all();
     avcodec_register_all();
     avformat_network_init();
-    av_log_set_level(AV_LOG_QUIET);
+    av_log_set_level(AV_LOG_VERBOSE);
     signal(SIGINT, pat_sig_handler);
     signal(SIGTERM, pat_sig_handler);
 }
 
 static void pat_sig_handler(int signum) {
-    pat_interrupted = true;
+    pat_signal = signum;
 }
 
 PATError pat_open_audio_decoder(PATDecoder** pat_decoder_out, PATAudioDevice* pat_audio_device,
@@ -179,12 +179,10 @@ static enum AVSampleFormat pat_get_ffmpeg_sample_format(const uint16_t format) {
     }
 }
 
-void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder) {
-    // TODO: Add proper return codes
-    // TODO: Add async playback, which requires skipping the current song without knowing the pat instance
-
+PATError pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder) {
+    PATError status = PAT_SUCCESS;
     pat_audio_device->skip_current_song = false;
-    pat_interrupted = false;
+    pat_signal = 0;
 
     enum AVSampleFormat format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
 
@@ -194,40 +192,60 @@ void pat_decode_audio(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder)
     AVFrame* av_frame = av_frame_alloc();
 
     if(av_frame == NULL) {
-        return;
+        return PAT_MEMORY_ERROR;
     }
 
     while(av_read_frame(pat_decoder->format_context, &av_packet) == 0 && !pat_audio_device->skip_current_song &&
-        !pat_interrupted) {
+        pat_signal == 0) {
+
         if(av_packet.stream_index == pat_decoder->stream_index) {
             if (avcodec_send_packet(pat_decoder->decoder_context, &av_packet) != 0) {
                 av_packet_unref(&av_packet);
                 av_frame_unref(av_frame);
                 av_frame_free(&av_frame);
-                return;
+                return PAT_DECODE_ERROR;
             }
 
-            if(avcodec_receive_frame(pat_decoder->decoder_context, av_frame) != 0) {
+            int receive_frame_error;
+
+            if((receive_frame_error = avcodec_receive_frame(pat_decoder->decoder_context, av_frame)) != 0) {
                 av_packet_unref(&av_packet);
                 av_frame_unref(av_frame);
+
+                if(receive_frame_error == AVERROR(EAGAIN)) {
+                    continue;
+                }
+
                 av_frame_free(&av_frame);
-                return;
+                return PAT_DECODE_ERROR;
             }
 
-            pat_resample_frame(pat_audio_device, pat_decoder, format, av_frame);
+            if((status = pat_resample_frame(pat_audio_device, pat_decoder, format, av_frame)) != PAT_SUCCESS) {
+                return status;
+            }
         }
 
         av_packet_unref(&av_packet);
         av_frame_unref(av_frame);
     }
 
-    if(pat_audio_device->skip_current_song || pat_interrupted) {
+    if(pat_audio_device->skip_current_song || pat_signal) {
         pat_clear_ring_buffer(pat_audio_device->pat_ring_buffer);
     } else {
         pat_flush(pat_audio_device, pat_decoder, format, &av_packet, av_frame);
     }
 
+    if(pat_signal == SIGINT) {
+        return PAT_INTERRUPTED_ERROR;
+    }
+
+    if(pat_signal == SIGTERM) {
+        return PAT_TERMINATED_ERROR;
+    }
+
     av_frame_free(&av_frame);
+
+    return status;
 }
 
 PATError pat_skip_audio(PATAudioDevice* pat_audio_device) {
@@ -255,7 +273,7 @@ static void pat_flush(const PATAudioDevice *pat_audio_device, const PATDecoder *
     }
 }
 
-static void pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
+static PATError pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
         const enum AVSampleFormat format, AVFrame* av_frame) {
     uint8_t* resampled_data = NULL;
 
@@ -266,7 +284,7 @@ static void pat_resample_frame(const PATAudioDevice* pat_audio_device, const PAT
 
     if(av_samples_alloc(&resampled_data, NULL, pat_audio_device->channels, (int) output_samples,
                         format, 0) < 0) {
-        return;
+        return PAT_MEMORY_ERROR;
     }
 
     output_samples = swr_convert(pat_decoder->swr_context, &resampled_data, (int) output_samples,
@@ -274,12 +292,12 @@ static void pat_resample_frame(const PATAudioDevice* pat_audio_device, const PAT
 
     if(output_samples < 0) {
         av_freep(&resampled_data);
-        return;
+        return PAT_RESAMPLE_ERROR;
     }
 
     if(output_samples == 0) {
         av_freep(&resampled_data);
-        return;
+        return PAT_SUCCESS;
     }
 
     int64_t buffer_size = output_samples * pat_audio_device->channels * av_get_bytes_per_sample(format);
@@ -291,6 +309,8 @@ static void pat_resample_frame(const PATAudioDevice* pat_audio_device, const PAT
     } while(written == 0);
 
     av_freep(&resampled_data);
+
+    return PAT_SUCCESS;
 }
 
 void pat_free_audio_decoder(PATDecoder* pat_decoder) {
