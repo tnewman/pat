@@ -33,8 +33,6 @@ static volatile int pat_signal = 0;
 typedef void (*sighandler_t)(int);
 
 void pat_init_audio_decoder() {
-    av_register_all();
-    avcodec_register_all();
     avformat_network_init();
     av_log_set_level(AV_LOG_QUIET);
 }
