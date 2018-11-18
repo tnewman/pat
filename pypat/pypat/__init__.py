@@ -55,7 +55,7 @@ class PATException(Exception):
     pass
 
 
-def _load_libpat():
+def _get_libpat_path():
     if sys.platform != 'linux':
         raise PATException('Unsupported OS. PAT only supports Linux.')
 
@@ -68,6 +68,12 @@ def _load_libpat():
             raise PATException('Failed to load libpat.')
     else:
         libpat_path = library
+
+    return libpat_path
+
+
+def _load_libpat():
+    libpat_path = _get_libpat_path()
 
     libpat = cdll.LoadLibrary(libpat_path)
 
