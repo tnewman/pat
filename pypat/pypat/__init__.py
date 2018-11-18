@@ -56,20 +56,19 @@ class PATException(Exception):
 
 
 def _get_libpat_path():
-    if sys.platform != 'linux':
+    if sys.platform == 'linux':
+        shared_lib_suffix = 'so'
+    else:
         raise PATException('Unsupported OS. PAT only supports Linux.')
 
-    library = find_library('pat')
+    libpat_paths = [os.path.abspath(f'{__file__}/../../../libpat/build/libpat/libpat.{shared_lib_suffix}'),
+                    os.path.abspath(f'{__file__}/../libpat.{shared_lib_suffix}')]
+    
+    for libpat_path in libpat_paths:
+        if os.path.exists(libpat_path):
+            return libpat_path
 
-    if library is None:
-        libpat_path = os.path.abspath(__file__ + '/../../../libpat/build/libpat/libpat.so')
-
-        if not os.path.exists(libpat_path):
-            raise PATException('Failed to load libpat.')
-    else:
-        libpat_path = library
-
-    return libpat_path
+    raise PATException('Failed to load libpat.')
 
 
 def _load_libpat():
