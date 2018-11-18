@@ -16,12 +16,6 @@ to provide robust support for virtually any audio format and SDL to play back au
 sudo apt install ffmpeg libsdl2-2.0
 ```
 
-## Development Prerequisites
-### Ubuntu
-```bash
-sudo apt install build-essential cmake libavutil-dev libswresample-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
-```
-
 ## Examples
 ### pypat
 ```python
@@ -32,4 +26,12 @@ sudo apt install build-essential cmake libavutil-dev libswresample-dev libavcode
 
 # Skip the current song
 >>> pypat.skip()
+```
+
+## Development Prerequisites
+### Ubuntu
+```bash
+sudo apt install build-essential cmake libavutil-dev libswresample-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
+```
+
 
