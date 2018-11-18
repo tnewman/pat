@@ -1,4 +1,4 @@
-## PAT (PAT Audio Technician)
+# PAT (PAT Audio Technician)
 PAT is an audio library that makes playing audio simple. Behind the scenes, PAT uses FFmpeg to provide robust playback 
 of virtually any audio format.
 
