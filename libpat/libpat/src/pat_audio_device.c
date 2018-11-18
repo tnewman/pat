@@ -6,7 +6,6 @@ static const int SAMPLES_PER_SECOND = 48000;
 static const int AUDIO_CHANNELS = 6; // 6 means 5.1 channel sound
 static const int AUDIO_BUFFER_SIZE = 1024; // SDL requires a power of 2 sized buffer
 static const int AUDIO_RING_BUFFER_SIZE = 65536; // Must be large enough to keep up with SDL's demand for audio data
-static const int CONCURRENT_PLAYS = 1; // The number of audio playback sessions that may occur simultaneously
 
 static void pat_audio_callback(void* userdata, Uint8* stream, int len);
 
@@ -40,9 +39,9 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
         return PAT_AUDIO_DEVICE_ERROR;
     }
 
-    SDL_sem* concurrent_plays = SDL_CreateSemaphore(CONCURRENT_PLAYS);
+    SDL_mutex* audio_lock = SDL_CreateMutex();
 
-    if(concurrent_plays == NULL) {
+    if(audio_lock == NULL) {
         pat_free_ring_buffer(pat_ring_buffer);
         SDL_CloseAudioDevice(device_id);
         *pat_audio_device_out = NULL;
@@ -54,17 +53,19 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
     if(pat_audio_device == NULL) {
         pat_free_ring_buffer(pat_ring_buffer);
         SDL_CloseAudioDevice(device_id);
-        SDL_DestroySemaphore(concurrent_plays);
+        SDL_DestroyMutex(audio_lock);
         *pat_audio_device_out = NULL;
         return PAT_MEMORY_ERROR;
     }
+
+    SDL_AtomicSet(&pat_audio_device->audio_wait_count, 0);
 
     pat_audio_device->device_id = device_id;
     pat_audio_device->frequency = have.freq;
     pat_audio_device->format = have.format;
     pat_audio_device->channels = have.channels;
     pat_audio_device->pat_ring_buffer = pat_ring_buffer;
-    pat_audio_device->concurrent_plays = concurrent_plays;
+    pat_audio_device->audio_lock = audio_lock;
 
     *pat_audio_device_out = pat_audio_device;
 
@@ -91,8 +92,8 @@ void pat_free_audio_device(PATAudioDevice* pat_audio_device) {
         pat_free_ring_buffer(pat_audio_device->pat_ring_buffer);
     }
 
-    if(pat_audio_device->concurrent_plays != NULL) {
-        SDL_DestroySemaphore(pat_audio_device->concurrent_plays);
+    if(pat_audio_device->audio_lock != NULL) {
+        SDL_DestroyMutex(pat_audio_device->audio_lock);
     }
 
     free(pat_audio_device);

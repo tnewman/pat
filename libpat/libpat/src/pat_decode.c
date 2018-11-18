@@ -44,14 +44,16 @@ static void pat_sig_handler(int signum) {
 PATError pat_decode_audio(PATAudioDevice* pat_audio_device, const char* audio_path) {
     SDL_AtomicSet(&pat_signal, 0);
 
-    SDL_SemWait(pat_audio_device->concurrent_plays);
+    SDL_AtomicAdd(&pat_audio_device->audio_wait_count, 1);
+    SDL_LockMutex(pat_audio_device->audio_lock);
+    SDL_AtomicAdd(&pat_audio_device->audio_wait_count, -1);
 
     sighandler_t old_sig_int_handler = signal(SIGINT, pat_sig_handler);
     sighandler_t old_sig_term_handler = signal(SIGTERM, pat_sig_handler);
 
     PATError status;
 
-    if(audio_path == NULL || SDL_SemValue(pat_audio_device->concurrent_plays) || SDL_AtomicGet(&pat_signal)) {
+    if(audio_path == NULL || SDL_AtomicGet(&pat_audio_device->audio_wait_count) || SDL_AtomicGet(&pat_signal)) {
         status = PAT_SUCCESS;
     } else {
         PATDecoder *pat_decoder;
@@ -76,7 +78,7 @@ PATError pat_decode_audio(PATAudioDevice* pat_audio_device, const char* audio_pa
     signal(SIGINT, old_sig_int_handler);
     signal(SIGTERM, old_sig_term_handler);
 
-    SDL_SemPost(pat_audio_device->concurrent_plays);
+    SDL_UnlockMutex(pat_audio_device->audio_lock);
 
     return status;
 }
@@ -245,7 +247,7 @@ static PATError pat_run_audio_decoder(PATDecoder* pat_decoder, PATAudioDevice* p
     }
 
     while(av_read_frame(pat_decoder->format_context, &av_packet) == 0 &&
-        !SDL_SemValue(pat_audio_device->concurrent_plays) && SDL_AtomicGet(&pat_signal) == 0) {
+            SDL_AtomicGet(&pat_audio_device->audio_wait_count) == 0 && SDL_AtomicGet(&pat_signal) == 0) {
 
         if(av_packet.stream_index == pat_decoder->stream_index) {
             if (avcodec_send_packet(pat_decoder->decoder_context, &av_packet) != 0) {
@@ -278,7 +280,7 @@ static PATError pat_run_audio_decoder(PATDecoder* pat_decoder, PATAudioDevice* p
         av_frame_unref(av_frame);
     }
 
-    if(SDL_SemValue(pat_audio_device->concurrent_plays) || SDL_AtomicGet(&pat_signal)) {
+    if(SDL_AtomicGet(&pat_audio_device->audio_wait_count) != 0 || SDL_AtomicGet(&pat_signal)) {
         pat_clear_ring_buffer(pat_audio_device->pat_ring_buffer);
     } else {
         pat_flush(pat_audio_device, pat_decoder, format, &av_packet, av_frame);

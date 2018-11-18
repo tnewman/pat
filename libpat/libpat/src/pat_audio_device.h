@@ -13,7 +13,8 @@ typedef struct PATAudioDevice {
     uint16_t format;
     uint8_t channels;
     PATRingBuffer* pat_ring_buffer;
-    SDL_sem* concurrent_plays;
+    SDL_mutex* audio_lock;
+    SDL_atomic_t audio_wait_count;
 } PATAudioDevice;
 
 PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out);
