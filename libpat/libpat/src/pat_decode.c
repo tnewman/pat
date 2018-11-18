@@ -28,7 +28,7 @@ static PATError pat_resample_frame(const PATAudioDevice* pat_audio_device, const
 static void pat_flush(const PATAudioDevice* pat_audio_device, const PATDecoder *pat_decoder,
         enum AVSampleFormat format, AVPacket *av_packet, AVFrame *av_frame);
 
-static volatile int pat_signal = 0;
+static SDL_atomic_t pat_signal;
 
 typedef void (*sighandler_t)(int);
 
@@ -38,43 +38,51 @@ void pat_init_audio_decoder() {
 }
 
 static void pat_sig_handler(int signum) {
-    pat_signal = signum;
+    SDL_AtomicSet(&pat_signal, signum);
 }
 
 PATError pat_decode_audio(PATAudioDevice* pat_audio_device, const char* audio_path) {
+    SDL_AtomicSet(&pat_signal, 0);
+
+    SDL_SemWait(pat_audio_device->concurrent_plays);
+
     sighandler_t old_sig_int_handler = signal(SIGINT, pat_sig_handler);
     sighandler_t old_sig_term_handler = signal(SIGTERM, pat_sig_handler);
 
     PATError status;
-    pat_audio_device->skip_current_song = false;
-    pat_signal = 0;
 
-    PATDecoder* pat_decoder;
+    if(audio_path == NULL || SDL_SemValue(pat_audio_device->concurrent_plays) || SDL_AtomicGet(&pat_signal)) {
+        status = PAT_SUCCESS;
+    } else {
+        PATDecoder *pat_decoder;
 
-    if((status = pat_open_audio_decoder(&pat_decoder, pat_audio_device, audio_path)) != PAT_SUCCESS) {
-        return status;
+        if ((status = pat_open_audio_decoder(&pat_decoder, pat_audio_device, audio_path)) != PAT_SUCCESS) {
+            return status;
+        }
+
+        status = pat_run_audio_decoder(pat_decoder, pat_audio_device);
+
+        pat_free_audio_decoder(pat_decoder);
     }
 
-    status = pat_run_audio_decoder(pat_decoder, pat_audio_device);
-
-    if(pat_signal == SIGINT) {
+    if (SDL_AtomicGet(&pat_signal) == SIGINT) {
         status = PAT_INTERRUPTED_ERROR;
     }
 
-    if(pat_signal == SIGTERM) {
+    if (SDL_AtomicGet(&pat_signal) == SIGTERM) {
         status = PAT_TERMINATED_ERROR;
     }
 
-    pat_free_audio_decoder(pat_decoder);
-
     signal(SIGINT, old_sig_int_handler);
     signal(SIGTERM, old_sig_term_handler);
+
+    SDL_SemPost(pat_audio_device->concurrent_plays);
 
     return status;
 }
 
 PATError pat_skip_audio(PATAudioDevice* pat_audio_device) {
-    pat_audio_device->skip_current_song = true;
+    pat_decode_audio(pat_audio_device, NULL);
     return PAT_SUCCESS;
 }
 
@@ -224,8 +232,6 @@ static enum AVSampleFormat pat_get_ffmpeg_sample_format(const uint16_t format) {
 
 static PATError pat_run_audio_decoder(PATDecoder* pat_decoder, PATAudioDevice* pat_audio_device) {
     PATError status = PAT_SUCCESS;
-    pat_audio_device->skip_current_song = false;
-    pat_signal = 0;
 
     enum AVSampleFormat format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
 
@@ -238,8 +244,8 @@ static PATError pat_run_audio_decoder(PATDecoder* pat_decoder, PATAudioDevice* p
         return PAT_MEMORY_ERROR;
     }
 
-    while(av_read_frame(pat_decoder->format_context, &av_packet) == 0 && !pat_audio_device->skip_current_song &&
-          pat_signal == 0) {
+    while(av_read_frame(pat_decoder->format_context, &av_packet) == 0 &&
+        !SDL_SemValue(pat_audio_device->concurrent_plays) && SDL_AtomicGet(&pat_signal) == 0) {
 
         if(av_packet.stream_index == pat_decoder->stream_index) {
             if (avcodec_send_packet(pat_decoder->decoder_context, &av_packet) != 0) {
@@ -272,7 +278,7 @@ static PATError pat_run_audio_decoder(PATDecoder* pat_decoder, PATAudioDevice* p
         av_frame_unref(av_frame);
     }
 
-    if(pat_audio_device->skip_current_song || pat_signal) {
+    if(SDL_SemValue(pat_audio_device->concurrent_plays) || SDL_AtomicGet(&pat_signal)) {
         pat_clear_ring_buffer(pat_audio_device->pat_ring_buffer);
     } else {
         pat_flush(pat_audio_device, pat_decoder, format, &av_packet, av_frame);
