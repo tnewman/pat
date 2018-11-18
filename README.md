@@ -21,6 +21,7 @@ sudo apt install build-essential cmake libavutil-dev libswresample-dev libavcode
 ### Ubuntu
 ```bash
 git clone https://github.com/tnewman/pat
+cd pat
 
 mkdir -p libpat/build
 cd libpat/build
