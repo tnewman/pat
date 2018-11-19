@@ -33,7 +33,7 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
 
     SDL_AudioDeviceID device_id = SDL_OpenAudioDevice(NULL, 0, &want, &have, SDL_AUDIO_ALLOW_ANY_CHANGE);
 
-    if(device_id < 0) {
+    if(device_id <= 0) {
         pat_free_ring_buffer(pat_ring_buffer);
         *pat_audio_device_out = NULL;
         return PAT_AUDIO_DEVICE_ERROR;
