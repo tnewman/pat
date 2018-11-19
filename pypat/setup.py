@@ -18,10 +18,6 @@ _libpat_file = os.path.basename(_libpat_path)
 
 class BuildPat(setuptools.command.build_py.build_py):
     def run(self):
-
-
-        print(_libpat_build_dir)
-
         subprocess.check_call(['cmake', '..'], cwd=_libpat_build_dir)
 
         if sys.platform == 'linux':
@@ -35,6 +31,7 @@ class BuildPat(setuptools.command.build_py.build_py):
         super(BuildPat, self).run()
 
 
+# TODO: Find a way to copy libpat to make sdist work.
 class BuildSDist(setuptools.command.build_py.build_py):
     def run(self):
         raise RuntimeError('Source distributions are not supported because libpat must be available for build.')

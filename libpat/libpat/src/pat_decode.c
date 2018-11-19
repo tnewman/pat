@@ -33,6 +33,7 @@ static SDL_atomic_t pat_signal;
 typedef void (*sighandler_t)(int);
 
 void pat_init_audio_decoder() {
+    av_register_all();
     avformat_network_init();
     av_log_set_level(AV_LOG_QUIET);
 }
