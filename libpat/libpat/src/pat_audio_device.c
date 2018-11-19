@@ -1,3 +1,4 @@
+#include "pat_audio_device.h"
 #include "pat_decode.h"
 #include <SDL.h>
 #include <stdlib.h>
@@ -71,6 +72,16 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
 
     SDL_PauseAudioDevice(device_id, 0);
 
+    return PAT_SUCCESS;
+}
+
+PATError pat_pause_audio_device(const PATAudioDevice* pat_audio_device) {
+    SDL_PauseAudioDevice(pat_audio_device->device_id, 1);
+    return PAT_SUCCESS;
+}
+
+PATError pat_resume_audio_device(const PATAudioDevice* pat_audio_device) {
+    SDL_PauseAudioDevice(pat_audio_device->device_id, 0);
     return PAT_SUCCESS;
 }
 

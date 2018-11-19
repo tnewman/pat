@@ -37,6 +37,28 @@ def skip():
         raise PATException('Could not skip playback.\n{}'.format(_error_to_str(pat_error)))
 
 
+def pause():
+    """
+    Pause audio playback. This method does nothing if audio playback is already paused.
+    :raises PATException: Raised when PAT cannot pause playback.
+    """
+    pat_error = _libpat.pat_pause(_pat)
+
+    if pat_error != _PATError.PAT_SUCCESS:
+        raise PATException('Could not pause playback.\n{}'.format(_error_to_str(pat_error)))
+
+
+def resume():
+    """
+    Resume audio playback. This method does nothing if audio playback is already resumed.
+    :raises PATException: Raised when PAT cannot resume playback.
+    """
+    pat_error = _libpat.pat_resume(_pat)
+
+    if pat_error != _PATError.PAT_SUCCESS:
+        raise PATException('Could not resume playback.\n{}'.format(_error_to_str(pat_error)))
+
+
 @unique
 class _PATError(IntEnum):
     PAT_SUCCESS = 0

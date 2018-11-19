@@ -19,6 +19,10 @@ typedef struct PATAudioDevice {
 
 PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out);
 
+PATError pat_pause_audio_device(const PATAudioDevice* pat_audio_device);
+
+PATError pat_resume_audio_device(const PATAudioDevice* pat_audio_device);
+
 void pat_free_audio_device(PATAudioDevice* pat_audio_device);
 
 #endif

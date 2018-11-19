@@ -1,3 +1,4 @@
+#include "pat/pat.h"
 #include "pat/pat_error.h"
 #include "pat_audio_device.h"
 #include "pat_decode.h"
@@ -33,11 +34,21 @@ PATError pat_open(PAT** pat_out) {
 }
 
 PATError pat_play(const PAT* pat, const char* pat_audio_path) {
+    pat_resume(pat);
     return pat_decode_audio(pat->pat_audio_device, pat_audio_path);
 }
 
 PATError pat_skip(const PAT* pat) {
+    pat_resume(pat);
     return pat_skip_audio(pat->pat_audio_device);
+}
+
+PATError pat_pause(const PAT* pat) {
+    return pat_pause_audio_device(pat->pat_audio_device);
+}
+
+PATError pat_resume(const PAT* pat) {
+    return pat_resume_audio_device(pat->pat_audio_device);
 }
 
 void pat_close(PAT* pat) {

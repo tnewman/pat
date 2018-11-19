@@ -22,10 +22,10 @@ static PATError pat_open_swr_context(SwrContext** swr_context_out, PATAudioDevic
 
 static enum AVSampleFormat pat_get_ffmpeg_sample_format(uint16_t format);
 
-static PATError pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
+static PATError pat_resample_frame(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder,
         enum AVSampleFormat format, AVFrame* av_frame);
 
-static void pat_flush(const PATAudioDevice* pat_audio_device, const PATDecoder *pat_decoder,
+static void pat_flush(PATAudioDevice* pat_audio_device, PATDecoder *pat_decoder,
         enum AVSampleFormat format, AVPacket *av_packet, AVFrame *av_frame);
 
 static SDL_atomic_t pat_signal;
@@ -292,8 +292,8 @@ static PATError pat_run_audio_decoder(PATDecoder* pat_decoder, PATAudioDevice* p
     return status;
 }
 
-static void pat_flush(const PATAudioDevice *pat_audio_device, const PATDecoder *pat_decoder,
-        enum AVSampleFormat format, AVPacket *av_packet, AVFrame *av_frame) {
+static void pat_flush(PATAudioDevice *pat_audio_device, PATDecoder *pat_decoder, enum AVSampleFormat format,
+        AVPacket *av_packet, AVFrame *av_frame) {
     av_packet->data = NULL;
     av_packet->size = 0;
 
@@ -312,7 +312,7 @@ static void pat_flush(const PATAudioDevice *pat_audio_device, const PATDecoder *
     }
 }
 
-static PATError pat_resample_frame(const PATAudioDevice* pat_audio_device, const PATDecoder* pat_decoder,
+static PATError pat_resample_frame(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder,
         const enum AVSampleFormat format, AVFrame* av_frame) {
     uint8_t* resampled_data = NULL;
 
@@ -345,7 +345,7 @@ static PATError pat_resample_frame(const PATAudioDevice* pat_audio_device, const
     do {
         written = pat_write_ring_buffer(pat_audio_device->pat_ring_buffer, resampled_data,
                                         (size_t) buffer_size, 500);
-    } while(written == 0);
+    } while(written == 0 && SDL_AtomicGet(&pat_audio_device->audio_wait_count) == 0 && SDL_AtomicGet(&pat_signal) == 0);
 
     av_freep(&resampled_data);
 

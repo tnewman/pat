@@ -34,6 +34,12 @@ sudo python3 setup.py install
 # Play a file
 >>> pypat.play('amerika.mpga')
 
-# Skip the current song
+# Skip the current file
 >>> pypat.skip()
+
+# Pause audio playback
+>>> pypat.pause()
+
+# Resume audio playback
+>>> pypat.resume()
 ```
