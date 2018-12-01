@@ -1,5 +1,4 @@
 from ctypes import *
-from ctypes.util import find_library
 from enum import IntEnum, unique
 import atexit
 import os
@@ -81,10 +80,12 @@ def _get_libpat_path():
     if sys.platform == 'linux':
         shared_lib_suffix = 'so'
     else:
-        raise PATException('Unsupported OS. PAT only supports Linux.')
+        raise PATException(f'{sys.platform} is an unsupported OS.')
 
-    libpat_paths = [os.path.abspath(f'{__file__}/../../../libpat/build/libpat/libpat.{shared_lib_suffix}'),
-                    os.path.abspath(f'{__file__}/../libpat.{shared_lib_suffix}')]
+    module_folder = os.path.dirname(__file__)
+
+    libpat_paths = [f'{module_folder}/libpat/build/libpat/libpat.{shared_lib_suffix}',
+                    f'{module_folder}/libpat.{shared_lib_suffix}']
     
     for libpat_path in libpat_paths:
         if os.path.exists(libpat_path):

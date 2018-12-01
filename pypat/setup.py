@@ -11,7 +11,7 @@ if sys.platform == 'linux':
 else:
     raise Exception('Unsupported OS. PAT only supports Linux.')
 
-_libpat_build_dir = os.path.abspath(f'{__file__}/../../libpat/build')
+_libpat_build_dir = os.path.abspath(f'pypat/libpat/build')
 _libpat_path = os.path.abspath(f'{_libpat_build_dir}/libpat/libpat.{_shared_lib_extension}')
 _libpat_file = os.path.basename(_libpat_path)
 
