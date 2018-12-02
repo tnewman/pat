@@ -86,7 +86,7 @@ def _get_libpat_path():
 
     module_folder = os.path.dirname(__file__)
 
-    libpat_paths = [f'{module_folder}/libpat/build/libpat/libpat.{_shared_lib_suffix}',
+    libpat_paths = [f'{module_folder}/libpat/build/bin/libpat.{_shared_lib_suffix}',
                     f'{module_folder}/libpat.{_shared_lib_suffix}']
     
     for libpat_path in libpat_paths:
