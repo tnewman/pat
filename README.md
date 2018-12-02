@@ -14,7 +14,7 @@ to provide robust support for virtually any audio format and SDL to play back au
 ### Ubuntu
 ```bash
 sudo apt install ffmpeg libsdl2-2.0
-sudo apt install build-essential cmake libavutil-dev libswresample-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
+sudo apt install build-essential cmake libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
 ```
 
 ## Build and Install
