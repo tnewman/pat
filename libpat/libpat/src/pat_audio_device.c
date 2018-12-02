@@ -5,7 +5,7 @@
 
 static const int SAMPLES_PER_SECOND = 48000;
 static const int AUDIO_CHANNELS = 6; // 6 means 5.1 channel sound
-static const int AUDIO_BUFFER_SIZE = 1024; // SDL requires a power of 2 sized buffer
+static const int AUDIO_BUFFER_SIZE = 65536; // SDL requires a power of 2 sized buffer
 static const int AUDIO_RING_BUFFER_SIZE = 65536; // Must be large enough to keep up with SDL's demand for audio data
 
 static void pat_audio_callback(void* userdata, Uint8* stream, int len);
@@ -17,9 +17,14 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
         *pat_audio_device_out = NULL;
         return PAT_MEMORY_ERROR;
     }
-
+    
+    #ifdef _WIN32
+        // SDL2 does not set a default audio driver for Windows
+        putenv("SDL_AUDIODRIVER=winmm");
+    #endif
+    
     SDL_Init(SDL_INIT_AUDIO);
-
+    
     SDL_AudioSpec want;
     SDL_memset(&want, 0, sizeof(want));
     want.freq = SAMPLES_PER_SECOND;
