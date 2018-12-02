@@ -19,12 +19,7 @@ _libpat_file = os.path.basename(_libpat_path)
 class BuildPat(setuptools.command.build_py.build_py):
     def run(self):
         subprocess.check_call(['cmake', '..'], cwd=_libpat_build_dir)
-
-        if sys.platform == 'linux':
-            subprocess.check_call(['make', 'clean'], cwd=_libpat_build_dir)
-            subprocess.check_call(['make'], cwd=_libpat_build_dir)
-        else:
-            raise Exception('Unsupported OS. PAT only supports Linux.')
+        subprocess.check_call(['cmake', '--build', '.', '--target', 'pat'], cwd=_libpat_build_dir)
 
         shutil.copy(_libpat_path, f'pypat/{_libpat_file}')
 
