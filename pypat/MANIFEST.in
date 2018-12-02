@@ -1,1 +1,7 @@
+exclude pypat/*.dll
 exclude pypat/*.so
+include pypat/libpat/CMakeLists.txt
+include pypat/libpat/build/.gitkeep
+recursive-include pypat/libpat/modules *
+recursive-include pypat/libpat/libpat *
+recursive-include pypat/libpat/test *

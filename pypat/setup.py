@@ -28,12 +28,6 @@ class BuildPat(setuptools.command.build_py.build_py):
         super(BuildPat, self).run()
 
 
-# TODO: Find a way to copy libpat to make sdist work.
-class BuildSDist(setuptools.command.build_py.build_py):
-    def run(self):
-        raise RuntimeError('Source distributions are not supported because libpat must be available for build.')
-
-
 setuptools.setup(
     name = 'pypat',
     version = '0.1.0',
@@ -42,6 +36,5 @@ setuptools.setup(
     package_data={'pypat': [_libpat_file]},
     cmdclass={
         'build_py': BuildPat,
-        'sdist': BuildSDist,
     },
 )
