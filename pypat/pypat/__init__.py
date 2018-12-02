@@ -77,15 +77,17 @@ class PATException(Exception):
 
 
 def _get_libpat_path():
-    if sys.platform == 'linux':
-        shared_lib_suffix = 'so'
+    if sys.platform == 'darwin':
+        _shared_lib_suffix = 'dylib'
+    elif sys.platform == 'win32':
+        _shared_lib_suffix = 'dll'
     else:
-        raise PATException(f'{sys.platform} is an unsupported OS.')
+        _shared_lib_suffix = 'so'
 
     module_folder = os.path.dirname(__file__)
 
-    libpat_paths = [f'{module_folder}/libpat/build/libpat/libpat.{shared_lib_suffix}',
-                    f'{module_folder}/libpat.{shared_lib_suffix}']
+    libpat_paths = [f'{module_folder}/libpat/build/libpat/libpat.{_shared_lib_suffix}',
+                    f'{module_folder}/libpat.{_shared_lib_suffix}']
     
     for libpat_path in libpat_paths:
         if os.path.exists(libpat_path):

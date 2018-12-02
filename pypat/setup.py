@@ -6,12 +6,12 @@ import shutil
 import subprocess
 import sys
 
-if sys.platform == 'linux':
-    _shared_lib_extension = 'so'
+if sys.platform == 'darwin':
+    _shared_lib_extension = 'dylib'
 elif sys.platform == 'win32':
     _shared_lib_extension = 'dll'
 else:
-    raise Exception(f'{sys.platform} is an unsupported OS.')
+    _shared_lib_extension = 'so'
 
 _libpat_build_dir = os.path.abspath(f'pypat/libpat/build')
 _libpat_path = os.path.abspath(f'{_libpat_build_dir}/bin/libpat.{_shared_lib_extension}')
