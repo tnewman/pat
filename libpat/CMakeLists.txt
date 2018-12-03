@@ -5,8 +5,6 @@ set(CMAKE_C_STANDARD 11)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
-set(SDL2_DIR C:/SDL2)
-
 find_package(FFmpeg)
 find_package(SDL2)
 
@@ -18,4 +16,4 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIRECTORY})
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_subdirectory(libpat)
-add_subdirectory(test)
+add_subdirectory(patplay)
