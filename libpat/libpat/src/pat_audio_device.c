@@ -25,7 +25,7 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
     
     #ifdef _WIN32
         // SDL2 does not set a default audio driver for Windows
-        putenv("SDL_AUDIODRIVER=winmm");
+        _putenv("SDL_AUDIODRIVER=winmm");
     #endif
     
     SDL_Init(SDL_INIT_AUDIO);

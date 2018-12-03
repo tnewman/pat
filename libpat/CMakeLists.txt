@@ -8,13 +8,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 find_package(FFmpeg)
 find_package(SDL2)
 
-if(NOT ${FFMPEG_FOUND})
-    message(FATAL_ERROR "FFMPEG not found!")
-endif()
-
-if(NOT ${SDL2_FOUND})
-    message(FATAL_ERROR "SDL2 not found!")
-endif()
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_subdirectory(libpat)
 add_subdirectory(test)
