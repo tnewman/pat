@@ -5,6 +5,8 @@ set(CMAKE_C_STANDARD 11)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
+set(SDL2_DIR C:/SDL2)
+
 find_package(FFmpeg)
 find_package(SDL2)
 

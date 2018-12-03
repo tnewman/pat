@@ -8,18 +8,20 @@ import sys
 
 if sys.platform == 'linux':
     _shared_lib_extension = 'so'
+elif sys.platform == 'win32':
+    _shared_lib_extension = 'dll'
 else:
-    raise Exception('Unsupported OS. PAT only supports Linux.')
+    raise Exception(f'{sys.platform} is an unsupported OS.')
 
 _libpat_build_dir = os.path.abspath(f'pypat/libpat/build')
-_libpat_path = os.path.abspath(f'{_libpat_build_dir}/libpat/libpat.{_shared_lib_extension}')
+_libpat_path = os.path.abspath(f'{_libpat_build_dir}/bin/libpat.{_shared_lib_extension}')
 _libpat_file = os.path.basename(_libpat_path)
 
 
 class BuildPat(setuptools.command.build_py.build_py):
     def run(self):
-        subprocess.check_call(['cmake', '..'], cwd=_libpat_build_dir)
-        subprocess.check_call(['cmake', '--build', '.', '--target', 'pat'], cwd=_libpat_build_dir)
+        subprocess.check_call(['cmake', '..', '-G', 'Ninja'], cwd=_libpat_build_dir)
+        subprocess.check_call(['cmake', '--build', '.'], cwd=_libpat_build_dir)
 
         shutil.copy(_libpat_path, f'pypat/{_libpat_file}')
 
