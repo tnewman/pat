@@ -77,8 +77,11 @@ static int pat_play_thread(void *data) {
     PATThreadData* pat_thread_data = (PATThreadData*) data;
 
     PATError status = pat_play(pat_thread_data->pat, pat_thread_data->pat_audio_path);
-    pat_thread_data->callback(status, pat_thread_data->data);
 
+    if(pat_thread_data->callback != NULL) {
+        pat_thread_data->callback(status, pat_thread_data->data);
+    }
+    
     free(pat_thread_data);
     return 0;
 }
