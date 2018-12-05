@@ -8,21 +8,22 @@ import sys
 
 def play(audio_path: str):
     """
-    Play an audio file with PAT.
+    Play an audio file.
     :param audio_path: The path to the audio file to play. This can be a local file or remote file (http:// or https://)
     :raises PATException: Raised when PAT cannot play an audio file.
     """
     pat_error = _libpat.pat_play(_pat, c_char_p(audio_path.encode('ascii')))
+    _check_error(audio_path, pat_error)
 
-    if pat_error == _PATError.PAT_SUCCESS:
-        return
-    elif pat_error == _PATError.PAT_INTERRUPTED_ERROR:
-        os.kill(os.getpid(), signal.SIGINT)
-    elif pat_error == _PATError.PAT_TERMINATED_ERROR:
-        os.kill(os.getpid(), signal.SIGTERM)
-        return
-    else:
-        raise PATException('Could not play {}.\n{}'.format(audio_path, _error_to_str(pat_error)))
+
+def play_async(audio_path: str):
+    """
+    Asynchronously play an audio file.
+    :param audio_path: The path to the audio file to play. This can be a local file or remote file (http:// or https://)
+    :raises PATException: Raised when PAT cannot play an audio file.
+    """
+    pat_error = _libpat.pat_play_async(_pat, c_char_p(audio_path.encode('ascii')), None, None)
+    _check_error(audio_path, pat_error)
 
 
 def skip():
@@ -118,6 +119,15 @@ def _pat_open():
 
 def _pat_close():
     _libpat.pat_close(_pat)
+
+
+def _check_error(audio_path, pat_error):
+    if pat_error == _PATError.PAT_INTERRUPTED_ERROR:
+        os.kill(os.getpid(), signal.SIGINT)
+    elif pat_error == _PATError.PAT_TERMINATED_ERROR:
+        os.kill(os.getpid(), signal.SIGTERM)
+    elif pat_error != _PATError.PAT_SUCCESS:
+        raise PATException('Could not play {}.\n{}'.format(audio_path, _error_to_str(pat_error)))
 
 
 def _error_to_str(pat_error: int):
