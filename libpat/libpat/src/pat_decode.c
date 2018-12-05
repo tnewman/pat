@@ -59,13 +59,12 @@ PATError pat_decode_audio(PATAudioDevice* pat_audio_device, const char* audio_pa
     } else {
         PATDecoder *pat_decoder;
 
-        if ((status = pat_open_audio_decoder(&pat_decoder, pat_audio_device, audio_path)) != PAT_SUCCESS) {
-            return status;
+        status = pat_open_audio_decoder(&pat_decoder, pat_audio_device, audio_path);
+
+        if(status == PAT_SUCCESS) {
+            status = pat_run_audio_decoder(pat_decoder, pat_audio_device);
+            pat_free_audio_decoder(pat_decoder);
         }
-
-        status = pat_run_audio_decoder(pat_decoder, pat_audio_device);
-
-        pat_free_audio_decoder(pat_decoder);
     }
 
     if (SDL_AtomicGet(&pat_signal) == SIGINT) {
