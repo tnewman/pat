@@ -20,7 +20,6 @@ play back audio.
 - Standard C Build Tools (gcc, Xcode, Visual Studio, etc.)
 
 ### Ubuntu
-### Ubuntu
 ```bash
 sudo apt install ffmpeg libsdl2-2.0
 sudo apt install build-essential cmake libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
