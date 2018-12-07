@@ -5,12 +5,7 @@
 
 static const int SAMPLES_PER_SECOND = 48000;
 
-#ifndef _WIN32
 static const int AUDIO_CHANNELS = 6; // 6 means 5.1 channel sound
-#else
-static const int AUDIO_CHANNELS = 2; // 2 means stereo sound
-                                     // directsound on Windows does not support 6 channels
-#endif
 
 static const int AUDIO_BUFFER_SIZE = 2048; // SDL requires a power of 2 sized buffer. This value should not be too
                                            // low, or audio clipping will result. This value should not be too high,
@@ -32,7 +27,7 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
     
     #ifdef _WIN32
         // SDL2 default audio driver is broken on Windows
-        _putenv("SDL_AUDIODRIVER=directsound");
+        _putenv("SDL_AUDIODRIVER=winmm");
     #endif
     
     if(SDL_Init(SDL_INIT_AUDIO) != 0) {
