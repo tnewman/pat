@@ -1,3 +1,19 @@
+# libpat
+libpat is a C library that makes playing audio simple. libpat uses FFmpeg to provide 
+robust support for virtually any audio format and SDL2 to play back audio.
+
+## Build
+```bash
+cd build
+cmake .. -G Ninja
+cmake --build .
+```
+
+After the build, build/bin will contain the libpat shared library that can be used in your 
+application.
+
+## Example
+```c
 #include "pat/pat.h"
 #include "pat/pat_error.h"
 #include <stdio.h>
@@ -31,3 +47,4 @@ int main(int argc, char** argv) {
 
     return status;
 }
+```
