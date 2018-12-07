@@ -4,11 +4,18 @@
 #include <stdlib.h>
 
 static const int SAMPLES_PER_SECOND = 48000;
+
+#ifndef _WIN32
 static const int AUDIO_CHANNELS = 6; // 6 means 5.1 channel sound
-static const int AUDIO_BUFFER_SIZE = 2048; // SDL requires a power of 2 sized buffer. This value should not be too
+#else
+static const int AUDIO_CHANNELS = 2; // 2 means stereo sound
+                                     // directsound on Windows does not support 6 channels
+#endif
+
+static const int AUDIO_BUFFER_SIZE = 1024; // SDL requires a power of 2 sized buffer. This value should not be too
                                            // low, or audio clipping will result. This value should not be too high,
                                            // or initial lag will occur.
-static const int AUDIO_RING_BUFFER_SIZE = 65536; // Must be large enough to keep up with SDL's demand for audio data.
+static const int AUDIO_RING_BUFFER_SIZE = 16384; // Must be large enough to keep up with SDL's demand for audio data.
                                                  // Choppy playback will occur if this value is too low. The ring
                                                  // buffer size will need to increase as the audio buffer size
                                                  // increases.
@@ -24,11 +31,13 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
     }
     
     #ifdef _WIN32
-        // SDL2 does not set a default audio driver for Windows
-        _putenv("SDL_AUDIODRIVER=winmm");
+        // SDL2 default audio driver is broken on Windows
+        _putenv("SDL_AUDIODRIVER=directsound");
     #endif
     
-    SDL_Init(SDL_INIT_AUDIO);
+    if(SDL_Init(SDL_INIT_AUDIO) != 0) {
+        return PAT_AUDIO_DEVICE_ERROR;
+    }
     
     SDL_AudioSpec want;
     SDL_memset(&want, 0, sizeof(want));
@@ -43,7 +52,7 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
     SDL_AudioSpec have;
 
     SDL_AudioDeviceID device_id = SDL_OpenAudioDevice(NULL, 0, &want, &have, SDL_AUDIO_ALLOW_ANY_CHANGE);
-
+    
     if(device_id <= 0) {
         pat_free_ring_buffer(pat_ring_buffer);
         *pat_audio_device_out = NULL;

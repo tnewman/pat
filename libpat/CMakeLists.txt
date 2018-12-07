@@ -16,4 +16,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUTPUT_DIRECTORY})
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_subdirectory(libpat)
-add_subdirectory(patplay)
+
+IF(EXISTS patplay)
+    add_subdirectory(patplay)
+ENDIF()

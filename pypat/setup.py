@@ -28,13 +28,26 @@ class BuildPat(setuptools.command.build_py.build_py):
         super(BuildPat, self).run()
 
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+
 setuptools.setup(
-    name = 'pypat',
-    version = '0.1.0',
-    description = 'A simple audio playback library.',
+    name='pypat',
+    version='0.1.2',
+    author='Thomas Newman',
+    description = 'A Python library that makes playing audio simple.',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/tnewman/pat",
     packages=setuptools.find_packages(),
     package_data={'pypat': [_libpat_file]},
     cmdclass={
         'build_py': BuildPat,
     },
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
+        "Operating System :: OS Independent",
+    ],
 )
