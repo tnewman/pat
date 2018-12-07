@@ -34,7 +34,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='pypat',
-    version='0.1.6',
+    version='0.1.7',
     author='Thomas Newman',
     description = 'A Python library that makes playing audio simple.',
     long_description=long_description,
@@ -45,6 +45,13 @@ setuptools.setup(
     cmdclass={
         'build_py': BuildPat,
     },
+    # Force a platform-specific wheel
+    ext_modules=[
+        setuptools.Extension(
+            name='pypat.extension',
+            sources=[]
+        )
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
