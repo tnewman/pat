@@ -7,7 +7,7 @@ static const int SAMPLES_PER_SECOND = 48000;
 
 static const int AUDIO_CHANNELS = 6; // 6 means 5.1 channel sound
 
-static const int AUDIO_BUFFER_SIZE = 2048; // SDL requires a power of 2 sized buffer. This value should not be too
+static const int AUDIO_BUFFER_SIZE = 4096; // SDL requires a power of 2 sized buffer. This value should not be too
                                            // low, or audio clipping will result. This value should not be too high,
                                            // or initial lag will occur.
 static const int AUDIO_RING_BUFFER_SIZE = 65536; // Must be large enough to keep up with SDL's demand for audio data.
