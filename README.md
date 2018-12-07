@@ -19,6 +19,14 @@ play back audio.
 - [SDL2](https://www.libsdl.org/download-2.0.php)
 - Standard C Build Tools (gcc, Xcode, Visual Studio, etc.)
 
+### Ubuntu
+### Ubuntu
+```bash
+sudo apt install ffmpeg libsdl2-2.0
+sudo apt install build-essential cmake libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
+sudo apt install build-essential cmake ninja-build libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
+```
+
 ## Windows-Specific Instructions
 - All builds and installations need to be run from the 64 bit Visual Studio command prompt.
 - DLLs for FFmpeg and SDL2 need to be on the PATH
