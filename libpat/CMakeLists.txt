@@ -17,6 +17,6 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_subdirectory(libpat)
 
-IF(EXISTS patplay)
+IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/patplay)
     add_subdirectory(patplay)
 ENDIF()
