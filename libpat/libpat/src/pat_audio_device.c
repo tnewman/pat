@@ -12,10 +12,10 @@ static const int AUDIO_CHANNELS = 2; // 2 means stereo sound
                                      // directsound on Windows does not support 6 channels
 #endif
 
-static const int AUDIO_BUFFER_SIZE = 1024; // SDL requires a power of 2 sized buffer. This value should not be too
+static const int AUDIO_BUFFER_SIZE = 2048; // SDL requires a power of 2 sized buffer. This value should not be too
                                            // low, or audio clipping will result. This value should not be too high,
                                            // or initial lag will occur.
-static const int AUDIO_RING_BUFFER_SIZE = 16384; // Must be large enough to keep up with SDL's demand for audio data.
+static const int AUDIO_RING_BUFFER_SIZE = 65536; // Must be large enough to keep up with SDL's demand for audio data.
                                                  // Choppy playback will occur if this value is too low. The ring
                                                  // buffer size will need to increase as the audio buffer size
                                                  // increases.

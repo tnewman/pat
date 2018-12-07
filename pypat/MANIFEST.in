@@ -1,3 +1,4 @@
+include License.txt
 exclude pypat/*.dll
 exclude pypat/*.so
 include pypat/libpat/CMakeLists.txt
