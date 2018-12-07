@@ -11,13 +11,24 @@ typedef struct PAT {
 
 typedef struct PATThreadData {
     const PAT* pat;
-    const char* pat_audio_path;
-    pat_play_finished_cb_t callback;
+    pat_finished_finished_cb_t callback;
     void* data;
-
 } PATThreadData;
 
-static int pat_play_thread(void *data);
+typedef struct PATPlayThreadData {
+    const PAT* pat;
+    const char* pat_audio_path;
+    pat_finished_finished_cb_t callback;
+    void* data;
+} PATPlayThreadData;
+
+static int pat_play_thread(void* data);
+
+static int pat_skip_thread(void* data);
+
+static int pat_pause_thread(void* data);
+
+static int pat_resume_thread(void* data);
 
 PATError pat_open(PAT** pat_out) {
     *pat_out = NULL;
@@ -49,8 +60,8 @@ PATError pat_play(const PAT* pat, const char* pat_audio_path) {
     return pat_decode_audio(pat->pat_audio_device, pat_audio_path);
 }
 
-PATError pat_play_async(const PAT* pat, const char* pat_audio_path, pat_play_finished_cb_t callback, void* data) {
-    PATThreadData* pat_thread_data = malloc(sizeof(PATThreadData));
+PATError pat_play_async(const PAT* pat, const char* pat_audio_path, pat_finished_finished_cb_t callback, void* data) {
+    PATPlayThreadData* pat_thread_data = malloc(sizeof(PATPlayThreadData));
 
     if(pat_thread_data == NULL) {
         return PAT_MEMORY_ERROR;
@@ -74,7 +85,7 @@ PATError pat_play_async(const PAT* pat, const char* pat_audio_path, pat_play_fin
 }
 
 static int pat_play_thread(void *data) {
-    PATThreadData* pat_thread_data = (PATThreadData*) data;
+    PATPlayThreadData* pat_thread_data = (PATPlayThreadData*) data;
 
     PATError status = pat_play(pat_thread_data->pat, pat_thread_data->pat_audio_path);
 
@@ -91,12 +102,107 @@ PATError pat_skip(const PAT* pat) {
     return pat_skip_audio(pat->pat_audio_device);
 }
 
+PATError pat_skip_async(const PAT* pat, pat_finished_finished_cb_t callback, void* data) {
+    PATThreadData* pat_thread_data = malloc(sizeof(PATThreadData));
+
+    if(pat_thread_data == NULL) {
+        return PAT_MEMORY_ERROR;
+    }
+
+    pat_thread_data->pat = pat;
+    pat_thread_data->callback = callback;
+    pat_thread_data->data = data;
+
+    SDL_Thread* thread = SDL_CreateThread(pat_skip_thread, "PAT Skip Thread", (void*) pat_thread_data);
+
+    if(thread == NULL) {
+        free(pat_thread_data);
+        return PAT_MEMORY_ERROR;
+    }
+
+    SDL_DetachThread(thread);
+
+    return PAT_SUCCESS;
+}
+
+static int pat_skip_thread(void* data) {
+    PATThreadData* pat_thread_data = (PATThreadData*) data;
+
+    PATError status = pat_skip(pat_thread_data->pat);
+
+    if(pat_thread_data->callback != NULL) {
+        pat_thread_data->callback(status, pat_thread_data->data);
+    }
+
+    return 0;
+}
+
 PATError pat_pause(const PAT* pat) {
     return pat_pause_audio_device(pat->pat_audio_device);
 }
 
+PATError pat_pause_async(const PAT* pat, pat_finished_finished_cb_t callback, void* data) {
+    PATThreadData* pat_thread_data = malloc(sizeof(PATThreadData));
+
+    if(pat_thread_data == NULL) {
+        return PAT_MEMORY_ERROR;
+    }
+
+    pat_thread_data->pat = pat;
+    pat_thread_data->callback = callback;
+    pat_thread_data->data = data;
+
+    SDL_Thread* thread = SDL_CreateThread(pat_pause_thread, "PAT Pause Thread", (void*) pat_thread_data);
+
+    if(thread == NULL) {
+        free(pat_thread_data);
+        return PAT_MEMORY_ERROR;
+    }
+
+    SDL_DetachThread(thread);
+
+    return PAT_SUCCESS;
+}
+
+static int pat_pause_thread(void* data) {
+    PATThreadData* pat_thread_data = (PATThreadData*) data;
+
+    PATError status = pat_pause(pat_thread_data->pat);
+
+    if(pat_thread_data->callback != NULL) {
+        pat_thread_data->callback(status, pat_thread_data->data);
+    }
+
+    return 0;
+}
+
 PATError pat_resume(const PAT* pat) {
     return pat_resume_audio_device(pat->pat_audio_device);
+}
+
+PATError pat_resume_async(const PAT* pat, pat_finished_finished_cb_t callback, void* data) {
+    PATThreadData* pat_thread_data = (PATThreadData*) data;
+
+    PATError status = pat_resume(pat_thread_data->pat);
+
+    if(pat_thread_data->callback != NULL) {
+        pat_thread_data->callback(status, pat_thread_data->data);
+    }
+
+    return 0;
+}
+
+
+static int pat_resume_thread(void* data) {
+    PATThreadData* pat_thread_data = (PATThreadData*) data;
+
+    PATError status = pat_resume(pat_thread_data->pat);
+
+    if(pat_thread_data->callback != NULL) {
+        pat_thread_data->callback(status, pat_thread_data->data);
+    }
+
+    return 0;
 }
 
 void pat_close(PAT* pat) {
