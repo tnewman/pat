@@ -30,6 +30,8 @@ static void pat_flush(PATAudioDevice* pat_audio_device, PATDecoder *pat_decoder,
 
 static SDL_atomic_t pat_signal;
 
+static const size_t PACKET_BUFFER_SIZE = 1024;
+
 typedef void (*sighandler_t)(int);
 
 void pat_init_audio_decoder() {
@@ -234,11 +236,12 @@ static enum AVSampleFormat pat_get_ffmpeg_sample_format(const uint16_t format) {
 
 static PATError pat_run_audio_decoder(PATDecoder* pat_decoder, PATAudioDevice* pat_audio_device) {
     PATError status = PAT_SUCCESS;
-
     enum AVSampleFormat format = pat_get_ffmpeg_sample_format(pat_audio_device->format);
 
     AVPacket av_packet;
-    av_init_packet(&av_packet);
+    uint8_t packet_buffer[PACKET_BUFFER_SIZE];
+    av_packet.data = packet_buffer;
+    av_packet.size = PACKET_BUFFER_SIZE;
 
     AVFrame* av_frame = av_frame_alloc();
 
@@ -272,6 +275,9 @@ static PATError pat_run_audio_decoder(PATDecoder* pat_decoder, PATAudioDevice* p
             }
 
             if((status = pat_resample_frame(pat_audio_device, pat_decoder, format, av_frame)) != PAT_SUCCESS) {
+                av_packet_unref(&av_packet);
+                av_frame_unref(av_frame);
+                av_frame_free(&av_frame);
                 return status;
             }
         }
@@ -286,6 +292,8 @@ static PATError pat_run_audio_decoder(PATDecoder* pat_decoder, PATAudioDevice* p
         pat_flush(pat_audio_device, pat_decoder, format, &av_packet, av_frame);
     }
 
+    av_packet_unref(&av_packet);
+    av_frame_unref(av_frame);
     av_frame_free(&av_frame);
 
     return status;
