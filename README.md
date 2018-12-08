@@ -10,6 +10,7 @@ play back audio.
 
 ## Programming Languages
 - [C/C++ (libpat)](libpat/README.md)
+- [NodeJS (nodepat)](nodepat/README.md)
 - [Python (pypat)](pypat/README.md)
 
 ## Prerequisites
