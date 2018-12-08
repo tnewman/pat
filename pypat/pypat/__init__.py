@@ -16,16 +16,6 @@ def play(audio_path: str):
     _check_error(audio_path, pat_error)
 
 
-def play_async(audio_path: str):
-    """
-    Asynchronously play an audio file.
-    :param audio_path: The path to the audio file to play. This can be a local file or remote file (http:// or https://)
-    :raises PATException: Raised when PAT cannot play an audio file.
-    """
-    pat_error = _libpat.pat_play_async(_pat, c_char_p(audio_path.encode('ascii')), None, None)
-    _check_error(audio_path, pat_error)
-
-
 def skip():
     """
     Skip playback of the current audio file. This method does nothing if there is not an audio file playing.
