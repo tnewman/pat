@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/tnewman/pat/issues"
   },
-  "homepage": "https://github.com/tnewman/pat/nodepat",
+  "homepage": "https://github.com/tnewman/pat",
   "dependencies": {
     "ffi": "git+https://github.com/node-ffi/node-ffi.git"
   },
