@@ -6,7 +6,7 @@
   "scripts": {
     "prepack": "node tools/prepack.js",
     "postpack": "node tools/postpack.js",
-    "postinstall": "cd src/libpat/build && cmake .. -G Ninja && cmake --build .",
+    "install": "cd src/libpat/build && cmake .. -G Ninja && cmake --build .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
