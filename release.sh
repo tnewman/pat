@@ -16,6 +16,11 @@ npm version $VERSION --allow-same-version
 cd ..
 echo "VERSION='$VERSION'" > pypat/version.py
 
+echo "Committing $VERSION"
+git add nodepat/package.json pypat/version.py
+git commit -m "$VERSION"
+git push origin master
+
 echo "Tagging $VERSION"
 git tag -a v$VERSION -m v$VERSION
 git push origin v$VERSION
