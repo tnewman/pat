@@ -72,7 +72,7 @@ function audioOperationCallback(err, res, resolve, reject) {
     if (err) {
         reject(err);
     } else if (res !== PAT_SUCCESS) {
-        reject(new Error(libpat.pat_error_to_string(status)));
+        reject(new Error(libpat.pat_error_to_string(res)));
     } else {
         resolve();
     }
