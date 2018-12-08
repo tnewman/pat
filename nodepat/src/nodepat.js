@@ -6,7 +6,7 @@ const ref = require('ref');
 const PATPtrType = ref.refType('void');
 const PATPtrPtrType = ref.refType(PATPtrType);
 
-const libpat = ffi.Library(__dirname + '/libpat/build/bin/libpat', {
+const libpat = ffi.Library(__dirname + '/../libpat/build/bin/libpat', {
     'pat_open': ['int', [PATPtrPtrType]],
     'pat_play_async': ['int', [PATPtrType, 'string', 'pointer', 'Object']],
     'pat_skip_async': ['int', [PATPtrType, 'pointer', 'Object']],

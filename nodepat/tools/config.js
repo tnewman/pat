@@ -1,0 +1,16 @@
+"use strict";
+
+const LIBPAT_DIR = __dirname + '/../../libpat';
+const LIBPAT_BUILD_DIR = LIBPAT_DIR + '/build';
+
+const LIBPAT_NODEPAT_DIR = __dirname + '/../src/libpat';
+const LIBPAT_NODEPAT_CMAKE_DEBUG_DIR = LIBPAT_NODEPAT_DIR + '/cmake-build-debug';
+const LIBPAT_NODEPAT_CMAKE_RELEASE_DIR = LIBPAT_NODEPAT_DIR + '/cmake-build-release';
+const LIBPAT_NODEPAT_IDEA_DIR = LIBPAT_NODEPAT_DIR + '/.idea';
+
+module.exports.LIBPAT_DIR = LIBPAT_DIR;
+module.exports.LIBPAT_BUILD_DIR = LIBPAT_BUILD_DIR;
+module.exports.LIBPAT_NODEPAT_DIR = LIBPAT_NODEPAT_DIR;
+module.exports.LIBPAT_NODEPAT_CMAKE_DEBUG_DIR = LIBPAT_NODEPAT_CMAKE_DEBUG_DIR;
+module.exports.LIBPAT_NODEPAT_CMAKE_RELEASE_DIR = LIBPAT_NODEPAT_CMAKE_RELEASE_DIR;
+module.exports.LIBPAT_NODEPAT_IDEA_DIR = LIBPAT_NODEPAT_IDEA_DIR;

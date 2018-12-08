@@ -2,8 +2,10 @@
   "name": "nodepat",
   "version": "0.1.7",
   "description": "A NodeJS library that makes playing audio simple.",
-  "main": "lib/nodepat.js",
+  "main": "src/nodepat.js",
   "scripts": {
+    "prepack": "node tools/prepack.js",
+    "postpack": "node tools/postpack.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "cd libpat/build && cmake .. -G Ninja && cmake --build ."
   },
@@ -19,5 +21,8 @@
   "homepage": "https://github.com/tnewman/pat/nodepat",
   "dependencies": {
     "ffi": "git+https://github.com/node-ffi/node-ffi.git"
+  },
+  "devDependencies": {
+    "fs-extra": "^7.0.1"
   }
 }
