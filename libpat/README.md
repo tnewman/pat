@@ -2,6 +2,9 @@
 libpat is a C library that makes playing audio simple. libpat uses FFmpeg to provide 
 robust support for virtually any audio format and SDL2 to play back audio.
 
+## Prerequisites
+Install [Prerequisites](https://github.com/tnewman/pat/tree/nodejs-support#Prerequisites) before building.
+
 ## Build
 ```bash
 cd build
