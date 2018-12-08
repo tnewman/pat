@@ -5,6 +5,7 @@ import setuptools.command.build_py
 import shutil
 import subprocess
 import sys
+import version
 
 if sys.platform == 'darwin':
     _shared_lib_extension = 'dylib'
@@ -44,7 +45,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='pypat',
-    version='0.0.0',
+    version=version.VERSION,
     author='Thomas Newman',
     description = 'A Python library that makes playing audio simple.',
     long_description=long_description,
