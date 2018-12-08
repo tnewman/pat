@@ -1,0 +1,23 @@
+{
+  "name": "nodepat",
+  "version": "0.1.7",
+  "description": "A NodeJS library that makes playing audio simple.",
+  "main": "lib/nodepat.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd libpat/build && cmake .. -G Ninja && cmake --build ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tnewman/pat.git"
+  },
+  "author": "Thomas Newman",
+  "license": "LGPL-2.0",
+  "bugs": {
+    "url": "https://github.com/tnewman/pat/issues"
+  },
+  "homepage": "https://github.com/tnewman/pat/nodepat",
+  "dependencies": {
+    "ffi": "git+https://github.com/node-ffi/node-ffi.git"
+  }
+}
