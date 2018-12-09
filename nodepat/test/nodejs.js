@@ -85,14 +85,15 @@ describe('pat', function() {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime < 2100) {
+            if(elapsedTime < 2500) {
                 assert.fail("pause did not occur");
             }
         });
 
-        nodepat.pauseSync();
-
-        setTimeout(() => nodepat.resume(), 1000);
+        setTimeout(() => {
+            nodepat.pauseSync();
+            setTimeout(() => nodepat.resume(), 1000);
+        }, 100);
 
         return playPromise;
     }).timeout(TIMEOUT);
