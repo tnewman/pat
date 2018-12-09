@@ -25,7 +25,7 @@ static PATError pat_resample_frame(PATAudioDevice* pat_audio_device, PATDecoder*
 static void pat_flush(PATAudioDevice* pat_audio_device, PATDecoder *pat_decoder,
         enum AVSampleFormat format, AVPacket *av_packet, AVFrame *av_frame);
 
-static const size_t PACKET_BUFFER_SIZE = 1024;
+#define PACKET_BUFFER_SIZE 1024
 
 void pat_init_audio_decoder() {
     avformat_network_init();
