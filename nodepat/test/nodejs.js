@@ -126,8 +126,12 @@ describe('pat', function() {
             }
         });
 
-        nodepat.skipSync();
-
+        // Setting a timeout is required to ensure pause is not called before the Node worker thread for play runs
+        setTimeout(() => {
+            nodepat.pauseSync();
+            nodepat.skipSync();
+        }, 100);
+        
         return playPromise;
     }).timeout(TIMEOUT);
 });
