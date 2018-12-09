@@ -5,14 +5,16 @@ const VALID_AUDIO_PATH = __dirname + '/../src/libpat/test/test.mp3';
 const MISSING_AUDIO_PATH = 'missing';
 const INVALID_AUDIO_PATH = __dirname + '/../src/libpat/test/invalid.mp3';
 
-describe('pat', () => {
+describe('pat', function() {
+    const TIMEOUT = 5000;
+
     it('should play an audio file', function() {
         return nodepat.play(VALID_AUDIO_PATH);
-    });
+    }).timeout(TIMEOUT);
 
     it('should play an audio file synchronously', function() {
         nodepat.playSync(VALID_AUDIO_PATH);
-    });
+    }).timeout(TIMEOUT);
 
     it('should reject a missing audio file', function() {
         return nodepat.play(MISSING_AUDIO_PATH).then(() => {
@@ -21,7 +23,7 @@ describe('pat', () => {
             assert.deepStrictEqual(error.message,
                 "Could not open the audio file. The audio file is inaccessible or does not exist.");
         });
-    });
+    }).timeout(TIMEOUT);
 
     it('should reject a missing audio file synchronously', function() {
         try {
@@ -33,7 +35,7 @@ describe('pat', () => {
         }
 
         assert.fail("missing audio should not play");
-    });
+    }).timeout(TIMEOUT);
 
     it('should reject an invalid audio file', function() {
         return nodepat.play(INVALID_AUDIO_PATH).then(() => {
@@ -43,7 +45,7 @@ describe('pat', () => {
                 "Could not demux the audio file. The audio file format is unsupported or corrupted, or " +
                 "the audio file does not contain an audio stream.");
         });
-    });
+    }).timeout(TIMEOUT);
 
     it('should reject an invalid audio file synchronously', function() {
        try {
@@ -55,7 +57,7 @@ describe('pat', () => {
        }
 
        assert.fail("invalid audio should not play");
-    });
+    }).timeout(TIMEOUT);
 
     it('should pause and resume an audio file', function() {
         let startTime = Date.now();
@@ -63,7 +65,7 @@ describe('pat', () => {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime < 1500) {
+            if(elapsedTime < 2500) {
                 assert.fail("pause did not occur");
             }
         });
@@ -75,7 +77,7 @@ describe('pat', () => {
         });
 
         return playPromise;
-    });
+    }).timeout(TIMEOUT);
 
     it('should pause and resume an audio file synchronously', async function() {
         let startTime = Date.now();
@@ -83,7 +85,7 @@ describe('pat', () => {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime < 1500) {
+            if(elapsedTime < 2500) {
                 assert.fail("pause did not occur");
             }
         });
@@ -93,7 +95,7 @@ describe('pat', () => {
         setTimeout(() => nodepat.resumeSync(), 750);
 
         return playPromise;
-    }).timeout(5000);
+    }).timeout(TIMEOUT);
 
     it('should skip an audio file', function() {
         let startTime = Date.now();
@@ -101,7 +103,7 @@ describe('pat', () => {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime > 1000) {
+            if(elapsedTime > 2000) {
                 assert.fail("skip did not occur");
             }
         });
@@ -109,5 +111,5 @@ describe('pat', () => {
         nodepat.skip();
 
         return playPromise;
-    });
+    }).timeout(TIMEOUT);
 });
