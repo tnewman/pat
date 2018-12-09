@@ -13,6 +13,7 @@ if(fs.existsSync(config.LIBPAT_DIR)) {
     removeIfExists(config.LIBPAT_NODEPAT_CMAKE_DEBUG_DIR);
     removeIfExists(config.LIBPAT_NODEPAT_CMAKE_RELEASE_DIR);
     removeIfExists(config.LIBPAT_NODEPAT_IDEA_DIR);
+    removeIfExists(config.LIBPAT_NODEPAT_VS_DIR);
     removeIfExists(config.LIBPAT_NODEPAT_PAT_PLAY_DIR);
 
     fs.ensureDirSync(config.LIBPAT_NODEPAT_BUILD_DIR);
