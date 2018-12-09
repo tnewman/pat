@@ -25,3 +25,4 @@ function removeIfExists(directory) {
         fs.removeSync(directory);
     }
 }
+
