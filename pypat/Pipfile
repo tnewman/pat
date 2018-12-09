@@ -11,5 +11,5 @@ pytest-asyncio = "*"
 pypat = {editable = true,path = "."}
 
 [scripts]
-py.test = py.test
+py.test = "py.test"
 
