@@ -65,7 +65,7 @@ describe('pat', function() {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime < 2100) {
+            if(elapsedTime < 1500) {
                 assert.fail("pause did not occur");
             }
         });
@@ -85,11 +85,12 @@ describe('pat', function() {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime < 2500) {
+            if(elapsedTime < 1500) {
                 assert.fail("pause did not occur");
             }
         });
 
+        // Setting a timeout is required to ensure pause is not called before the Node worker thread for play runs
         setTimeout(() => {
             nodepat.pauseSync();
             setTimeout(() => nodepat.resume(), 1000);
@@ -104,7 +105,7 @@ describe('pat', function() {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime > 2000) {
+            if(elapsedTime > 500) {
                 assert.fail("skip did not occur");
             }
         });
@@ -120,7 +121,7 @@ describe('pat', function() {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime > 2000) {
+            if(elapsedTime > 500) {
                 assert.fail("skip did not occur");
             }
         });
