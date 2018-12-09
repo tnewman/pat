@@ -65,7 +65,7 @@ describe('pat', function() {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime < 2500) {
+            if(elapsedTime < 2100) {
                 assert.fail("pause did not occur");
             }
         });
@@ -85,7 +85,7 @@ describe('pat', function() {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime < 2500) {
+            if(elapsedTime < 2100) {
                 assert.fail("pause did not occur");
             }
         });
