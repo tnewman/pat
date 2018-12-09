@@ -74,7 +74,7 @@ def test_skip_audio_file():
     pool = futures.ThreadPoolExecutor(max_workers=1)
     future = pool.submit(play_thread)
 
-    # If this thread does not sleep, pause will run before the playback thread
+    # If this thread does not sleep, skip will run before the playback thread
     time.sleep(0.250)
 
     pypat.skip()
