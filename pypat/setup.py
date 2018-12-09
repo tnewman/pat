@@ -44,7 +44,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='pypat',
-    version='0.1.7',
+    version='0.0.0',
     author='Thomas Newman',
     description = 'A Python library that makes playing audio simple.',
     long_description=long_description,
