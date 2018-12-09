@@ -28,6 +28,16 @@ class BuildPat(setuptools.command.build_py.build_py):
         super(BuildPat, self).run()
 
 
+try:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+    class bdist_wheel(_bdist_wheel):
+        def finalize_options(self):
+            _bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+except ImportError:
+    bdist_wheel = None
+
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
@@ -43,15 +53,9 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     package_data={'pypat': [_libpat_file]},
     cmdclass={
-        'build_py': BuildPat,
+        'bdist_wheel': bdist_wheel,
+        'build_py': BuildPat
     },
-    # Force a platform-specific wheel
-    ext_modules=[
-        setuptools.Extension(
-            name='pypat.extension',
-            sources=[]
-        )
-    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
