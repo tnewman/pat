@@ -10,6 +10,9 @@ VERSION=$1
 
 echo "Releasing Version $VERSION"
 
+echo "Running Pretag Build"
+./build.sh
+
 echo "Substituting Version $VERSION"
 cd nodepat
 npm version $VERSION --allow-same-version
@@ -25,6 +28,7 @@ echo "Tagging $VERSION"
 git tag -a v$VERSION -m v$VERSION
 git push origin v$VERSION
 
+echo "Running Build"
 ./build.sh
 
 echo "Publishing $VERSION"

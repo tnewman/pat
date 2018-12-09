@@ -93,7 +93,7 @@ describe('pat', () => {
         setTimeout(() => nodepat.resumeSync(), 750);
 
         return playPromise;
-    });
+    }).timeout(5000);
 
     it('should skip an audio file', function() {
         let startTime = Date.now();

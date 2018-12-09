@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(libpat C)
 
+set(SKIP_PAT_PLAY_BUILD false CACHE BOOL "skip building patplay utility")
+
 set(CMAKE_C_STANDARD 11)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
@@ -17,6 +19,8 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_subdirectory(libpat)
 
-IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/patplay)
+IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/patplay AND ${SKIP_PAT_PLAY_BUILD} MATCHES false)
     add_subdirectory(patplay)
+ELSE()
+    message(STATUS "Skipping patplay build")
 ENDIF()

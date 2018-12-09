@@ -17,15 +17,6 @@ const libpat = ffi.Library(__dirname + '/libpat/build/bin/libpat', {
 });
 
 const PAT_SUCCESS = 0;
-const PAT_AUDIO_DEVICE_ERROR = 1;
-const PAT_DEMUX_ERROR = 2;
-const PAT_DECODE_ERROR = 3;
-const PAT_FILE_OPEN_ERROR = 4;
-const PAT_INTERRUPTED_ERROR = 5;
-const PAT_MEMORY_ERROR = 6;
-const PAT_RESAMPLE_ERROR = 7;
-const PAT_TERMINATED_ERROR = 8;
-const PAT_UNKNOWN_ERROR = 9;
 
 let patPtr = open();
 

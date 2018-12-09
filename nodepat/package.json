@@ -6,8 +6,8 @@
   "scripts": {
     "prepack": "node tools/prepack.js",
     "postpack": "node tools/postpack.js",
-    "install": "cd src/libpat/build && cmake .. -G Ninja && cmake --build .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install": "cd src/libpat/build && cmake .. -G Ninja -DSKIP_PAT_PLAY_BUILD=true && cmake --build .",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -23,9 +23,11 @@
     "ffi": "git+https://github.com/node-ffi/node-ffi.git"
   },
   "devDependencies": {
-    "fs-extra": "^7.0.1"
+    "fs-extra": "^7.0.1",
+    "mocha": "^5.2.0"
   },
   "files": [
-    "src"
+    "src",
+    "test"
   ]
 }

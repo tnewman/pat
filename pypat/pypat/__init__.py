@@ -12,8 +12,7 @@ def play(audio_path: str):
     :param audio_path: The path to the audio file to play. This can be a local file or remote file (http:// or https://)
     :raises PATException: Raised when PAT cannot play an audio file.
     """
-    pat_error = _libpat.pat_play(_pat, c_char_p(audio_path.encode('ascii')))
-    _check_error(audio_path, pat_error)
+    _check_error(_libpat.pat_play(_pat, c_char_p(audio_path.encode('ascii'))))
 
 
 def skip():
@@ -21,10 +20,7 @@ def skip():
     Skip playback of the current audio file. This method does nothing if there is not an audio file playing.
     :raises PATException: Raised when PAT cannot skip playback.
     """
-    pat_error = _libpat.pat_skip(_pat)
-
-    if pat_error != _PATError.PAT_SUCCESS:
-        raise PATException('Could not skip playback.\n{}'.format(_error_to_str(pat_error)))
+    _check_error(_libpat.pat_skip(_pat))
 
 
 def pause():
@@ -32,10 +28,7 @@ def pause():
     Pause audio playback. This method does nothing if audio playback is already paused.
     :raises PATException: Raised when PAT cannot pause playback.
     """
-    pat_error = _libpat.pat_pause(_pat)
-
-    if pat_error != _PATError.PAT_SUCCESS:
-        raise PATException('Could not pause playback.\n{}'.format(_error_to_str(pat_error)))
+    _check_error(_libpat.pat_pause(_pat))
 
 
 def resume():
@@ -43,28 +36,14 @@ def resume():
     Resume audio playback. This method does nothing if audio playback is already resumed.
     :raises PATException: Raised when PAT cannot resume playback.
     """
-    pat_error = _libpat.pat_resume(_pat)
-
-    if pat_error != _PATError.PAT_SUCCESS:
-        raise PATException('Could not resume playback.\n{}'.format(_error_to_str(pat_error)))
-
-
-@unique
-class _PATError(IntEnum):
-    PAT_SUCCESS = 0
-    PAT_AUDIO_DEVICE_ERROR = 1
-    PAT_DEMUX_ERROR = 2
-    PAT_DECODE_ERROR = 3
-    PAT_FILE_OPEN_ERROR = 4
-    PAT_INTERRUPTED_ERROR = 5
-    PAT_MEMORY_ERROR = 6
-    PAT_RESAMPLE_ERROR = 7
-    PAT_TERMINATED_ERROR = 8
-    PAT_UNKNOWN_ERROR = 9
+    _check_error(_libpat.pat_resume(_pat))
 
 
 class PATException(Exception):
     pass
+
+
+_PAT_SUCCESS = 0
 
 
 def _get_libpat_path():
@@ -99,11 +78,7 @@ def _load_libpat():
 
 def _pat_open():
     pat = c_void_p()
-    pat_error = _libpat.pat_open(byref(pat))
-
-    if pat_error != 0:
-        raise PATException('Error initializing PAT.\n{}'.format(_error_to_str(pat_error)))
-
+    _check_error(_libpat.pat_open(byref(pat)))
     return pat
 
 
@@ -111,17 +86,9 @@ def _pat_close():
     _libpat.pat_close(_pat)
 
 
-def _check_error(audio_path, pat_error):
-    if pat_error == _PATError.PAT_INTERRUPTED_ERROR:
-        os.kill(os.getpid(), signal.SIGINT)
-    elif pat_error == _PATError.PAT_TERMINATED_ERROR:
-        os.kill(os.getpid(), signal.SIGTERM)
-    elif pat_error != _PATError.PAT_SUCCESS:
-        raise PATException('Could not play {}.\n{}'.format(audio_path, _error_to_str(pat_error)))
-
-
-def _error_to_str(pat_error: int):
-    return _libpat.pat_error_to_string(pat_error).decode('ascii')
+def _check_error(pat_error):
+    if pat_error != _PAT_SUCCESS:
+        raise PATException(_libpat.pat_error_to_string(pat_error).decode('ascii'))
 
 
 _libpat = _load_libpat()
