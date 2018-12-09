@@ -44,10 +44,18 @@ function play(audioPath) {
     });
 }
 
+function playSync(audioPath) {
+    checkPatStatus(libpat.pat_play(patPtr, audioPath));
+}
+
 function skip() {
     return new Promise((resolve, reject) => {
         libpat.pat_skip.async(patPtr, (err, res) => audioOperationCallback(err, res, resolve, reject));
     });
+}
+
+function skipSync() {
+    checkPatStatus(libpat.pat_skip(patPtr));
 }
 
 function pause() {
@@ -56,10 +64,18 @@ function pause() {
     });
 }
 
+function pauseSync() {
+    checkPatStatus(libpat.pat_pause(patPtr));
+}
+
 function resume() {
     return new Promise((resolve, reject) => {
         libpat.pat_resume.async(patPtr, (err, res) => audioOperationCallback(err, res, resolve, reject));
     });
+}
+
+function resumeSync() {
+    checkPatStatus(libpat.pat_resume(patPtr));
 }
 
 function checkPatStatus(error) {
@@ -83,6 +99,11 @@ process.on('exit', () => {
 });
 
 exports.play = play;
+exports.playSync = playSync;
 exports.skip = skip;
+exports.skipSync = skipSync;
 exports.pause = pause;
+exports.pauseSync = pauseSync;
 exports.resume = resume;
+exports.resumeSync = resumeSync;
+

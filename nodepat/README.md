@@ -21,19 +21,31 @@ nodepat.play('amerika.mpga')
     .then(() => console.log('Playback Finished'))
     .catch((error) => console.error(error));
 
+// Play a file synchronously
+nodepat.playSync('amerika.mpga');
+
 // Skip the current file
 nodepat.skip()
     .then(() => console.log('Skipped the Currently Playing File'))
     .catch((error) => console.error(error));
+
+// Skip the current file synchronously
+nodepat.skipSync();
 
 // Pause audio playback
 nodepat.pause()
     .then(() => console.log('Paused Audio Playback'))
     .catch((error) => console.error(error));
 
+// Pause audio playback synchronously
+nodepat.pauseSync();
+
 // Resume audio playback
 nodepat.resume()
     .then(() => console.log('Resumed Audio Playback'))
     .catch((error) => console.error(error));
+
+// Resume audio playback synchronously
+nodepat.resumeSync();
 ```
 
