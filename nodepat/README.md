@@ -33,7 +33,7 @@ nodepat.pause()
 
 // Resume audio playback
 nodepat.resume()
-    .then(() => console.log('Resumed Audio Playsback'))
+    .then(() => console.log('Resumed Audio Playback'))
     .catch((error) => console.error(error));
 ```
 
