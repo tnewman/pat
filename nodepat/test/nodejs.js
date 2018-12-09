@@ -73,7 +73,7 @@ describe('pat', function() {
         nodepat.pause().then(() => {
             setTimeout(() => {
                 nodepat.resume();
-            }, 750);
+            }, 1000);
         });
 
         return playPromise;
@@ -92,7 +92,7 @@ describe('pat', function() {
 
         nodepat.pauseSync();
 
-        setTimeout(() => nodepat.resumeSync(), 750);
+        setTimeout(() => nodepat.resumeSync(), 1000);
 
         return playPromise;
     }).timeout(TIMEOUT);
