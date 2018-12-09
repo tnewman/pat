@@ -4,12 +4,8 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pytest = "*"
-pytest-asyncio = "*"
 
 [packages]
-pypat = {editable = true,path = "."}
 
-[scripts]
-py.test = py.test
-
+[requires]
+python_version = "3.6"

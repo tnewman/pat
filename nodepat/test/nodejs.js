@@ -131,7 +131,7 @@ describe('pat', function() {
             nodepat.pauseSync();
             nodepat.skipSync();
         }, 100);
-        
+
         return playPromise;
     }).timeout(TIMEOUT);
 });
