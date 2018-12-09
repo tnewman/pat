@@ -65,7 +65,7 @@ describe('pat', function() {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime < 2500) {
+            if(elapsedTime < 2750) {
                 assert.fail("pause did not occur");
             }
         });
@@ -85,7 +85,7 @@ describe('pat', function() {
         let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
             let elapsedTime = Date.now() - startTime;
 
-            if(elapsedTime < 2500) {
+            if(elapsedTime < 2750) {
                 assert.fail("pause did not occur");
             }
         });
@@ -109,6 +109,22 @@ describe('pat', function() {
         });
 
         nodepat.skip();
+
+        return playPromise;
+    }).timeout(TIMEOUT);
+
+    it('should skip an audio file synchronously', async function() {
+        let startTime = Date.now();
+
+        let playPromise = nodepat.play(VALID_AUDIO_PATH).then(() => {
+            let elapsedTime = Date.now() - startTime;
+
+            if(elapsedTime > 2000) {
+                assert.fail("skip did not occur");
+            }
+        });
+
+        nodepat.skipSync();
 
         return playPromise;
     }).timeout(TIMEOUT);
