@@ -10,6 +10,3 @@ pytest-asyncio = "*"
 [packages]
 pypat = {editable = true,path = "."}
 
-[scripts]
-test = "py.test"
-
