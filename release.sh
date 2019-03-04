@@ -20,8 +20,8 @@ cd ..
 echo "VERSION='$VERSION'" > pypat/version.py
 
 echo "Committing $VERSION"
-git add nodepat/package.json pypat/version.py
-git commit -m "v$VERSION Release"
+git add nodepat/package.json nodepat/package.json pypat/version.py
+git commit -m "v$VERSION Release" --allow-empty
 git push origin master
 
 echo "Tagging $VERSION"
