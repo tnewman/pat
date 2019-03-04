@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "fs-extra": "^7.0.1",
-    "mocha": "^5.2.0"
+    "mocha": "^6.0.2"
   },
   "files": [
     "src",
