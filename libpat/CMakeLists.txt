@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.9)
 project(libpat C)
 
 set(SKIP_PAT_PLAY_BUILD false CACHE BOOL "skip building patplay utility")
