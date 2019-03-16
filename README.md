@@ -22,8 +22,6 @@ play back audio.
 
 ### Ubuntu
 ```bash
-sudo apt install ffmpeg libsdl2-2.0
-sudo apt install build-essential cmake libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
 sudo apt install build-essential cmake ninja-build libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
 ```
 
