@@ -4,7 +4,8 @@
   "description": "A NodeJS library that makes playing audio simple.",
   "main": "src/nodepat.js",
   "scripts": {
-    "prepack": "node tools/prepack.js",
+    "build": "tsc",
+    "prepack": "npm run-script build && node tools/prepack.js",
     "postpack": "node tools/postpack.js",
     "install": "cd src/libpat/build && cmake .. -G Ninja -DSKIP_PAT_PLAY_BUILD=true && cmake --build .",
     "test": "mocha"
