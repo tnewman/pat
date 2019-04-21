@@ -8,7 +8,7 @@
     "prepack": "npm run-script build && node tools/prepack.js",
     "postpack": "node tools/postpack.js",
     "install": "cd src/libpat/build && cmake .. -G Ninja -DSKIP_PAT_PLAY_BUILD=true && cmake --build .",
-    "test": "mocha"
+    "test": "ts-mocha test/**.ts"
   },
   "repository": {
     "type": "git",
@@ -25,9 +25,11 @@
   },
   "devDependencies": {
     "@types/ffi": "^0.2.2",
+    "@types/mocha": "^5.2.6",
     "@types/ref": "0.0.28",
     "fs-extra": "^7.0.1",
     "mocha": "^6.1.4",
+    "ts-mocha": "^6.0.0",
     "typescript": "^3.4.4"
   },
   "files": [

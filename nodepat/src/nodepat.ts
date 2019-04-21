@@ -27,43 +27,43 @@ function open() {
     return patPtrPtr.deref();
 }
 
-export function play(audioPath: string): Promise<void> {
+function play(audioPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
         libpat.pat_play.async(patPtr, audioPath, (err: Error, res: number) => audioOperationCallback(err, res, resolve, reject));
     });
 }
 
-export function playSync(audioPath: string): void {
+function playSync(audioPath: string): void {
     checkPatStatus(libpat.pat_play(patPtr, audioPath));
 }
 
-export function skip(): Promise<void> {
+function skip(): Promise<void> {
     return new Promise((resolve, reject) => {
         libpat.pat_skip.async(patPtr, (err: Error, res: number) => audioOperationCallback(err, res, resolve, reject));
     });
 }
 
-export function skipSync(): void {
+function skipSync(): void {
     checkPatStatus(libpat.pat_skip(patPtr));
 }
 
-export function pause(): Promise<void> {
+function pause(): Promise<void> {
     return new Promise((resolve, reject) => {
         libpat.pat_pause.async(patPtr, (err: Error, res: number) => audioOperationCallback(err, res, resolve, reject));
     });
 }
 
-export function pauseSync(): void {
+function pauseSync(): void {
     checkPatStatus(libpat.pat_pause(patPtr));
 }
 
-export function resume(): Promise<void> {
+function resume(): Promise<void> {
     return new Promise((resolve, reject) => {
         libpat.pat_resume.async(patPtr, (err: Error, res: number) => audioOperationCallback(err, res, resolve, reject));
     });
 }
 
-export function resumeSync(): void {
+function resumeSync(): void {
     checkPatStatus(libpat.pat_resume(patPtr));
 }
 
@@ -85,4 +85,15 @@ function audioOperationCallback(err: Error, res: number, resolve: () => void, re
 
 process.on('exit', () => {
     libpat.pat_close(patPtr);
+});
+
+export default ({
+    play,
+    playSync,
+    skip,
+    skipSync,
+    pause,
+    pauseSync,
+    resume,
+    resumeSync,
 });
