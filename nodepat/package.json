@@ -8,7 +8,7 @@
     "build": "tsc",
     "prepack": "npm run-script build && node tools/prepack.js",
     "postpack": "node tools/postpack.js",
-    "install": "cd src/libpat/build && cmake .. -G Ninja -DSKIP_PAT_PLAY_BUILD=true && cmake --build .",
+    "install": "cd dist/libpat/build && cmake .. -G Ninja -DSKIP_PAT_PLAY_BUILD=true && cmake --build .",
     "test": "mocha --require ts-node/register test/**.ts"
   },
   "repository": {
