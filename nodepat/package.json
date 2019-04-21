@@ -23,8 +23,11 @@
     "ffi": "git+https://github.com/node-ffi/node-ffi.git"
   },
   "devDependencies": {
+    "@types/ffi": "^0.2.2",
+    "@types/ref": "0.0.28",
     "fs-extra": "^7.0.1",
-    "mocha": "^6.0.2"
+    "mocha": "^6.1.4",
+    "typescript": "^3.4.4"
   },
   "files": [
     "src",

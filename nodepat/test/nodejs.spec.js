@@ -1,5 +1,5 @@
 let assert = require('assert');
-let nodepat = require('../src/nodepat');
+let nodepat = require('../dist/nodepat');
 
 const VALID_AUDIO_PATH = __dirname + '/../src/libpat/test/test.mp3';
 const MISSING_AUDIO_PATH = 'missing';
