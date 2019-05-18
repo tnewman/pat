@@ -5,6 +5,10 @@ robust support for virtually any audio format and SDL2 to play back audio.
 ## Prerequisites
 Install [Prerequisites](https://github.com/tnewman/pat/tree/nodejs-support#Prerequisites) before installing.
 
+## NodeJS Version Compatibility
+- 10
+NodeJS 12 support is pending updates to upstream libraries.
+
 ## Install
 ```bash
 npm install nodepat
