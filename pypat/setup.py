@@ -13,14 +13,14 @@ elif sys.platform == 'win32':
 else:
     _shared_lib_extension = 'so'
 
-_libpat_build_dir = os.path.abspath(f'pypat/libpat/build')
-_libpat_path = os.path.abspath(f'{_libpat_build_dir}/bin/libpat.{_shared_lib_extension}')
+_libpat_build_dir = os.path.abspath(f'c_extension/build')
+_libpat_path = os.path.abspath(f'{_libpat_build_dir}/_pypat.{_shared_lib_extension}')
 _libpat_file = os.path.basename(_libpat_path)
 
 
 class BuildPat(setuptools.command.build_py.build_py):
     def run(self):
-        subprocess.check_call(['cmake', '..', '-G', 'Ninja', '-DSKIP_PAT_PLAY_BUILD=true'], cwd=_libpat_build_dir)
+        subprocess.check_call(['cmake', '..'], cwd=_libpat_build_dir)
         subprocess.check_call(['cmake', '--build', '.'], cwd=_libpat_build_dir)
 
         shutil.copy(_libpat_path, f'pypat/{_libpat_file}')
@@ -52,6 +52,7 @@ setuptools.setup(
     url='https://github.com/tnewman/pat',
     packages=setuptools.find_packages(),
     package_data={'pypat': [_libpat_file]},
+    include_package_data=True,
     cmdclass={
         'bdist_wheel': bdist_wheel,
         'build_py': BuildPat

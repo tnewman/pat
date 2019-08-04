@@ -2,7 +2,10 @@ include License.txt
 include version.py
 exclude pypat/*.dll
 exclude pypat/*.so
-include pypat/libpat/CMakeLists.txt
-include pypat/libpat/build/.gitkeep
-recursive-include pypat/libpat/modules *
-recursive-include pypat/libpat/libpat *
+include c_extension/CMakeLists.txt
+include c_extension/build/.gitkeep
+recursive-include c_extension/include *
+recursive-include c_extension/src *
+include c_extension/libpat/CMakeLists.txt
+recursive-include c_extension/libpat/modules *
+recursive-include c_extension/libpat/libpat *
