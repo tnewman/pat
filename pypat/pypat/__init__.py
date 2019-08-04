@@ -1,6 +1,23 @@
 import pypat._pypat
 
 
+class PATException(Exception):
+    """
+    Thrown when an error occurs when using PAT.
+    """
+    pass
+
+
+def _convert_exception(func):
+    def wrapper(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except Exception as exception:
+            raise PATException(exception)
+    return wrapper
+
+
+@_convert_exception
 def play(audio_path: str):
     """
     Play an audio file.
@@ -10,6 +27,7 @@ def play(audio_path: str):
     _pypat.play(audio_path)
 
 
+@_convert_exception
 def skip():
     """
     Skip playback of the current audio file. This method does nothing if there is not an audio file playing.
@@ -18,6 +36,7 @@ def skip():
     _pypat.skip()
 
 
+@_convert_exception
 def pause():
     """
     Pause audio playback. This method does nothing if audio playback is already paused.
@@ -26,6 +45,7 @@ def pause():
     _pypat.pause()
 
 
+@_convert_exception
 def resume():
     """
     Resume audio playback. This method does nothing if audio playback is already resumed.
