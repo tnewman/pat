@@ -1,4 +1,4 @@
-import pypat._pypat
+import _pypat
 
 
 class PATException(Exception):
