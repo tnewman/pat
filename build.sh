@@ -6,7 +6,7 @@ rm -rf libpat/build
 mkdir -p libpat/build
 cd libpat/build
 touch .gitkeep
-cmake .. -G Ninja
+cmake .. -G Ninja -DBUILD_PAT_PLAY=true
 cmake --build .
 cd ../..
 
