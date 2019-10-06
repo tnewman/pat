@@ -1,5 +1,6 @@
 include Pipfile
 include Pipfile.lock
+recursive-include . LICENSE
 recursive-include . LICENSE.txt
 recursive-include . README.md
 recursive-include pypat *.c
