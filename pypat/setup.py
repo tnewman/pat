@@ -18,10 +18,11 @@ class CMakeBuild(build_ext):
 
         for ext in self.extensions:
             ext_dir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-
+            print(self.get_ext_filename(ext.name))
             cmake_args = [
-                f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={ext_dir}',
                 f'-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY={self.build_temp}',
+                f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={ext_dir}',
+                f'-D_PYPAT_OUTPUT_NAME={self.get_ext_filename(ext.name)}',
             ]
 
             subprocess.check_call([*['cmake', ext.cmake_lists_dir], *cmake_args], cwd=self.build_temp)

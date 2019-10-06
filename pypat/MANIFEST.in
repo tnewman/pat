@@ -1,2 +1,3 @@
+include setup.py
 recursive-include c_extension *
 recursive-exclude c_extension/libpat/build *
