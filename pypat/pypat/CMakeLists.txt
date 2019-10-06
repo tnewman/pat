@@ -9,7 +9,7 @@ find_package(PythonInterp 3.6 REQUIRED)
 find_package(PythonLibs 3.6 REQUIRED)
 
 add_library(_pypat SHARED
-  src/_pypat.c
+  _pypat.c
 )
   
 target_include_directories(_pypat PUBLIC include PRIVATE src)

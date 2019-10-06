@@ -6,7 +6,7 @@ import version
 
 
 class CMakeExtension(Extension):
-    def __init__(self, name, cmake_lists_dir, sources, **kwargs):
+    def __init__(self, name, cmake_lists_dir, sources=[], **kwargs):
         Extension.__init__(self, name, sources=sources, **kwargs)
         self.cmake_lists_dir = os.path.abspath(cmake_lists_dir)
 
@@ -43,7 +43,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/tnewman/pat',
-    ext_modules=[CMakeExtension('_pypat', 'c_extension', [])],
+    ext_modules=[CMakeExtension('_pypat', 'pypat')],
     cmdclass={'build_ext': CMakeBuild},
     zip_safe=False,
     classifiers=[
