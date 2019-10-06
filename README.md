@@ -5,6 +5,8 @@ play back audio.
 
 ## Supported Platforms
 - Linux
+
+## Future Supported Platforms
 - Mac OSX
 - Windows
 
