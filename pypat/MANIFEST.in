@@ -1,3 +1,10 @@
-include setup.py
-recursive-include c_extension *
-recursive-exclude c_extension/libpat/build *
+include Pipfile
+include Pipfile.lock
+recursive-include . LICENSE.txt
+recursive-include . README.md
+recursive-include pypat *.c
+recursive-include pypat *.h
+recursive-include pypat CMakeLists.txt
+recursive-include pypat/libpat *.cmake
+recursive-include pypat/libpat *.mp3
+prune pypat/libpat/build
