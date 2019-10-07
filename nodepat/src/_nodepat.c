@@ -74,14 +74,14 @@ static void _nodepat_close(void* args) {
 static napi_value _nodepat_play(napi_env env, napi_callback_info info) {
     const size_t ARG_LENGTH = 1;
 
-    napi_status status;
+    napi_status napi_status;
 
     size_t argc = ARG_LENGTH;
     napi_value argv[ARG_LENGTH];
 
-    status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+    napi_status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
 
-    if (status != napi_ok) {
+    if (napi_status != napi_ok) {
         napi_throw_type_error(env, "TypeError", "String expected.");
         return NULL;
     }
@@ -89,14 +89,18 @@ static napi_value _nodepat_play(napi_env env, napi_callback_info info) {
     const size_t AUDIO_PATH_LENGTH = 1024;
     char audio_path[AUDIO_PATH_LENGTH];
 
-    status = napi_get_value_string_utf8(env, argv[0], audio_path, AUDIO_PATH_LENGTH, NULL);
+    napi_status = napi_get_value_string_utf8(env, argv[0], audio_path, AUDIO_PATH_LENGTH, NULL);
 
-    if (status != napi_ok) {
+    if (napi_status != napi_ok) {
         napi_throw_type_error(env, "TypeError", "String expected.");
         return NULL;
     }
 
-    pat_play(pat, audio_path);
+    PATError pat_error = pat_play(pat, audio_path);
+
+    if (pat_error != PAT_SUCCESS) {
+        napi_throw_error(env, "pat_error", pat_error_to_string(pat_error));
+    }
 
     return NULL;
 }
