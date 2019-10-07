@@ -1,8 +1,14 @@
-from setuptools import setup, Extension, find_packages
+from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import os
+import platform
 import subprocess
+import sys
 import version
+
+
+def is_64_bit_windows():
+    return platform.system() == 'Windows' and sys.maxsize > 2 ** 32
 
 
 class CMakeExtension(Extension):
@@ -20,13 +26,16 @@ class CMakeBuild(build_ext):
             ext_dir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
             print(self.get_ext_filename(ext.name))
             cmake_args = [
-                f'-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY={self.build_temp}',
-                f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={ext_dir}',
-                f'-D_PYPAT_OUTPUT_NAME={self.get_ext_filename(ext.name)}',
+                *[
+                    f'-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY={self.build_temp}',
+                    f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={ext_dir}',
+                    f'-D_PYPAT_OUTPUT_NAME={self.get_ext_filename(ext.name)}',
+                ],
+                *(['-DCMAKE_GENERATOR_PLATFORM=x64'] if is_64_bit_windows() else []),
             ]
 
             subprocess.check_call([*['cmake', ext.cmake_lists_dir], *cmake_args], cwd=self.build_temp)
-            subprocess.check_call(['cmake', '--build', '.'], cwd=self.build_temp)
+            subprocess.check_call(['cmake', '--build', '.', '--config', 'Release'], cwd=self.build_temp)
 
 
 with open('README.md', 'r') as fh:
