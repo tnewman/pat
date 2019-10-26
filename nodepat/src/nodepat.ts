@@ -3,7 +3,7 @@ const {
   _skip,
   _pause,
   _resume,
-} = require('../build/Release/_nodepat');
+} = require('../build/Release/_nodepat.node');
 
 export async function play(audioPath: string): Promise<void> {
   _play(audioPath);
