@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.12)
 project(libpat C)
 
 set(BUILD_PAT_PLAY false CACHE BOOL "build patplay utility")
@@ -7,8 +7,8 @@ set(CMAKE_C_STANDARD 11)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
-find_package(FFmpeg)
-find_package(SDL2)
+find_package(FFmpeg REQUIRED)
+find_package(SDL2 REQUIRED)
 
 set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY})
