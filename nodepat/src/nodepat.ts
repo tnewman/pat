@@ -22,5 +22,5 @@ export async function resume(): Promise<void> {
 }
 
 (async () => {
-    await play('/home/tnewman/Downloads/test.mpga');
+    await play('C:/Users/tnewm/Downloads/test.mpga');
 })();
