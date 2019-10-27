@@ -3,8 +3,6 @@
 #include <pat/pat.h>
 #include <pat/pat_error.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <windows.h>
 
 #define AUDIO_PATH_LENGTH 1024
 

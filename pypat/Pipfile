@@ -7,6 +7,3 @@ verify_ssl = true
 pytest = "*"
 wheel = "*"
 
-[packages]
-pypat = {editable = true,path = "."}
-

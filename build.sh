@@ -20,8 +20,8 @@ cd ..
 echo "Building pypat"
 cd pypat
 pipenv sync --dev
+pipenv run python setup.py build
 pipenv run py.test
-python3 setup.py build
-python3 setup.py sdist
+pipenv run python setup.py sdist
 cd ..
 
