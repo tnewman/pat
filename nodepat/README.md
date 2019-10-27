@@ -3,7 +3,7 @@ nodepat is a NodeJS library that makes playing audio simple. nodepat uses FFmpeg
 robust support for virtually any audio format and SDL2 to play back audio.
 
 ## Prerequisites
-Install [Prerequisites](https://github.com/tnewman/pat/tree/nodejs-support#Prerequisites) before installing.
+Install [Prerequisites](https://github.com/tnewman/pat#Prerequisites) before installing.
 
 ## NodeJS Version Compatibility
 - 10
