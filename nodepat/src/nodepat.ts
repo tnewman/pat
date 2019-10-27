@@ -6,7 +6,7 @@ const {
 } = require('../build/Release/_nodepat.node');
 
 export async function play(audioPath: string): Promise<void> {
-  _play(audioPath);
+  return _play(audioPath);
 }
 
 export async function skip(): Promise<void> {
