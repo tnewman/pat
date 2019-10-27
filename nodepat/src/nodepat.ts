@@ -20,7 +20,3 @@ export async function pause(): Promise<void> {
 export async function resume(): Promise<void> {
   _resume();
 }
-
-(async () => {
-  await play('C:/Users/tnewm/Downloads/test.mpga');
-})();
