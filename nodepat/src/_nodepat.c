@@ -21,6 +21,17 @@ static napi_value _nodepat_pause(napi_env env, napi_callback_info info);
 
 static napi_value _nodepat_resume(napi_env env, napi_callback_info info);
 
+static void _nodepat_execute(napi_env env, void* data);
+
+static void _nodepat_complete(napi_env env, napi_status status, void* data);
+
+typedef enum NodePATTask {
+    PLAY,
+    SKIP,
+    PAUSE,
+    RESUME
+} NodePATTask;
+
 static PAT* pat;
 
 napi_value Init(const napi_env env, const napi_value exports) {
@@ -75,18 +86,35 @@ static void _nodepat_close(void* args) {
 }
 
 typedef struct _PATPlayData {
+    NodePATTask task;
     PATError status;
     napi_deferred deferred;
     char audio_path[AUDIO_PATH_LENGTH];
 } _PATPlayData;
 
-void _nodepat_play_execute(napi_env env, void* data) {
+static void _nodepat_execute(napi_env env, void* data) {
     _PATPlayData* pat_play_data = (_PATPlayData*) data;
 
-    pat_play_data->status = pat_play(pat, pat_play_data->audio_path);
+    switch (pat_play_data->task) {
+        case PLAY:
+            pat_play_data->status = pat_play(pat, pat_play_data->audio_path);
+            break;
+        case SKIP:
+            pat_play_data->status = pat_skip(pat);
+            break;
+        case PAUSE:
+            pat_play_data->status = pat_pause(pat);
+            break;
+        case RESUME:
+            pat_play_data->status = pat_resume(pat);
+            break;
+        default:
+            pat_play_data->status = PAT_UNKNOWN_ERROR;
+            break;
+    }
 }
 
-void _nodepat_play_complete(napi_env env, napi_status status, void* data) {
+static void _nodepat_complete(napi_env env, napi_status status, void* data) {
     _PATPlayData* pat_play_data = (_PATPlayData*) data;
 
     if (status != napi_ok) {
@@ -148,11 +176,21 @@ static napi_value _nodepat_play(napi_env env, napi_callback_info info) {
         goto error;
     }
 
+    napi_value undefined;
+
+    status = napi_get_undefined(env, &undefined);
+
+    if (status != napi_ok) {
+        goto error;
+    }
+
     _PATPlayData* data = malloc(sizeof(_PATPlayData));
 
     if(!data) {
         goto error;
     }
+
+    data->task = PLAY;
 
     status = napi_get_value_string_utf8(env, argv[0], data->audio_path, AUDIO_PATH_LENGTH, NULL);
 
@@ -171,7 +209,7 @@ static napi_value _nodepat_play(napi_env env, napi_callback_info info) {
 
     napi_async_work work;
 
-    status = napi_create_async_work(env, NULL, "PAT Play", _nodepat_play_execute, _nodepat_play_complete, data, &work);
+    status = napi_create_async_work(env, NULL, undefined, _nodepat_execute, _nodepat_complete, data, &work);
 
     if (status != napi_ok) {
         goto error;
