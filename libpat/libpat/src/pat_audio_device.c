@@ -101,7 +101,7 @@ PATError pat_resume_audio_device(const PATAudioDevice* pat_audio_device) {
 
 static void pat_audio_callback(void* userdata, Uint8* stream, int len) {
     PATRingBuffer* pat_ring_buffer = (PATRingBuffer*) userdata;
-    int read_size = pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 500);
+    size_t read_size = pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 500);
 
     if (read_size < len) {
         memset(stream + read_size, 0, len - read_size);
