@@ -183,7 +183,7 @@ static napi_value _nodepat_play(napi_env env, napi_callback_info info) {
         goto error;
     }
 
-    return result;
+    return promise;
 
     error:
         if (data != NULL) {
