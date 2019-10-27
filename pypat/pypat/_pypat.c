@@ -14,7 +14,7 @@ static PyObject* _pypat_status_to_py_result(PATError status) {
   Py_RETURN_NONE;
 }
 
-static void _pypat_cleanup() {
+static void _pypat_cleanup(void) {
   pat_close(pat);
 }
 
