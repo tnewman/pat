@@ -6,7 +6,7 @@ rm -rf libpat/build
 mkdir -p libpat/build
 cd libpat/build
 touch .gitkeep
-cmake .. -G Ninja
+cmake .. -G Ninja -DBUILD_PAT_PLAY=true
 cmake --build .
 cd ../..
 
@@ -20,8 +20,8 @@ cd ..
 echo "Building pypat"
 cd pypat
 pipenv sync --dev
+pipenv run python setup.py build_ext --inplace
 pipenv run py.test
-python3 setup.py build
-python3 setup.py sdist
+pipenv run python setup.py sdist
 cd ..
 

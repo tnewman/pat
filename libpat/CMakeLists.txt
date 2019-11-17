@@ -1,14 +1,14 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.12)
 project(libpat C)
 
-set(SKIP_PAT_PLAY_BUILD false CACHE BOOL "skip building patplay utility")
+set(BUILD_PAT_PLAY false CACHE BOOL "build patplay utility")
 
 set(CMAKE_C_STANDARD 11)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
-find_package(FFmpeg)
-find_package(SDL2)
+find_package(FFmpeg REQUIRED)
+find_package(SDL2 REQUIRED)
 
 set(OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY})
@@ -19,7 +19,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 add_subdirectory(libpat)
 
-IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/patplay AND ${SKIP_PAT_PLAY_BUILD} MATCHES false)
+IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/patplay AND ${BUILD_PAT_PLAY} MATCHES true)
     add_subdirectory(patplay)
 ELSE()
     message(STATUS "Skipping patplay build")

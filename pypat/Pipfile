@@ -5,7 +5,5 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-
-[packages]
-pypat = {editable = true,path = "."}
+wheel = "*"
 

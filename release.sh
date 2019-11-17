@@ -17,7 +17,7 @@ echo "Substituting Version $VERSION"
 cd nodepat
 npm version $VERSION --allow-same-version
 cd ..
-echo "VERSION='$VERSION'" > pypat/version.py
+echo "VERSION='$VERSION'" > pypat/pypat/version.py
 
 echo "Committing $VERSION"
 git add nodepat/package.json nodepat/package.json pypat/version.py

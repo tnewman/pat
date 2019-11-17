@@ -24,16 +24,16 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
         *pat_audio_device_out = NULL;
         return PAT_MEMORY_ERROR;
     }
-    
+
     #ifdef _WIN32
         // SDL2 default audio driver is broken on Windows
         _putenv("SDL_AUDIODRIVER=winmm");
     #endif
-    
+
     if(SDL_Init(SDL_INIT_AUDIO) != 0) {
         return PAT_AUDIO_DEVICE_ERROR;
     }
-    
+
     SDL_AudioSpec want;
     SDL_memset(&want, 0, sizeof(want));
     want.freq = SAMPLES_PER_SECOND;
@@ -47,7 +47,7 @@ PATError pat_open_audio_device(PATAudioDevice** pat_audio_device_out) {
     SDL_AudioSpec have;
 
     SDL_AudioDeviceID device_id = SDL_OpenAudioDevice(NULL, 0, &want, &have, SDL_AUDIO_ALLOW_ANY_CHANGE);
-    
+
     if(device_id <= 0) {
         pat_free_ring_buffer(pat_ring_buffer);
         *pat_audio_device_out = NULL;
@@ -101,7 +101,11 @@ PATError pat_resume_audio_device(const PATAudioDevice* pat_audio_device) {
 
 static void pat_audio_callback(void* userdata, Uint8* stream, int len) {
     PATRingBuffer* pat_ring_buffer = (PATRingBuffer*) userdata;
-    pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 500);
+    size_t read_size = pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 500);
+
+    if (read_size < len) {
+        memset(stream + read_size, 0, len - read_size);
+    }
 }
 
 void pat_free_audio_device(PATAudioDevice* pat_audio_device) {

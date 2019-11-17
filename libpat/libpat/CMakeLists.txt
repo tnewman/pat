@@ -1,4 +1,4 @@
-add_library(pat SHARED
+add_library(pat
         src/pat.c
         src/pat_error.c
         src/pat_audio_device.c

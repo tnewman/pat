@@ -1,8 +1,11 @@
-include License.txt
-include version.py
-exclude pypat/*.dll
-exclude pypat/*.so
-include pypat/libpat/CMakeLists.txt
-include pypat/libpat/build/.gitkeep
-recursive-include pypat/libpat/modules *
-recursive-include pypat/libpat/libpat *
+include Pipfile
+include Pipfile.lock
+recursive-include . LICENSE
+recursive-include . LICENSE.txt
+recursive-include . README.md
+recursive-include pypat *.c
+recursive-include pypat *.h
+recursive-include pypat CMakeLists.txt
+recursive-include pypat/libpat *.cmake
+recursive-include pypat/libpat *.mp3
+prune pypat/libpat/build

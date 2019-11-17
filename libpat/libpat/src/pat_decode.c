@@ -17,7 +17,7 @@ static PATError pat_open_codec_context(AVCodecContext** decoder_context_out, AVS
 static PATError pat_open_swr_context(SwrContext** swr_context_out, PATAudioDevice* pat_audio_device,
         AVCodecContext* decoder_context);
 
-static enum AVSampleFormat pat_get_ffmpeg_sample_format(uint16_t format);
+static enum AVSampleFormat pat_get_ffmpeg_sample_format(const uint16_t format);
 
 static PATError pat_resample_frame(PATAudioDevice* pat_audio_device, PATDecoder* pat_decoder,
         enum AVSampleFormat format, AVFrame* av_frame);
