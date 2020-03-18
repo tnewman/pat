@@ -1,6 +1,5 @@
 #include "pat_audio_device.h"
 #include "pat_decode.h"
-#include <SDL.h>
 #include <stdlib.h>
 
 static const int SAMPLES_PER_SECOND = 48000;
