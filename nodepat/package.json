@@ -5,10 +5,10 @@
   "main": "./dist/nodepat.js",
   "types": "./dist/nodepat.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "node-gyp build && tsc",
     "prepack": "npm run-script build && node tools/prepack.js",
     "postpack": "node tools/postpack.js",
-    "install": "cmake-js install && cmake-js compile",
+    "install": "node-gyp rebuild",
     "lint": "./node_modules/.bin/eslint --ext .ts src test",
     "test": "mocha --require ts-node/register test/**.ts"
   },
@@ -22,9 +22,6 @@
     "url": "https://github.com/tnewman/pat/issues"
   },
   "homepage": "https://github.com/tnewman/pat",
-  "dependencies": {
-    "cmake-js": "^6.1.0"
-  },
   "devDependencies": {
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.9.1",
