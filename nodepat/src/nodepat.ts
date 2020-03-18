@@ -1,9 +1,5 @@
-const {
-  _play,
-  _skip,
-  _pause,
-  _resume,
-} = require('../build/Release/_nodepat.node');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const {_play, _skip, _pause, _resume,} = require('../build/Release/_nodepat.node');
 
 export async function play(audioPath: string): Promise<void> {
   return _play(audioPath);
