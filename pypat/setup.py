@@ -19,7 +19,16 @@ def get_pkg_config_library(package_name):
     return subprocess.check_output(['pkg-config', package_name, '--libs'])[2:-1].decode('utf-8')
 
 
-if sys.platform != 'win32':
+if sys.platform == 'win32':
+    libraries = [
+        'avcodec',
+        'avdevice',
+        'avformat',
+        'avutil',
+        'swresample',
+        'sdl2',
+    ]
+else:
     if shutil.which('pkg-config') is None:
         raise Exception('pkg-config is required on UNIX-like platforms!')
 
@@ -47,9 +56,7 @@ _pypat = Extension('_pypat',
                        'pypat/libpat/libpat/src',
                        *include_dirs
                    ],
-                   libraries=[
-                       *libraries,
-                   ],
+                   libraries=libraries,
                    sources=[
                        'pypat/_pypat.c',
                        'pypat/libpat/libpat/src/pat.c',
