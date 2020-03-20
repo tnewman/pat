@@ -94,21 +94,20 @@ static void _nodepat_close(void* args) {
 
 static napi_value _nodepat_play(napi_env env, napi_callback_info info) {
     napi_status status;
-    napi_value result = NULL;
 
     size_t argc = 1;
     napi_value argv[1];
+
+    char* audio_path = malloc(AUDIO_PATH_LENGTH);
+
+    if (audio_path == NULL) {
+        goto error;
+    }
 
     status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
 
     if (status != napi_ok) {
         napi_throw_type_error(env, "TypeError", "String expected.");
-        goto error;
-    }
-
-    char* audio_path = malloc(AUDIO_PATH_LENGTH);
-
-    if (audio_path == NULL) {
         goto error;
     }
 
