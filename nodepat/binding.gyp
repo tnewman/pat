@@ -16,15 +16,27 @@
       ],
       "conditions": [
         ["OS == 'win'", {
-
+          "variables": {
+            'ffmpeg-root%': 'C:/ffmpeg',
+            'sdl2-root%': 'C:/SDL2'
+          },
+          "include_dirs": [
+            "<(ffmpeg-root)/include",
+            "<(sdl2-root)/include/SDL2"
+          ],
+          "libraries": [
+            "<(ffmpeg-root)/lib/avcodec.lib",
+            "<(ffmpeg-root)/lib/avdevice.lib",
+            "<(ffmpeg-root)/lib/avformat.lib",
+            "<(ffmpeg-root)/lib/avutil.lib",
+            "<(ffmpeg-root)/lib/swresample.lib",
+            "<(sdl2-root)/lib/x64/SDL2.lib",
+            "<(sdl2-root)/lib/x86/SDL2.lib"
+          ]
         }, {
           "include_dirs": [
-            "<!(pkg-config libavcodec --cflags-only-I | cut -c3-)",
-            "<!(pkg-config libavdevice --cflags-only-I | cut -c3-)",
-            "<!(pkg-config libavformat --cflags-only-I | cut -c3-)",
-            "<!(pkg-config libavutil --cflags-only-I | cut -c3-)",
-            "<!(pkg-config libswresample --cflags-only-I | cut -c3-)",
-            "<!(pkg-config sdl2 --cflags-only-I | cut -c3-)"
+            "<(pkg-config libavcodec --cflags-only-I | cut -c3-)",
+            "<(pkg-config sdl2 --cflags-only-I | cut -c3-)"
           ],
           "libraries": [
             "<!(pkg-config libavcodec --libs)",
