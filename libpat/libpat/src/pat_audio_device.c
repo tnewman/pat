@@ -102,8 +102,8 @@ static void pat_audio_callback(void* userdata, Uint8* stream, int len) {
     PATRingBuffer* pat_ring_buffer = (PATRingBuffer*) userdata;
     size_t read_size = pat_read_ring_buffer(pat_ring_buffer, stream, (size_t) len, 500);
 
-    if (read_size < len) {
-        memset(stream + read_size, 0, len - read_size);
+    if (read_size < (size_t) len) {
+        memset(stream + read_size, 0, (size_t) len - read_size);
     }
 }
 

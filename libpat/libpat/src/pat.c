@@ -8,9 +8,6 @@ typedef struct PAT {
     PATAudioDevice* pat_audio_device;
 } PAT;
 
-static PATError pat_run_async_thread(const PAT* pat, SDL_ThreadFunction thread_function, const char* thread_name,
-                                pat_finished_finished_cb_t callback, void* data);
-
 PATError pat_open(PAT** pat_out) {
     *pat_out = NULL;
     PATError status;
