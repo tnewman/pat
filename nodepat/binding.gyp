@@ -14,12 +14,27 @@
         "src/libpat/libpat/src/pat_error.c",
         "src/libpat/libpat/src/pat_ring_buffer.c"
       ],
-      "libraries": [
-        "-lavcodec",
-        "-lavformat",
-        "-lavutil",
-        "-lswresample",
-        "-lSDL2"
+      "conditions": [
+        ["OS == 'win'", {
+
+        }, {
+          "include_dirs": [
+            "<!(pkg-config libavcodec --cflags-only-I | cut -c3-)",
+            "<!(pkg-config libavdevice --cflags-only-I | cut -c3-)",
+            "<!(pkg-config libavformat --cflags-only-I | cut -c3-)",
+            "<!(pkg-config libavutil --cflags-only-I | cut -c3-)",
+            "<!(pkg-config libswresample --cflags-only-I | cut -c3-)",
+            "<!(pkg-config sdl2 --cflags-only-I | cut -c3-)"
+          ],
+          "libraries": [
+            "<!(pkg-config libavcodec --libs)",
+            "<!(pkg-config libavdevice --libs)",
+            "<!(pkg-config libavformat --libs)",
+            "<!(pkg-config libavutil --libs)",
+            "<!(pkg-config libswresample --libs)",
+            "<!(pkg-config sdl2 --libs)"
+          ]
+        }]
       ]
     }
   ]
