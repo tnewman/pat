@@ -38,7 +38,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - name: Install Dependencies (Mac OS)
-        run: brew install ffmpeg sdl2
+        run: brew install ffmpeg pkg-config sdl2
         if: matrix.os == 'macos-latest'
 
       - name: Build nodepat
