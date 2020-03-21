@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Dependencies (Mac OS)
         run: |
-          brew install Caskroom/cask/soundflower
+          brew cask install blackhole
           brew install ffmpeg pkg-config sdl2
         if: matrix.os == 'macos-latest'
 
