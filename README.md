@@ -19,10 +19,16 @@ play back audio.
 
 ## Prerequisites
 - [FFmpeg](https://www.ffmpeg.org/download.html)
+- [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/) (Linux and Mac only)
 - [SDL2](https://www.libsdl.org/download-2.0.php)
 - Standard C Build Tools (gcc, Xcode, Visual Studio, etc.)
 
 ### Ubuntu
 ```bash
 sudo apt install build-essential libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
+```
+
+### Mac OS
+```bash
+brew install ffmpeg pkg-config sdl2
 ```
