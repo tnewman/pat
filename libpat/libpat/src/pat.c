@@ -12,6 +12,10 @@ PATError pat_open(PAT** pat_out) {
     *pat_out = NULL;
     PATError status;
 
+    // Required for older versions of FFmpeg, such as the one bundled with 
+    // Ubuntu 18.04.
+    av_register_all();
+
     pat_init_audio_decoder();
 
     PATAudioDevice* pat_audio_device;
