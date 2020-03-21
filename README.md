@@ -1,4 +1,6 @@
 # PAT (PAT Audio Technician)
+![PAT CI/CD](https://github.com/tnewman/pat/workflows/PAT%20CI/CD/badge.svg)
+
 PAT is a multi-programming language audio library that makes playing audio simple. Behind the 
 scenes, PAT uses FFmpeg to provide robust support for virtually any audio format and SDL2 to 
 play back audio.
