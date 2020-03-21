@@ -35,7 +35,8 @@
           ]
         }, {
           "include_dirs": [
-            "/usr/include/SDL2"
+            "/usr/include/SDL2",
+            "/usr/local/include/SDL2"
           ],
           "libraries": [
             "-lavcodec",

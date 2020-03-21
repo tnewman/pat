@@ -7,6 +7,7 @@ _pypat = Extension('_pypat',
                        'pypat/libpat/libpat/include',
                        'pypat/libpat/libpat/src',
                        '/usr/include/SDL2',
+                       '/usr/local/include/SDL2',
                    ],
                    libraries=[
                         'avcodec',
@@ -22,7 +23,7 @@ _pypat = Extension('_pypat',
                        'pypat/libpat/libpat/src/pat_audio_device.c',
                        'pypat/libpat/libpat/src/pat_decode.c',
                        'pypat/libpat/libpat/src/pat_error.c',
-                       'pypat/libpat/libpat/src/pat_ring_buffer.c'
+                       'pypat/libpat/libpat/src/pat_ring_buffer.c',
                    ])
 
 with open('README.md', 'r') as fh:
