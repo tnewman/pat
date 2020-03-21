@@ -35,5 +35,8 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "node-gyp": "^6.1.0"
+  }
 }
