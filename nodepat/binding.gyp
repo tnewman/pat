@@ -35,8 +35,12 @@
           ]
         }, {
           "include_dirs": [
-            "<(pkg-config libavcodec --cflags-only-I | cut -c3-)",
-            "<(pkg-config sdl2 --cflags-only-I | cut -c3-)"
+            "<!(pkg-config libavcodec --cflags-only-I | cut -c3-)",
+            "<!(pkg-config libavdevice --cflags-only-I | cut -c3-)",
+            "<!(pkg-config libavformat --cflags-only-I | cut -c3-)",
+            "<!(pkg-config libavutil --cflags-only-I | cut -c3-)",
+            "<!(pkg-config libswresample --cflags-only-I | cut -c3-)",
+            "<!(pkg-config sdl2 --cflags-only-I | cut -c3-)"
           ],
           "libraries": [
             "<!(pkg-config libavcodec --libs)",
