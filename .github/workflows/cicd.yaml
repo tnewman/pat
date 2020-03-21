@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Dependencies (Mac OS)
         run: |
-          sudo brew cask install soundflower
+          brew install Caskroom/cask/soundflower
           brew install ffmpeg pkg-config sdl2
         if: matrix.os == 'macos-latest'
 
