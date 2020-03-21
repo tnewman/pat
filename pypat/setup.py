@@ -11,12 +11,12 @@ libraries = []
 
 def get_pkg_config_include_dir(package_name):
     # Convert -I/path/to/include\n to /path/to/include
-    return subprocess.check_output(['pkg-config', package_name, '--cflags-only-I'])[2:-1].decode('utf-8')
+    return subprocess.check_output(['pkg-config', package_name, '--cflags-only-I'])[2:-1].replace('-I', '')
 
 
 def get_pkg_config_library(package_name):
     # Convert -llib\n to lib
-    return subprocess.check_output(['pkg-config', package_name, '--libs'])[2:-1].decode('utf-8')
+    return subprocess.check_output(['pkg-config', package_name, '--libs'])[2:-1].replace('-l', '')
 
 
 if sys.platform == 'win32':
@@ -49,6 +49,9 @@ else:
         get_pkg_config_library('libswresample'),
         get_pkg_config_library('sdl2'),
     ]
+
+    print(include_dirs)
+    print(libraries)
 
 _pypat = Extension('_pypat',
                    include_dirs=[
