@@ -1,0 +1,50 @@
+name: PAT CI/CD
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+      
+      - name: Install FFmpeg
+        run: sudo apt-get install libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev
+      
+      - name: Install SDL2
+        run: sudo apt-get install libsdl2-dev
+      
+      - name: Install PulseAudio
+        run: sudo apt-get install pulseaudio pavucontrol
+      
+      - name: Configure PulseAudio
+        run: |
+          /usr/bin/pulseaudio --daemonize
+          pacmd load-module module-null-sink sink_name=AudioOut
+
+      - name: Build nodepat
+        working-directory: nodepat
+        run: |
+          npm i
+          npm run build
+          npm test
+
+      - name: Build pypat
+        working-directory: pypat
+        run: |
+          pip install pytest
+          python setup.py build_ext --inplace
+          python -m pytest
