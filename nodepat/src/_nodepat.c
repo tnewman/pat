@@ -44,7 +44,21 @@ static PAT* pat;
 napi_value Init(const napi_env env, const napi_value exports) {
     PATError pat_status = pat_open(&pat);
 
-    if(pat_status != PAT_SUCCESS) {
+    if (pat_status != PAT_SUCCESS) {
+        napi_value error;
+        napi_value error_str;
+
+        if (napi_create_string_utf8(env, pat_error_to_string(pat_status), NAPI_AUTO_LENGTH, &error_str)
+            != napi_ok) {
+            return NULL;
+        }
+
+        if (napi_create_error(env, NULL, error_str, &error) != napi_ok) {
+            return NULL;
+        }
+
+        napi_throw(env, error);
+
         return NULL;
     }
 
