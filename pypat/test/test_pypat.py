@@ -4,9 +4,9 @@ import time
 from concurrent import futures
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-VALID_AUDIO_PATH = CURRENT_DIRECTORY + '/../pypat/libpat/test/test.mp3'
+VALID_AUDIO_PATH = CURRENT_DIRECTORY + '/../pypat/libpat/test/test.ogg'
 MISSING_AUDIO_PATH = 'missing'
-INVALID_AUDIO_PATH = CURRENT_DIRECTORY + '/../pypat/libpat/test/invalid.mp3'
+INVALID_AUDIO_PATH = CURRENT_DIRECTORY + '/../pypat/libpat/test/invalid.ogg'
 
 
 def test_play_audio_file():
