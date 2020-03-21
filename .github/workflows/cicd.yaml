@@ -32,8 +32,7 @@ jobs:
 
       - name: Configure PulseAudio (Linux)
         run: |
-          /usr/bin/pulseaudio --daemonize
-          sleep 5
+          pulseaudio --daemonize --disallow-exit
           pacmd load-module module-null-sink sink_name=AudioOut
         if: matrix.os == 'ubuntu-latest'
 
