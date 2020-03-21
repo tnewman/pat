@@ -43,6 +43,7 @@ jobs:
       - name: Build nodepat
         working-directory: nodepat
         run: |
+          npm i -g node-gyp
           npm i
           npm run build
           npm test
