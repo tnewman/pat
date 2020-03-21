@@ -34,6 +34,7 @@ jobs:
         run: |
           pulseaudio --daemonize --disallow-exit
           pacmd load-module module-null-sink sink_name=AudioOut
+          pacmd list-sources
         if: matrix.os == 'ubuntu-latest'
 
       - name: Install Dependencies (Mac OS)
