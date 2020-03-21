@@ -9,14 +9,18 @@ include_dirs = []
 libraries = []
 
 
+def normalize_package_bytes(package_bytes):
+    return package_bytes.decode('utf-8').replace('-I', '').replace('-l', '').replace('\n', '')
+
+
 def get_pkg_config_include_dir(package_name):
     # Convert -I/path/to/include\n to /path/to/include
-    return subprocess.check_output(['pkg-config', package_name, '--cflags-only-I']).decode('utf-8').replace('-I', '')
+    return normalize_package_bytes(subprocess.check_output(['pkg-config', package_name, '--cflags-only-I']))
 
 
 def get_pkg_config_library(package_name):
     # Convert -llib\n to lib
-    return subprocess.check_output(['pkg-config', package_name, '--libs'])[2:-1].decode('utf-8').replace('-l', '')
+    return normalize_package_bytes(subprocess.check_output(['pkg-config', package_name, '--libs']))
 
 
 if sys.platform == 'win32':
