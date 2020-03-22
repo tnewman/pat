@@ -31,23 +31,20 @@ jobs:
         with:
           python-version: '3.x'
       
-      - name: Install Dependencies (Linux)
-        run: sudo apt-get install libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev pulseaudio pavucontrol
-        if: matrix.os == 'ubuntu-latest'
-
-      - name: Configure PulseAudio (Linux)
+      - name: Setup Prerequisites (Linux)
         run: |
+          sudo apt-get install libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev pulseaudio pavucontrol
           pulseaudio --daemonize --exit-idle-time=-1
           pacmd load-module module-null-sink sink_name=AudioOut
         if: matrix.os == 'ubuntu-latest'
 
-      - name: Install Dependencies (Mac OS)
+      - name: Setup Prerequisites (Mac OS)
         run: |
           brew cask install blackhole
           brew install ffmpeg pkg-config sdl2
         if: matrix.os == 'macos-latest'
       
-      - name: Install Dependencies (Windows)
+      - name: Setup Prerequisites (Windows)
         run: |
           Function InstallWebZip($URL, $FolderName) {
             $progressPreference = 'silentlyContinue'
