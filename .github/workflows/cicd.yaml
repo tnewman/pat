@@ -97,8 +97,20 @@ jobs:
         # Windows does not support a NULL audio sink
 
       - name: Check Version
-        run: echo "Current Tag is ${GITHUB_REF##*/}"
-      
+        run: |
+          TAG_VERSION="${GITHUB_REF##*/}"
+          SEMANTIC_VERSION="${TAG_VERSION:1}"
+          NODEPAT_VERSION=$(node -p -e "require('./nodepat/package.json').version")
+          PYPAT_VERSION=$(python pypat/setup.py --version)
+
+          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" || "$SEMANTIC_VERSION" != "PYPAT_VERSION" ]]; then
+            echo "Mismatch between tag version and package versions."
+            echo "tag version: $SEMANTIC_VERSION"
+            echo "nodepat version: $NODEPAT_VERSION"
+            echo "pypat version: $PYPAT_VERSION"
+          fi
+        if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
+
       #- name: NPM Publish
       #  working-directory: nodepat
       #  run: npm publish
