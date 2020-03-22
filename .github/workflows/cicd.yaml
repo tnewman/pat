@@ -131,7 +131,6 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v1
         with:
-          registry-url: 'https://registry.npmjs.org'
           node-version: '12.x'
       
       - name: Install Python
@@ -159,7 +158,9 @@ jobs:
           fi
 
       - name: NPM Publish
-        run: npm publish artifacts/nodepat-*.tgz
+        run: |
+          npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npm publish artifacts/nodepat-*.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
