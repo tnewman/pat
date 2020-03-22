@@ -1,6 +1,6 @@
 {
   "name": "nodepat",
-  "version": "0.3.0-alpha.3",
+  "version": "0.3.0-alpha.4",
   "description": "A NodeJS library that makes playing audio simple.",
   "main": "./dist/nodepat.js",
   "types": "./dist/nodepat.d.ts",
@@ -38,8 +38,5 @@
     "dist",
     "src/_nodepat.c",
     "src/libpat"
-  ],
-  "dependencies": {
-    "node-gyp": "^6.1.0"
-  }
+  ]
 }
