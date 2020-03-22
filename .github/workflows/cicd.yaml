@@ -9,8 +9,8 @@ jobs:
     strategy:
       matrix:
         os:
-          #- 'ubuntu-latest'
-          #- 'macos-latest'
+          - 'ubuntu-latest'
+          - 'macos-latest'
           - 'windows-latest'
     runs-on: ${{ matrix.os }}
     steps:
@@ -58,18 +58,12 @@ jobs:
           }
 
           InstallWebZip https://ffmpeg.zeranoe.com/builds/win64/dev/ffmpeg-4.2.2-win64-dev.zip "ffmpeg-dev"
-          InstallWebZip https://ffmpeg.zeranoe.com/builds/win64/shared/ffmpeg-4.2.2-win64-shared.zip "ffmpeg-shared"
           InstallWebZip https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip "sdl2-dev"
-          InstallWebZip https://www.libsdl.org/release/SDL2-2.0.12-win32-x64.zip "sdl2-shared"
 
           $currentLocation =(Get-Location).toString()
           $ffmpegDevRoot = "$currentLocation\ffmpeg-dev"
-          $ffmpegSharedRoot = "$currentLocation\ffmpeg-shared"
           $sdl2DevRoot = "$currentLocation\sdl2-dev"
-          $sdl2SharedRoot = "$currentLocation\sdl2-shared"
           
-          echo "::add-path::${ffmpegSharedRoot}\bin"
-          echo "::add-path::${sdl2SharedRoot}"
           echo "::set-env name=GYP_DEFINES::ffmpeg-root=`"${ffmpegDevRoot}`" sdl2-root=`"${sdl2DevRoot}`""
           echo "::set-env name=INCLUDE::${ffmpegDevRoot}\include;${sdl2DevRoot}\include"
           echo "::set-env name=LIB::${ffmpegDevRoot}\lib;${sdl2DevRoot}\lib\x64"
@@ -81,7 +75,11 @@ jobs:
           npm i -g npm node-gyp
           npm i
           npm run build
-          npm test
+        
+      - name: Test nodepat
+        working-directory: nodepat
+        run: npm test
+        if: matrix.os != 'windows-latest'
 
       - name: Build pypat
         working-directory: pypat
@@ -89,4 +87,8 @@ jobs:
           pip install pytest
           python setup.py build_ext --inplace
           python setup.py build
-          python -m pytest
+      
+      - name: Test pypat
+        working-directory: pypat
+        run: python -m pytest
+        if: matrix.os != 'windows-latest'
