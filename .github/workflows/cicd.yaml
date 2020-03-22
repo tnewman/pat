@@ -11,6 +11,7 @@ jobs:
         os:
           - 'ubuntu-latest'
           - 'macos-latest'
+          - 'windows-latest'
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -41,6 +42,25 @@ jobs:
           brew cask install blackhole
           brew install ffmpeg pkg-config sdl2
         if: matrix.os == 'macos-latest'
+      
+      - name: Install Dependencies (Windows)
+        run: |
+          Function InstallWebZip($URL, $FolderName) {
+            Invoke-WebRequest $URL -OutFile "${FolderName}.zip"
+            Expand-Archive -Path "${FolderName}.zip" -DestinationPath "${FolderName}"
+            Move-Item -Path ".\${FolderName}\*\*" -Destination ".\${FolderName}"
+          }
+
+          InstallWebZip https://ffmpeg.zeranoe.com/builds/win64/dev/ffmpeg-4.2.2-win64-dev.zip "ffmpeg"
+          InstallWebZip https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip "sdl2"
+
+          $currentLocation =(Get-Location).toString()
+          $ffmpegRoot = "$currentLocation\ffmpeg"
+          $sdl2Root = "$currentLocation\sdl2"
+          $env:GYP_DEFINES = "ffmpeg-root=`"${ffmpegRoot}`" sdl2-root=`"${sdl2Root}`""
+          $env:INCLUDE = "$ffmpegRoot\include;$sdl2Root\include"
+          $env:LIB = "$ffmpegRoot\lib;$sdl2Root\lib\x64"
+        if: matrix.os == 'windows-latest'
 
       - name: Build nodepat
         working-directory: nodepat
@@ -55,4 +75,5 @@ jobs:
         run: |
           pip install pytest
           python setup.py build_ext --inplace
+          python setup.py build
           python -m pytest
