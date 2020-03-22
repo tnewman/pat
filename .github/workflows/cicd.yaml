@@ -97,17 +97,19 @@ jobs:
         if: matrix.os != 'windows-latest'
         # Windows does not support a NULL audio sink
       
-      - name: Archive nodepat
+      - name: Copying Artifacts
+        run: |
+          mkdir artifacts
+          cp nodepat/nodepat-*.tgz artifacts
+          cp pypat/dist/pypat-*.tar.gz artifacts
+        if: matrix.os == 'ubuntu-latest'
+      
+      - name: Uploading Artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: nodepat
-          path: nodepat/nodepat-*.tgz
-
-      - name: Archive pypat
-        uses: actions/upload-artifact@v1
-        with:
-          name: pypat
-          path: pypat/dist/pypat-*.tar.gz
+          name: artifacts
+          path: artifacts
+        if: matrix.os == 'ubuntu-latest'
   
   deploy:
     runs-on: ubuntu-latest
