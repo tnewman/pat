@@ -91,3 +91,10 @@ jobs:
         run: python -m pytest
         if: matrix.os != 'windows-latest'
         # Windows does not support a NULL audio sink
+      
+      - name: Check NPM Login
+        working-directory: nodepat
+        run: npm whoami
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
