@@ -7,9 +7,7 @@ play back audio.
 
 ## Supported Platforms
 - Linux
-
-## Future Supported Platforms
-- Mac OSX
+- Mac OS
 - Windows
 
 ## Programming Languages
