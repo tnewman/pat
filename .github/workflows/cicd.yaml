@@ -1,8 +1,11 @@
 name: PAT CI/CD
 
 on:
-  - push
-  - pull_request
+  push:
+  pull_request:
+  release:
+    types:
+      - published
 
 jobs:
   build:
@@ -24,6 +27,7 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v1
         with:
+          registry-url: 'https://registry.npmjs.org'
           node-version: '12.x'
       
       - name: Install Python
@@ -72,6 +76,7 @@ jobs:
           npm i -g npm node-gyp
           npm i
           npm run build
+          npm pack
         
       - name: Test nodepat
         working-directory: nodepat
@@ -84,10 +89,92 @@ jobs:
         run: |
           pip install pytest
           python setup.py build_ext --inplace
-          python setup.py build
+          python setup.py sdist
       
       - name: Test pypat
         working-directory: pypat
         run: python -m pytest
         if: matrix.os != 'windows-latest'
         # Windows does not support a NULL audio sink
+      
+      - name: Copying Artifacts
+        run: |
+          mkdir artifacts
+          cp nodepat/nodepat-*.tgz artifacts
+          cp pypat/dist/pypat-*.tar.gz artifacts
+        if: matrix.os == 'ubuntu-latest'
+      
+      - name: Uploading Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: artifacts
+          path: artifacts
+        if: matrix.os == 'ubuntu-latest'
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'release'
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: artifacts
+      
+      - name: Extract Artifacts
+        run: |
+          tar -xzf artifacts/nodepat-*.tgz
+          tar -xzf artifacts/pypat-*.tar.gz
+          mv package nodepat
+          mv pypat-* pypat
+      
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          node-version: '12.x'
+      
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+
+      - name: Setup Prerequisites
+        run: pip install twine
+
+      - name: Check Version
+        run: |
+          TAG_VERSION="${GITHUB_REF##*/}"
+          SEMANTIC_VERSION="${TAG_VERSION:1}"
+
+          NODEPAT_VERSION=$(node -p -e "require('./nodepat/package.json').version")
+          PYPAT_VERSION=$(python pypat/setup.py --version)
+
+          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]]; then
+            echo "Mismatch between tag version and package versions."
+            echo "tag version: $SEMANTIC_VERSION"
+            echo "nodepat version: $NODEPAT_VERSION"
+            echo "pypat version: $PYPAT_VERSION"
+            exit 1
+          fi
+
+      - name: NPM Publish
+        run: |
+          TAG_VERSION="${GITHUB_REF##*/}"
+          SEMANTIC_VERSION="${TAG_VERSION:1}"
+
+          if [[ "$SEMANTIC_VERSION" == *"-"* ]]; then
+            NPM_TAG="next"
+          else
+            NPM_TAG="latest"
+          fi
+          
+          npm publish $(pwd)/artifacts/nodepat-*.tgz --tag $NPM_TAG
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: PyPI Publish
+        run: twine upload $(pwd)/artifacts/pypat-*.tar.gz
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets. PYPI_TOKEN }}
