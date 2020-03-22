@@ -61,7 +61,7 @@ jobs:
           $currentLocation =(Get-Location).toString()
           $ffmpegRoot = "$currentLocation\ffmpeg"
           $sdl2Root = "$currentLocation\sdl2"
-          echo "::set-env name=GYP_DEFINES::ffmpeg-root=`"${ffmpegRoot}`" sdl2-root=`"${sdl2Root}"`"
+          echo "::set-env name=GYP_DEFINES::ffmpeg-root=`"${ffmpegRoot}`" sdl2-root=`"${sdl2Root}`""
           echo "::set-env name=INCLUDE::$ffmpegRoot\include;$sdl2Root\include"
           echo "::set-env name=LIB::$ffmpegRoot\lib;$sdl2Root\lib\x64"
         if: matrix.os == 'windows-latest'
