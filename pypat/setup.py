@@ -1,3 +1,4 @@
+import os
 import pkg_resources
 from setuptools import setup, Extension
 from setuptools.extern.packaging import version
@@ -28,7 +29,11 @@ _pypat = Extension('_pypat',
                    ])
 
 
-with open('README.md', 'r') as fh:
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+
+with open(os.path.join(__location__, 'README.md'), 'r') as fh:
     long_description = fh.read()
 
 
