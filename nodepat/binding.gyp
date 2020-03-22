@@ -35,20 +35,16 @@
           ]
         }, {
           "include_dirs": [
-            "<!(pkg-config libavcodec --cflags-only-I | cut -c3-)",
-            "<!(pkg-config libavdevice --cflags-only-I | cut -c3-)",
-            "<!(pkg-config libavformat --cflags-only-I | cut -c3-)",
-            "<!(pkg-config libavutil --cflags-only-I | cut -c3-)",
-            "<!(pkg-config libswresample --cflags-only-I | cut -c3-)",
-            "<!(pkg-config sdl2 --cflags-only-I | cut -c3-)"
+            "/usr/include/SDL2",
+            "/usr/local/include/SDL2"
           ],
           "libraries": [
-            "<!(pkg-config libavcodec --libs)",
-            "<!(pkg-config libavdevice --libs)",
-            "<!(pkg-config libavformat --libs)",
-            "<!(pkg-config libavutil --libs)",
-            "<!(pkg-config libswresample --libs)",
-            "<!(pkg-config sdl2 --libs)"
+            "-lavcodec",
+            "-lavdevice",
+            "-lavformat",
+            "-lavutil",
+            "-lswresample",
+            "-lSDL2"
           ]
         }]
       ]

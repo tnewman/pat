@@ -26,3 +26,8 @@ play back audio.
 ```bash
 sudo apt install build-essential libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
 ```
+
+### Mac OS
+```bash
+brew install ffmpeg sdl2
+```

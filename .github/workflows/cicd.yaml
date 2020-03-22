@@ -6,7 +6,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - 'ubuntu-latest'
+          - 'macos-latest'
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -21,23 +26,26 @@ jobs:
         with:
           python-version: '3.x'
       
-      - name: Install FFmpeg
-        run: sudo apt-get install libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev
-      
-      - name: Install SDL2
-        run: sudo apt-get install libsdl2-dev
-      
-      - name: Install PulseAudio
-        run: sudo apt-get install pulseaudio pavucontrol
-      
-      - name: Configure PulseAudio
+      - name: Install Dependencies (Linux)
+        run: sudo apt-get install libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev pulseaudio pavucontrol
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Configure PulseAudio (Linux)
         run: |
-          /usr/bin/pulseaudio --daemonize
+          pulseaudio --daemonize --exit-idle-time=-1
           pacmd load-module module-null-sink sink_name=AudioOut
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Install Dependencies (Mac OS)
+        run: |
+          brew cask install blackhole
+          brew install ffmpeg pkg-config sdl2
+        if: matrix.os == 'macos-latest'
 
       - name: Build nodepat
         working-directory: nodepat
         run: |
+          npm i -g npm
           npm i
           npm run build
           npm test

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
 project(libpat C)
 
 set(BUILD_PAT_PLAY false CACHE BOOL "build patplay utility")
