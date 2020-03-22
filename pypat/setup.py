@@ -32,7 +32,7 @@ with open('README.md', 'r') as fh:
 setup(
     name='pypat',
     packages=['pypat'],
-    version=version.VERSION,
+    version='0.3.0-alpha.1',
     author='Thomas Newman',
     author_email='tnewman@users.noreply.github.com',
     description='A Python library that makes playing audio simple.',
