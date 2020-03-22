@@ -121,6 +121,13 @@ jobs:
         with:
           name: artifacts
       
+      - name: Extract Artifacts
+        run: |
+          tar -xzf artifacts/nodepat-*.tgz
+          tar -xzf artifacts/pypat-*.tar.gz
+          mv package nodepat
+          mv pypat-* pypat
+      
       - name: Install NodeJS
         uses: actions/setup-node@v1
         with:
