@@ -76,6 +76,7 @@ jobs:
           npm i -g npm node-gyp
           npm i
           npm run build
+          npm run pack
         
       - name: Test nodepat
         working-directory: nodepat
@@ -86,15 +87,27 @@ jobs:
       - name: Build pypat
         working-directory: pypat
         run: |
-          pip install pytest twine
+          pip install pytest
           python setup.py build_ext --inplace
-          python setup.py build
+          python setup.py sdist
       
       - name: Test pypat
         working-directory: pypat
         run: python -m pytest
         if: matrix.os != 'windows-latest'
         # Windows does not support a NULL audio sink
+      
+      - name: Archive nodepat
+        uses: actions/upload-artifact@v1
+        with:
+          name: nodepat
+          path: nodepat/nodepat-*.tgz
+
+      - name: Archive pypat
+        uses: actions/upload-artifact@v1
+        with:
+          name: pypat
+          path: pypat/dist/pypat-*.tar.gz
   
   deploy:
     runs-on: ubuntu-latest
@@ -104,7 +117,7 @@ jobs:
         run: |
           TAG_VERSION="${GITHUB_REF##*/}"
           SEMANTIC_VERSION="${TAG_VERSION:1}"
-          
+
           NODEPAT_VERSION=$(node -p -e "require('./nodepat/package.json').version")
           PYPAT_VERSION=$(python pypat/setup.py --version)
 
