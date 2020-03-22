@@ -1,4 +1,6 @@
+import pkg_resources
 from setuptools import setup, Extension
+from setuptools.extern.packaging import version
 
 
 _pypat = Extension('_pypat',
@@ -25,8 +27,27 @@ _pypat = Extension('_pypat',
                        'pypat/libpat/libpat/src/pat_ring_buffer.c',
                    ])
 
+
 with open('README.md', 'r') as fh:
     long_description = fh.read()
+
+
+# Patch Version class to preserve original version string
+class NoNormalizeVersion(version.Version):
+    def __init__(self, version):
+        self._orig_version = version
+        super().__init__(version)
+
+    def __str__(self):
+        return self._orig_version
+
+
+version.Version = NoNormalizeVersion
+
+
+# Patch safe_version() to prevent version normalization
+pkg_resources.safe_version = lambda v: v
+
 
 setup(
     name='pypat',
