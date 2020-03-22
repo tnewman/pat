@@ -80,6 +80,7 @@ jobs:
         working-directory: nodepat
         run: npm test
         if: matrix.os != 'windows-latest'
+        # Windows does not support a NULL audio sink
 
       - name: Build pypat
         working-directory: pypat
@@ -92,3 +93,4 @@ jobs:
         working-directory: pypat
         run: python -m pytest
         if: matrix.os != 'windows-latest'
+        # Windows does not support a NULL audio sink
