@@ -69,6 +69,7 @@ jobs:
       - name: Build nodepat
         working-directory: nodepat
         run: |
+          echo $env:GYP_DEFINES
           npm i -g npm
           npm i
           npm run build
