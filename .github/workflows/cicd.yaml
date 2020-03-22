@@ -97,7 +97,7 @@ jobs:
         # Windows does not support a NULL audio sink
 
       - name: Check Version
-        run: echo "Current Tag is ${${GITHUB_REF##*/}}"
+        run: echo "Current Tag is ${GITHUB_REF##*/}"
       
       #- name: NPM Publish
       #  working-directory: nodepat
