@@ -1,5 +1,4 @@
 from setuptools import setup, Extension
-import version
 
 
 _pypat = Extension('_pypat',
