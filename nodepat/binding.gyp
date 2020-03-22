@@ -22,7 +22,7 @@
           },
           "include_dirs": [
             "<(ffmpeg-root)/include",
-            "<(sdl2-root)/include/SDL2"
+            "<(sdl2-root)/include"
           ],
           "libraries": [
             "<(ffmpeg-root)/lib/avcodec.lib",
