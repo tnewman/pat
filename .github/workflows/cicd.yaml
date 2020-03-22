@@ -6,7 +6,6 @@ on:
   release:
     types:
       - published
-      - prereleased
 
 jobs:
   build:
@@ -28,6 +27,7 @@ jobs:
       - name: Install NodeJS
         uses: actions/setup-node@v1
         with:
+          registry-url: 'https://registry.npmjs.org'
           node-version: '12.x'
       
       - name: Install Python
