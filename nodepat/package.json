@@ -35,7 +35,9 @@
   },
   "files": [
     "binding.gyp",
-    "dist"
+    "dist",
+    "src/_nodepat.c",
+    "src/libpat"
   ],
   "dependencies": {
     "node-gyp": "^6.1.0"
