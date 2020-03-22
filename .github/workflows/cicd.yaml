@@ -76,7 +76,7 @@ jobs:
           npm i -g npm node-gyp
           npm i
           npm run build
-          npm run pack
+          npm pack
         
       - name: Test nodepat
         working-directory: nodepat
