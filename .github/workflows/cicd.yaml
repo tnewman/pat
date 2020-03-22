@@ -3,6 +3,7 @@ name: PAT CI/CD
 on:
   - push
   - pull_request
+  - tags
 
 jobs:
   build:
