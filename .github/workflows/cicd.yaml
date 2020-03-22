@@ -115,6 +115,28 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          node-version: '12.x'
+      
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: artifacts
+      
+      - name: Setup Prerequisites
+        run: pip install twine
+
       - name: Check Version
         run: |
           TAG_VERSION="${GITHUB_REF##*/}"
@@ -132,17 +154,16 @@ jobs:
           fi
         if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
 
-      #- name: NPM Publish
-      #  working-directory: nodepat
-      #  run: npm publish
-      #  env:
-      #    NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #  if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
+      - name: NPM Publish
+        run: npm publish artifacts/nodepat-*.tgz
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
       
-      #- name: PyPI Publish
-      #  working-directory: pypat
-      #  run: 
-      #  env:
-      #    PIP_USERNAME: __token__
-      #    PIP_PASSWORD: ${{ secrets. PYPI_TOKEN }}
-      #  if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
+      - name: PyPI Publish
+        working-directory: pypat
+        run: twine upload artifacts/pypat-*.tar.gz
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets. PYPI_TOKEN }}
+        if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
