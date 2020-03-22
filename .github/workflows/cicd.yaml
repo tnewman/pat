@@ -71,7 +71,8 @@ jobs:
         run: |
           Get-ChildItem -Path D:\a\pat\pat\ffmpeg
           echo $env:GYP_DEFINES
-          npm i -g npm
+          npm i -g npm node-gyp
+          node-gyp configure
           npm i
           npm run build
           npm test
