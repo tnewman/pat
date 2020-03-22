@@ -14,6 +14,9 @@ jobs:
           - 'windows-latest'
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Enable Symlinks (Windows)
+        run: git config core.symlinks true
+
       - name: Checkout
         uses: actions/checkout@v2
       
