@@ -159,12 +159,21 @@ jobs:
           fi
 
       - name: NPM Publish
-        run: npm publish $(pwd)/artifacts/nodepat-*.tgz
+        run: |
+          TAG_VERSION="${GITHUB_REF##*/}"
+          SEMANTIC_VERSION="${TAG_VERSION:1}"
+
+          if [[ "$SEMANTIC_VERSION" == *"-"* ]]; then
+            NPM_TAG="next"
+          else
+            NPM_TAG="latest"
+          fi
+          
+          npm publish $(pwd)/artifacts/nodepat-*.tgz --tag $NPM_TAG
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
       - name: PyPI Publish
-        working-directory: pypat
         run: twine upload $(pwd)/artifacts/pypat-*.tar.gz
         env:
           TWINE_USERNAME: __token__
