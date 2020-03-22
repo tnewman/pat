@@ -150,7 +150,7 @@ jobs:
           NODEPAT_VERSION=$(node -p -e "require('./nodepat/package.json').version")
           PYPAT_VERSION=$(python pypat/setup.py --version)
 
-          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" || "$SEMANTIC_VERSION" != "PYPAT_VERSION" ]]; then
+          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]]; then
             echo "Mismatch between tag version and package versions."
             echo "tag version: $SEMANTIC_VERSION"
             echo "nodepat version: $NODEPAT_VERSION"
