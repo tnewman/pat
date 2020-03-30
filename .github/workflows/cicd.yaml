@@ -36,6 +36,7 @@ jobs:
       
       - name: Setup Prerequisites (Linux)
         run: |
+          sudo apt-get update
           sudo apt-get install libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev pulseaudio pavucontrol
           pulseaudio --daemonize --exit-idle-time=-1
           pacmd load-module module-null-sink sink_name=AudioOut
