@@ -2,9 +2,9 @@ import assert from 'assert';
 import path from 'path';
 import * as nodepat from '../src/nodepat';
 
-const VALID_AUDIO_PATH = path.join(__dirname, '../src/libpat/test/test.mp3');
+const VALID_AUDIO_PATH = path.join(__dirname, '../src/libpat/test/test.ogg');
 const MISSING_AUDIO_PATH = 'missing';
-const INVALID_AUDIO_PATH = path.join(__dirname, '../src/libpat/test/invalid.mp3');
+const INVALID_AUDIO_PATH = path.join(__dirname, '../src/libpat/test/invalid.ogg');
 
 describe('pat', () => {
   const TIMEOUT = 5000;

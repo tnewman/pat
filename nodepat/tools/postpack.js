@@ -9,7 +9,7 @@ if(fs.existsSync(config.LIBPAT_DIR)) {
         fs.removeSync(config.LIBPAT_NODEPAT_DIR);
     }
 
-    let symlinkPath = path.relative(config.NODEPAT_DIST_DIR, config.LIBPAT_DIR);
+    let symlinkPath = path.relative(config.NODEPAT_SRC_DIR, config.LIBPAT_DIR);
 
     fs.ensureSymlinkSync(symlinkPath, config.LIBPAT_NODEPAT_DIR);
 }

@@ -2,8 +2,8 @@
 
 const LIBPAT_DIR = __dirname + '/../../libpat';
 const NODEPAT_DIR = __dirname + '/../';
-const NODEPAT_DIST_DIR = NODEPAT_DIR + '/dist';
-const LIBPAT_NODEPAT_DIR = NODEPAT_DIST_DIR + '/libpat';
+const NODEPAT_SRC_DIR = NODEPAT_DIR + '/src';
+const LIBPAT_NODEPAT_DIR = NODEPAT_SRC_DIR + '/libpat';
 const LIBPAT_NODEPAT_BUILD_DIR = LIBPAT_NODEPAT_DIR + '/build';
 const LIBPAT_NODEPAT_CMAKE_DEBUG_DIR = LIBPAT_NODEPAT_DIR + '/cmake-build-debug';
 const LIBPAT_NODEPAT_CMAKE_RELEASE_DIR = LIBPAT_NODEPAT_DIR + '/cmake-build-release';
@@ -14,7 +14,7 @@ const LIBPAT_NODEPAT_GITKEEP_FILE = LIBPAT_NODEPAT_BUILD_DIR + '/.gitkeep';
 
 module.exports.LIBPAT_DIR = LIBPAT_DIR;
 module.exports.NODEPAT_DIR = NODEPAT_DIR;
-module.exports.NODEPAT_DIST_DIR = NODEPAT_DIST_DIR;
+module.exports.NODEPAT_SRC_DIR = NODEPAT_SRC_DIR;
 module.exports.LIBPAT_NODEPAT_BUILD_DIR = LIBPAT_NODEPAT_BUILD_DIR;
 module.exports.LIBPAT_NODEPAT_DIR = LIBPAT_NODEPAT_DIR;
 module.exports.LIBPAT_NODEPAT_CMAKE_DEBUG_DIR = LIBPAT_NODEPAT_CMAKE_DEBUG_DIR;

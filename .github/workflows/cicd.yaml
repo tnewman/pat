@@ -1,0 +1,179 @@
+name: PAT CI/CD
+
+on:
+  push:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - 'ubuntu-latest'
+          - 'macos-latest'
+          - 'windows-latest'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Enable Symlinks (Windows)
+        run: git config --global core.symlinks true
+        if: matrix.os == 'windows-latest'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          node-version: '12.x'
+      
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+      
+      - name: Setup Prerequisites (Linux)
+        run: |
+          sudo apt-get install libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev pulseaudio pavucontrol
+          pulseaudio --daemonize --exit-idle-time=-1
+          pacmd load-module module-null-sink sink_name=AudioOut
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Setup Prerequisites (Mac OS)
+        run: |
+          brew cask install blackhole
+          brew install ffmpeg pkg-config sdl2
+        if: matrix.os == 'macos-latest'
+      
+      - name: Setup Prerequisites (Windows)
+        run: |
+          Function InstallWebZip($URL, $FolderName) {
+            $progressPreference = 'silentlyContinue'
+            Invoke-WebRequest $URL -OutFile "${FolderName}.zip"
+            Expand-Archive -Path "${FolderName}.zip" -DestinationPath "${FolderName}"
+            Move-Item -Path ".\${FolderName}\*\*" -Destination ".\${FolderName}"
+            rm "${FolderName}.zip"
+          }
+
+          InstallWebZip https://ffmpeg.zeranoe.com/builds/win64/dev/ffmpeg-4.2.2-win64-dev.zip "ffmpeg-dev"
+          InstallWebZip https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip "sdl2-dev"
+
+          $currentLocation =(Get-Location).toString()
+          $ffmpegDevRoot = "$currentLocation\ffmpeg-dev"
+          $sdl2DevRoot = "$currentLocation\sdl2-dev"
+          
+          echo "::set-env name=GYP_DEFINES::ffmpeg-root=`"${ffmpegDevRoot}`" sdl2-root=`"${sdl2DevRoot}`""
+          echo "::set-env name=INCLUDE::${ffmpegDevRoot}\include;${sdl2DevRoot}\include"
+          echo "::set-env name=LIB::${ffmpegDevRoot}\lib;${sdl2DevRoot}\lib\x64"
+        if: matrix.os == 'windows-latest'
+
+      - name: Build nodepat
+        working-directory: nodepat
+        run: |
+          npm i -g npm node-gyp
+          npm i
+          npm run build
+          npm pack
+        
+      - name: Test nodepat
+        working-directory: nodepat
+        run: npm test
+        if: matrix.os != 'windows-latest'
+        # Windows does not support a NULL audio sink
+
+      - name: Build pypat
+        working-directory: pypat
+        run: |
+          pip install pytest
+          python setup.py build_ext --inplace
+          python setup.py sdist
+      
+      - name: Test pypat
+        working-directory: pypat
+        run: python -m pytest
+        if: matrix.os != 'windows-latest'
+        # Windows does not support a NULL audio sink
+      
+      - name: Copying Artifacts
+        run: |
+          mkdir artifacts
+          cp nodepat/nodepat-*.tgz artifacts
+          cp pypat/dist/pypat-*.tar.gz artifacts
+        if: matrix.os == 'ubuntu-latest'
+      
+      - name: Uploading Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: artifacts
+          path: artifacts
+        if: matrix.os == 'ubuntu-latest'
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'release'
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: artifacts
+      
+      - name: Extract Artifacts
+        run: |
+          tar -xzf artifacts/nodepat-*.tgz
+          tar -xzf artifacts/pypat-*.tar.gz
+          mv package nodepat
+          mv pypat-* pypat
+      
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          node-version: '12.x'
+      
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+
+      - name: Setup Prerequisites
+        run: pip install twine
+
+      - name: Check Version
+        run: |
+          TAG_VERSION="${GITHUB_REF##*/}"
+          SEMANTIC_VERSION="${TAG_VERSION:1}"
+
+          NODEPAT_VERSION=$(node -p -e "require('./nodepat/package.json').version")
+          PYPAT_VERSION=$(python pypat/setup.py --version)
+
+          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]]; then
+            echo "Mismatch between tag version and package versions."
+            echo "tag version: $SEMANTIC_VERSION"
+            echo "nodepat version: $NODEPAT_VERSION"
+            echo "pypat version: $PYPAT_VERSION"
+            exit 1
+          fi
+
+      - name: NPM Publish
+        run: |
+          TAG_VERSION="${GITHUB_REF##*/}"
+          SEMANTIC_VERSION="${TAG_VERSION:1}"
+
+          if [[ "$SEMANTIC_VERSION" == *"-"* ]]; then
+            NPM_TAG="next"
+          else
+            NPM_TAG="latest"
+          fi
+          
+          npm publish $(pwd)/artifacts/nodepat-*.tgz --tag $NPM_TAG
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: PyPI Publish
+        run: twine upload $(pwd)/artifacts/pypat-*.tar.gz
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets. PYPI_TOKEN }}

@@ -44,7 +44,21 @@ static PAT* pat;
 napi_value Init(const napi_env env, const napi_value exports) {
     PATError pat_status = pat_open(&pat);
 
-    if(pat_status != PAT_SUCCESS) {
+    if (pat_status != PAT_SUCCESS) {
+        napi_value error;
+        napi_value error_str;
+
+        if (napi_create_string_utf8(env, pat_error_to_string(pat_status), NAPI_AUTO_LENGTH, &error_str)
+            != napi_ok) {
+            return NULL;
+        }
+
+        if (napi_create_error(env, NULL, error_str, &error) != napi_ok) {
+            return NULL;
+        }
+
+        napi_throw(env, error);
+
         return NULL;
     }
 
@@ -94,21 +108,20 @@ static void _nodepat_close(void* args) {
 
 static napi_value _nodepat_play(napi_env env, napi_callback_info info) {
     napi_status status;
-    napi_value result = NULL;
 
     size_t argc = 1;
     napi_value argv[1];
+
+    char* audio_path = malloc(AUDIO_PATH_LENGTH);
+
+    if (audio_path == NULL) {
+        goto error;
+    }
 
     status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
 
     if (status != napi_ok) {
         napi_throw_type_error(env, "TypeError", "String expected.");
-        goto error;
-    }
-
-    char* audio_path = malloc(AUDIO_PATH_LENGTH);
-
-    if (audio_path == NULL) {
         goto error;
     }
 

@@ -17,9 +17,6 @@ pip3 install pypat
 # Play a file
 >>> pypat.play('amerika.mpga')
 
-# Play a file asynchronously
->>> pypat.play_async('amerika.mpga')
-
 # Skip the current file
 >>> pypat.skip()
 

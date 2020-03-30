@@ -8,7 +8,7 @@ Install [Prerequisites](https://github.com/tnewman/pat#Prerequisites) before bui
 ## Build
 ```bash
 cd build
-cmake .. -G Ninja
+cmake ..
 cmake --build .
 ```
 

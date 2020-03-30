@@ -1,59 +1,70 @@
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
 import os
-import platform
-import subprocess
-import sys
-import version
+import pkg_resources
+from setuptools import setup, Extension
+from setuptools.extern.packaging import version
 
 
-def is_64_bit_windows():
-    return platform.system() == 'Windows' and sys.maxsize > 2 ** 32
+_pypat = Extension('_pypat',
+                   include_dirs=[
+                       'pypat/libpat/libpat/include',
+                       'pypat/libpat/libpat/src',
+                       '/usr/include/SDL2',
+                       '/usr/local/include/SDL2',
+                   ],
+                   libraries=[
+                        'avcodec',
+                        'avdevice',
+                        'avformat',
+                        'avutil',
+                        'swresample',
+                        'SDL2',
+                    ],
+                   sources=[
+                       'pypat/_pypat.c',
+                       'pypat/libpat/libpat/src/pat.c',
+                       'pypat/libpat/libpat/src/pat_audio_device.c',
+                       'pypat/libpat/libpat/src/pat_decode.c',
+                       'pypat/libpat/libpat/src/pat_error.c',
+                       'pypat/libpat/libpat/src/pat_ring_buffer.c',
+                   ])
 
 
-class CMakeExtension(Extension):
-    def __init__(self, name, cmake_lists_dir, sources=[], **kwargs):
-        Extension.__init__(self, name, sources=sources, **kwargs)
-        self.cmake_lists_dir = os.path.abspath(cmake_lists_dir)
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 
-class CMakeBuild(build_ext):
-    def build_extensions(self):
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
-
-        for ext in self.extensions:
-            ext_dir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-            cmake_args = [
-                *[
-                    f'-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY={self.build_temp}',
-                    f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={ext_dir}',
-                    f'-DCMAKE_RUNTIME_OUTPUT_DIRECTORY={ext_dir}/$<0:>',
-                    f'-D_PYPAT_OUTPUT_NAME={self.get_ext_filename(ext.name)}',
-                ],
-                *(['-DCMAKE_GENERATOR_PLATFORM=x64'] if is_64_bit_windows() else []),
-            ]
-
-            subprocess.check_call([*['cmake', ext.cmake_lists_dir], *cmake_args], cwd=self.build_temp)
-            subprocess.check_call(['cmake', '--build', '.', '--config', 'Release'], cwd=self.build_temp)
-
-
-with open('README.md', 'r') as fh:
+with open(os.path.join(__location__, 'README.md'), 'r') as fh:
     long_description = fh.read()
+
+
+# Patch Version class to preserve original version string
+class NoNormalizeVersion(version.Version):
+    def __init__(self, version):
+        self._orig_version = version
+        super().__init__(version)
+
+    def __str__(self):
+        return self._orig_version
+
+
+version.Version = NoNormalizeVersion
+
+
+# Patch safe_version() to prevent version normalization
+pkg_resources.safe_version = lambda v: v
 
 
 setup(
     name='pypat',
     packages=['pypat'],
-    version=version.VERSION,
+    version='0.3.0-alpha.4',
     author='Thomas Newman',
     author_email='tnewman@users.noreply.github.com',
-    description = 'A Python library that makes playing audio simple.',
+    description='A Python library that makes playing audio simple.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/tnewman/pat',
-    ext_modules=[CMakeExtension('_pypat', 'pypat')],
-    cmdclass={'build_ext': CMakeBuild},
+    ext_modules=[_pypat],
     zip_safe=False,
     classifiers=[
         'Programming Language :: Python :: 3',
