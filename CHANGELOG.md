@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - TBD
 ### Added
 - Official support for `pypy`, including requiring `pypy` tests to pass in CI
+- Added default export to `nodepat`
+- Added TSDocs to `nodepat`
+
+## Changed
+- Updated `nodepat` example to use TypeScript
 
 ## [0.3.0] - 2020-04-03
 ### Added
