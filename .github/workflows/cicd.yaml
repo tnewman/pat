@@ -100,7 +100,7 @@ jobs:
         working-directory: pypat
         run: |
           python -m pytest
-          pypy -m pytest
+          pypy3 -m pytest
         if: matrix.os != 'windows-latest'
         # Windows does not support a NULL audio sink
       
