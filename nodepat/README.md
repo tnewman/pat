@@ -11,26 +11,23 @@ npm install nodepat
 ```
 
 ## Example
-```javascript
-const nodepat = require('nodepat');
+```typescript
+import nodepat from 'nodepat';
 
-// Play a file
-nodepat.play('amerika.mpga')
-  .then(() => console.log('Playback Finished'))
-  .catch((error) => console.error(error));
+// Alternatively
+import { play, skip, pause, resume } from 'nodepat';
 
-// Skip the current file
-nodepat.skip()
-  .then(() => console.log('Skipped the Currently Playing File'))
-  .catch((error) => console.error(error));
+(async () => {
+  // Play a file
+  await nodepat.play('amerika.mpga');
 
-// Pause audio playback
-nodepat.pause()
-  .then(() => console.log('Paused Audio Playback'))
-  .catch((error) => console.error(error));
+  // Skip the current file
+  await nodepat.skip();
 
-// Resume audio playback
-nodepat.resume()
-  .then(() => console.log('Resumed Audio Playback'))
-  .catch((error) => console.error(error));
+  // Pause audio playback
+  await nodepat.pause();
+
+  // Resume audio playback
+  await nodepat.resume();
+})();
 ```
