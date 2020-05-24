@@ -34,6 +34,11 @@ jobs:
         with:
           python-version: '3.x'
       
+      - name: Install PyPy
+        uses: actions/setup-python@v1
+        with:
+          python-version: 'pypy3'
+      
       - name: Setup Prerequisites (Linux)
         run: |
           sudo apt-get update
@@ -93,7 +98,9 @@ jobs:
       
       - name: Test pypat
         working-directory: pypat
-        run: python -m pytest
+        run: |
+          python -m pytest
+          pypy3 -m pytest
         if: matrix.os != 'windows-latest'
         # Windows does not support a NULL audio sink
       
