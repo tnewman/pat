@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Changed
 - Updated `nodepat` example to use TypeScript
+- Updated `nodepat` and `pypat` dependencies
 
 ## [0.3.0] - 2020-04-03
 ### Added
