@@ -11,4 +11,6 @@ Although PAT itself is licensed under the LGPL v2.1+, FFMpeg binaries are not al
 redistributable under the LGPL v2.1+. Please review 
 [FFmpeg License and Legal Considerations](https://www.ffmpeg.org/legal.html) before 
 bundling FFMpeg binaries with your application. PAT is always provided as source 
-distributions, so this is only a consideration for custom distributions.
+distributions, and is dynamically linked against the system-provided FFmpeg, so this 
+is only a consideration for those wishing to distribute pre-built PAT and FFmpeg.
+
