@@ -16,3 +16,10 @@ export async function pause(): Promise<void> {
 export async function resume(): Promise<void> {
   _resume();
 }
+
+export default {
+  play,
+  skip,
+  pause,
+  resume
+}
