@@ -69,10 +69,10 @@ jobs:
           $currentLocation =(Get-Location).toString()
           $ffmpegDevRoot = "$currentLocation\ffmpeg-dev"
           $sdl2DevRoot = "$currentLocation\sdl2-dev"
-          
-          echo "::set-env name=GYP_DEFINES::ffmpeg-root=`"${ffmpegDevRoot}`" sdl2-root=`"${sdl2DevRoot}`""
-          echo "::set-env name=INCLUDE::${ffmpegDevRoot}\include;${sdl2DevRoot}\include"
-          echo "::set-env name=LIB::${ffmpegDevRoot}\lib;${sdl2DevRoot}\lib\x64"
+
+          echo "{GYP_DEFINES}={ffmpeg-root=`"${ffmpegDevRoot}`" sdl2-root=`"${sdl2DevRoot}`"}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "{INCLUDE}={${ffmpegDevRoot}\include;${sdl2DevRoot}\include}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "{LIB}={${ffmpegDevRoot}\lib;${sdl2DevRoot}\lib\x64}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         if: matrix.os == 'windows-latest'
 
       - name: Build nodepat
