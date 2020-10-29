@@ -22,7 +22,7 @@ play back audio.
 
 ### Ubuntu
 ```bash
-sudo apt install build-essential libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
+sudo apt install build-essential cmake libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev ninja-build
 ```
 
 ### Mac OS

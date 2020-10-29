@@ -52,7 +52,7 @@ jobs:
           brew cask install blackhole
           brew install ffmpeg pkg-config sdl2
         if: matrix.os == 'macos-latest'
-      
+
       - name: Setup Prerequisites (Windows)
         run: |
           Function InstallWebZip($URL, $FolderName) {
@@ -63,16 +63,16 @@ jobs:
             rm "${FolderName}.zip"
           }
 
-          InstallWebZip https://ffmpeg.zeranoe.com/builds/win64/dev/ffmpeg-4.2.2-win64-dev.zip "ffmpeg-dev"
+          InstallWebZip https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2020-10-28-12-36/ffmpeg-N-99760-g81d4b8fb3c-win64-lgpl-shared.zip "ffmpeg-dev"
           InstallWebZip https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip "sdl2-dev"
 
           $currentLocation =(Get-Location).toString()
           $ffmpegDevRoot = "$currentLocation\ffmpeg-dev"
           $sdl2DevRoot = "$currentLocation\sdl2-dev"
-          
-          echo "::set-env name=GYP_DEFINES::ffmpeg-root=`"${ffmpegDevRoot}`" sdl2-root=`"${sdl2DevRoot}`""
-          echo "::set-env name=INCLUDE::${ffmpegDevRoot}\include;${sdl2DevRoot}\include"
-          echo "::set-env name=LIB::${ffmpegDevRoot}\lib;${sdl2DevRoot}\lib\x64"
+
+          echo "GYP_DEFINES=ffmpeg-root=`"${ffmpegDevRoot}`" sdl2-root=`"${sdl2DevRoot}`"" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "INCLUDE=${ffmpegDevRoot}\include;${sdl2DevRoot}\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "LIB=${ffmpegDevRoot}\lib;${sdl2DevRoot}\lib\x64" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         if: matrix.os == 'windows-latest'
 
       - name: Build nodepat
