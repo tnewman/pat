@@ -11,4 +11,11 @@ fn main() {
         .file("src/libpat/libpat/src/pat_ring_buffer.c")
         .file("src/libpat/libpat/src/pat.c")
         .compile("pat");
+
+    println!("cargo:rustc-link-lib=dylib=avcodec");
+    println!("cargo:rustc-link-lib=dylib=avdevice");
+    println!("cargo:rustc-link-lib=dylib=avformat");
+    println!("cargo:rustc-link-lib=dylib=avutil");
+    println!("cargo:rustc-link-lib=dylib=swresample");
+    println!("cargo:rustc-link-lib=dylib=SDL2");
 }
