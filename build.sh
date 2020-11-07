@@ -25,3 +25,8 @@ pipenv run py.test
 pipenv run python setup.py sdist
 cd ..
 
+echo "Building rustpat"
+cd rustpat
+cargo build
+cargo test
+cd ..

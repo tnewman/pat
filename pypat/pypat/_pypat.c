@@ -3,8 +3,6 @@
 #include <pat/pat_error.h>
 #include <Python.h>
 
-static PAT* pat;
-
 static PyObject* _pypat_status_to_py_result(PATError status) {
   if(status != PAT_SUCCESS) {
     PyErr_SetString(PyExc_Exception, pat_error_to_string(status));
@@ -12,10 +10,6 @@ static PyObject* _pypat_status_to_py_result(PATError status) {
   }
 
   Py_RETURN_NONE;
-}
-
-static void _pypat_cleanup(void) {
-  pat_close(pat);
 }
 
 static PyObject* _pypat_play(PyObject* self, PyObject* args) {
@@ -28,7 +22,7 @@ static PyObject* _pypat_play(PyObject* self, PyObject* args) {
   PATError status;
 
   Py_BEGIN_ALLOW_THREADS
-  status = pat_play(pat, audio_path);
+  status = pat_play(audio_path);
   Py_END_ALLOW_THREADS
 
   return _pypat_status_to_py_result(status);
@@ -38,7 +32,7 @@ static PyObject* _pypat_skip(PyObject* self, PyObject* args) {
   PATError status;
 
   Py_BEGIN_ALLOW_THREADS
-  status = pat_skip(pat);
+  status = pat_skip();
   Py_END_ALLOW_THREADS
 
   return _pypat_status_to_py_result(status);
@@ -48,7 +42,7 @@ static PyObject* _pypat_pause(PyObject* self, PyObject* args) {
   PATError status;
 
   Py_BEGIN_ALLOW_THREADS
-  status = pat_pause(pat);
+  status = pat_pause();
   Py_END_ALLOW_THREADS
 
   return _pypat_status_to_py_result(status);
@@ -58,7 +52,7 @@ static PyObject* _pypat_resume(PyObject* self, PyObject* args) {
   PATError status;
 
   Py_BEGIN_ALLOW_THREADS
-  status = pat_resume(pat);
+  status = pat_resume();
   Py_END_ALLOW_THREADS
 
   return _pypat_status_to_py_result(status);
@@ -81,14 +75,12 @@ static struct PyModuleDef patmodule = {
 };
 
 PyMODINIT_FUNC PyInit__pypat(void) {
-  PATError status = pat_open(&pat);
+  PATError status = pat_init();
 
   if(status != PAT_SUCCESS) {
     PyErr_SetString(PyExc_Exception, pat_error_to_string(status));
     return NULL;
   }
-
-  Py_AtExit(_pypat_cleanup);
 
   return PyModule_Create(&patmodule);
 }
