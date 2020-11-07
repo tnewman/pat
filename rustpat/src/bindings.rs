@@ -14,29 +14,21 @@ pub type PATError = ::std::os::raw::c_uint;
 extern "C" {
     pub fn pat_error_to_string(error: PATError) -> *mut ::std::os::raw::c_char;
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct PAT {
-    _unused: [u8; 0],
-}
 pub type pat_finished_finished_cb_t = ::std::option::Option<
     unsafe extern "C" fn(status: PATError, data: *mut ::std::os::raw::c_void),
 >;
 extern "C" {
-    pub fn pat_open(pat_out: *mut *mut PAT) -> PATError;
+    pub fn pat_init() -> PATError;
 }
 extern "C" {
-    pub fn pat_play(pat: *const PAT, pat_audio_path: *const ::std::os::raw::c_char) -> PATError;
+    pub fn pat_play(pat_audio_path: *const ::std::os::raw::c_char) -> PATError;
 }
 extern "C" {
-    pub fn pat_skip(pat: *const PAT) -> PATError;
+    pub fn pat_skip() -> PATError;
 }
 extern "C" {
-    pub fn pat_pause(pat: *const PAT) -> PATError;
+    pub fn pat_pause() -> PATError;
 }
 extern "C" {
-    pub fn pat_resume(pat: *const PAT) -> PATError;
-}
-extern "C" {
-    pub fn pat_close(pat: *mut PAT);
+    pub fn pat_resume() -> PATError;
 }

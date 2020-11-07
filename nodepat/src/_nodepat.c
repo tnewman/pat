@@ -23,8 +23,6 @@ typedef struct _PATPlayData {
 static napi_status napi_set_named_function(napi_env env, napi_value exports, char* function_name, napi_callback function,
     void* data);
 
-static void _nodepat_close(void* args);
-
 static napi_value _nodepat_play(napi_env env, napi_callback_info info);
 
 static napi_value _nodepat_skip(napi_env env, napi_callback_info info);
@@ -39,10 +37,8 @@ static void _nodepat_execute(napi_env env, void* data);
 
 static void _nodepat_complete(napi_env env, napi_status status, void* data);
 
-static PAT* pat;
-
 napi_value Init(const napi_env env, const napi_value exports) {
-    PATError pat_status = pat_open(&pat);
+    PATError pat_status = pat_init();
 
     if (pat_status != PAT_SUCCESS) {
         napi_value error;
@@ -78,10 +74,6 @@ napi_value Init(const napi_env env, const napi_value exports) {
         return NULL;
     }
 
-    if (napi_add_env_cleanup_hook(env, _nodepat_close, NULL) != napi_ok) {
-        return NULL;
-    }
-
     return exports;
 }
 
@@ -100,10 +92,6 @@ static napi_status napi_set_named_function(napi_env env, napi_value exports, cha
     }
 
     return napi_set_named_property(env, exports, function_name, callback);
-}
-
-static void _nodepat_close(void* args) {
-    pat_close(pat);
 }
 
 static napi_value _nodepat_play(napi_env env, napi_callback_info info) {
@@ -217,16 +205,16 @@ static void _nodepat_execute(napi_env env, void* data) {
 
     switch (pat_play_data->task) {
         case PAT_PLAY:
-            pat_play_data->status = pat_play(pat, (char*) pat_play_data->data);
+            pat_play_data->status = pat_play((char*) pat_play_data->data);
             break;
         case PAT_SKIP:
-            pat_play_data->status = pat_skip(pat);
+            pat_play_data->status = pat_skip();
             break;
         case PAT_PAUSE:
-            pat_play_data->status = pat_pause(pat);
+            pat_play_data->status = pat_pause();
             break;
         case PAT_RESUME:
-            pat_play_data->status = pat_resume(pat);
+            pat_play_data->status = pat_resume();
             break;
         default:
             pat_play_data->status = PAT_UNKNOWN_ERROR;

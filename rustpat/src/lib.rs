@@ -1,28 +1,32 @@
 use std::ffi::CString;
-use std::ptr::null_mut;
+use std::sync::Once;
 
 #[allow(dead_code)]
 #[allow(non_camel_case_types)]
 #[allow(non_upper_case_globals)]
 mod bindings;
 
-pub struct PAT {
-    pat_ptr: *mut bindings::PAT,
-}
+pub struct PAT {}
+
+static INIT: Once = Once::new();
+static mut INIT_RESULT: Result<(), PATError> = Err(PATError::UnknownError);
 
 impl PAT {
     pub fn new() -> Result<PAT, PATError> {
-        let mut pat_ptr: *mut bindings::PAT = null_mut();
-
-        let result;
-
         unsafe {
-            result = PATError::from_pat_result(bindings::pat_open(&mut pat_ptr));
-        }
+            INIT.call_once(|| {
+                let result = PATError::from_pat_result(bindings::pat_init());
+    
+                match result {
+                    Ok(_) => INIT_RESULT = Ok(()),
+                    Err(error) => INIT_RESULT = Err(error)
+                }
+            });
 
-        match result {
-            Ok(_) => Ok(PAT { pat_ptr }),
-            Err(error) => Err(error),
+            match INIT_RESULT {
+                Ok(_) => Ok(PAT {}),
+                Err(error) => Err(error.clone())
+            }
         }
     }
 
@@ -35,7 +39,7 @@ impl PAT {
         let result;
 
         unsafe {
-            result = bindings::pat_play(self.pat_ptr, pat_audio_path.as_ptr());
+            result = bindings::pat_play(pat_audio_path.as_ptr());
         }
 
         PATError::from_pat_result(result)
@@ -45,7 +49,7 @@ impl PAT {
         let result;
 
         unsafe {
-            result = bindings::pat_skip(self.pat_ptr);
+            result = bindings::pat_skip();
         }
 
         PATError::from_pat_result(result)
@@ -55,7 +59,7 @@ impl PAT {
         let result;
 
         unsafe {
-            result = bindings::pat_pause(self.pat_ptr);
+            result = bindings::pat_pause();
         }
 
         PATError::from_pat_result(result)
@@ -65,7 +69,7 @@ impl PAT {
         let result;
 
         unsafe {
-            result = bindings::pat_resume(self.pat_ptr);
+            result = bindings::pat_resume();
         }
 
         PATError::from_pat_result(result)
@@ -101,14 +105,3 @@ impl PATError {
         }
     }
 }
-
-impl Drop for PAT {
-    fn drop(&mut self) {
-        unsafe {
-            bindings::pat_close(self.pat_ptr);
-        }
-    }
-}
-
-unsafe impl Send for PAT {}
-unsafe impl Sync for PAT {}

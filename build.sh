@@ -28,4 +28,5 @@ cd ..
 echo "Building rustpat"
 cd rustpat
 cargo build
+cargo test
 cd ..

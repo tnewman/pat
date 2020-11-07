@@ -9,10 +9,7 @@ int main(int argc, char** argv) {
 		return PAT_FILE_OPEN_ERROR;
 	}
 
-    PATError status;
-    PAT* pat;
-
-    status = pat_open(&pat);
+    PATError status = pat_init();
 
     if(status != PAT_SUCCESS) {
         const char* error_string = pat_error_to_string(status);
@@ -20,14 +17,12 @@ int main(int argc, char** argv) {
         return status;
     }
 
-    status = pat_play(pat, argv[1]);
+    status = pat_play(argv[1]);
 
     if(status != PAT_SUCCESS) {
         const char* error_string = pat_error_to_string(status);
         printf("%s\n", error_string);
     }
-
-    pat_close(pat);
 
     return status;
 }

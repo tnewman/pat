@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     PATError status;
     PAT* pat;
 
-    status = pat_open(&pat);
+    status = pat_init();
 
     if(status != PAT_SUCCESS) {
         const char* error_string = pat_error_to_string(status);
@@ -45,8 +45,6 @@ int main(int argc, char** argv) {
         const char* error_string = pat_error_to_string(status);
         printf("%s\n", error_string);
     }
-
-    pat_close(pat);
 
     return status;
 }
