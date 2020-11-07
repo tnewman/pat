@@ -78,9 +78,6 @@ jobs:
           echo "GYP_DEFINES=ffmpeg-root=`"${ffmpegDevRoot}`" sdl2-root=`"${sdl2DevRoot}`"" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "INCLUDE=${ffmpegDevRoot}\include;${sdl2DevRoot}\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "LIB=${ffmpegDevRoot}\lib;${sdl2DevRoot}\lib\x64" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-          echo "${ffmpegDevRoot}\lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          echo "${sdl2DevRoot}\lib\x64" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         if: matrix.os == 'windows-latest'
 
       - name: Build nodepat
@@ -121,6 +118,8 @@ jobs:
         working-directory: rustpat
         run: |
           cargo test --release
+        if: matrix.os != 'windows-latest'
+        # Windows does not support a NULL audio sink
       
       - name: Copying Artifacts
         run: |
