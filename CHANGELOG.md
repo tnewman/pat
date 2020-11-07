@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.0] - TBD
 - Added `rustpat` Rust wrapper
+- Replaced `pat_open` with `pat_init` in `libpat`
+- Removed `PAT` struct from `libpat`
 
 ## [0.4.1] - 2020-10-28
 ### Changed
