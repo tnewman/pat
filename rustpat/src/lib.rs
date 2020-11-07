@@ -1,9 +1,10 @@
+use std::ffi::CString;
+use std::ptr::null_mut;
+
 #[allow(dead_code)]
 #[allow(non_camel_case_types)]
 #[allow(non_upper_case_globals)]
 mod bindings;
-
-use std::ffi::CString;
 
 pub struct PAT {
     pat_ptr: *mut bindings::PAT,
@@ -11,12 +12,12 @@ pub struct PAT {
 
 impl PAT {
     pub fn new() -> Result<PAT, PATError> {
-        let mut pat_ptr: *mut bindings::PAT = std::ptr::null_mut();
+        let mut pat_ptr: *mut bindings::PAT = null_mut();
 
         let result;
 
         unsafe {
-            result = PAT::from_pat_result(bindings::pat_open(&mut pat_ptr));
+            result = PATError::from_pat_result(bindings::pat_open(&mut pat_ptr));
         }
 
         match result {
@@ -37,7 +38,7 @@ impl PAT {
             result = bindings::pat_play(self.pat_ptr, pat_audio_path.as_ptr());
         }
 
-        PAT::from_pat_result(result)
+        PATError::from_pat_result(result)
     }
 
     pub fn skip(&self) -> Result<(), PATError> {
@@ -47,7 +48,7 @@ impl PAT {
             result = bindings::pat_skip(self.pat_ptr);
         }
 
-        PAT::from_pat_result(result)
+        PATError::from_pat_result(result)
     }
 
     pub fn pause(&self) -> Result<(), PATError> {
@@ -57,7 +58,7 @@ impl PAT {
             result = bindings::pat_pause(self.pat_ptr);
         }
 
-        PAT::from_pat_result(result)
+        PATError::from_pat_result(result)
     }
 
     pub fn resume(&self) -> Result<(), PATError> {
@@ -67,7 +68,7 @@ impl PAT {
             result = bindings::pat_resume(self.pat_ptr);
         }
 
-        PAT::from_pat_result(result)
+        PATError::from_pat_result(result)
     }
 }
 
@@ -84,7 +85,7 @@ pub enum PATError {
     UnknownError,
 }
 
-impl PAT {
+impl PATError {
     fn from_pat_result(pat_result: bindings::PATError) -> Result<(), PATError> {
         match pat_result {
             bindings::PATError_PAT_SUCCESS => Ok(()),
@@ -111,13 +112,3 @@ impl Drop for PAT {
 
 unsafe impl Send for PAT {}
 unsafe impl Sync for PAT {}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let _pat = crate::PAT::new();
-
-        std::thread::spawn(move || {});
-    }
-}
