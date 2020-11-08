@@ -62,6 +62,7 @@ jobs:
       working-directory: libpat
       run: |
         mkdir build
+        cd build
         cmake ..
         cmake --build .
       if: matrix.language == 'cpp' 
