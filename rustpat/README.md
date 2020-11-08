@@ -13,7 +13,7 @@ fn main() {
     let pat = rustpat::PAT::new().unwrap();
 
     // Play a file
-    pat.play('amerika.mpga').unwrap();
+    pat.play("amerika.mpga").unwrap();
 
     // Skip the current file
     pat.skip().unwrap();
