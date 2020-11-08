@@ -168,7 +168,10 @@ jobs:
           python-version: '3.x'
 
       - name: Setup Prerequisites
-        run: pip install twine
+        run: |
+          pip install twine
+          sudo apt-get update
+          sudo apt-get install libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
 
       - name: Check Version
         run: |
