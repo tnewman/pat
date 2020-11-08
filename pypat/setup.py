@@ -57,7 +57,7 @@ pkg_resources.safe_version = lambda v: v
 setup(
     name='pypat',
     packages=['pypat'],
-    version='0.4.1',
+    version='0.5.0a1',
     author='Thomas Newman',
     author_email='tnewman@users.noreply.github.com',
     description='A Python library that makes playing audio simple.',
