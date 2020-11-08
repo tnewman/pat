@@ -180,13 +180,13 @@ jobs:
           RUSTPAT_VERSION=$(awk -F ' = ' '$1 ~ /version/ { gsub(/[\"]/, "", $2); printf("%s",$2) }' rustpat/Cargo.toml)
 
           if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]] || \
-            [[ "$SEMANTIC_VERSION" != "$RUSTPAT_VERSION"]]; then
-            echo "Mismatch between tag version and package versions."
-            echo "tag version: $SEMANTIC_VERSION"
-            echo "nodepat version: $NODEPAT_VERSION"
-            echo "pypat version: $PYPAT_VERSION"
-            echo "rustpat version: $RUSTPAT_VERSION"
-            exit 1
+                  [[ "$SEMANTIC_VERSION" != "$RUSTPAT_VERSION" ]]; then
+              echo "Mismatch between tag version and package versions."
+              echo "tag version: $SEMANTIC_VERSION"
+              echo "nodepat version: $NODEPAT_VERSION"
+              echo "pypat version: $PYPAT_VERSION"
+              echo "rustpat version: $RUSTPAT_VERSION"
+              exit 1
           fi
 
       - name: NPM Publish
