@@ -1,6 +1,6 @@
 #include "pat/pat_error.h"
 #include "pat_decode.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <stdlib.h>
 
 static PATError pat_open_audio_decoder(PATDecoder** pat_decoder_out, PATAudioDevice* pat_audio_device,
