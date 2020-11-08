@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.1] - 2020-11-08
 - Fixed memory leak in audio decoder
-- Run CI jobs on Ubuntu 16.04
+- Run CI jobs on Ubuntu 18.04 and Ubuntu Latest
 
 ## [0.5.0] - 2020-11-07
 - Added `rustpat` Rust wrapper
