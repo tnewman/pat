@@ -177,7 +177,7 @@ jobs:
 
           NODEPAT_VERSION=$(node -p -e "require('./nodepat/package.json').version")
           PYPAT_VERSION=$(python pypat/setup.py --version)
-          RUSTPAT_VERSION=$(awk -F ' = ' '$1 ~ /version/ { gsub(/[\"]/, "", $2); printf("%s",$2) }' rustpat/Cargo.toml)
+          RUSTPAT_VERSION=$(awk -F ' = ' '$1 ~ /version/ { gsub(/[\"]/, "", $2); printf("%s",$2) }' rustpat/Cargo.toml.orig)
 
           if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]] || \
                   [[ "$SEMANTIC_VERSION" != "$RUSTPAT_VERSION" ]]; then
