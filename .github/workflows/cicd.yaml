@@ -127,7 +127,7 @@ jobs:
           mkdir artifacts
           cp nodepat/nodepat-*.tgz artifacts
           cp pypat/dist/pypat-*.tar.gz artifacts
-          cp rustpat/target/package/rustpat-*.crate
+          cp rustpat/target/package/rustpat-*.crate artifacts
         if: matrix.os == 'ubuntu-latest'
       
       - name: Uploading Artifacts
