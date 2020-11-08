@@ -127,6 +127,7 @@ jobs:
           mkdir artifacts
           cp nodepat/nodepat-*.tgz artifacts
           cp pypat/dist/pypat-*.tar.gz artifacts
+          cp rustpat/target/package/rustpat-*.crate
         if: matrix.os == 'ubuntu-latest'
       
       - name: Uploading Artifacts
@@ -150,8 +151,10 @@ jobs:
         run: |
           tar -xzf artifacts/nodepat-*.tgz
           tar -xzf artifacts/pypat-*.tar.gz
+          tar -xzf artifacts/rustpat-*.crate
           mv package nodepat
           mv pypat-* pypat
+          mv rustpat-* rustpat
       
       - name: Install NodeJS
         uses: actions/setup-node@v1
@@ -177,7 +180,7 @@ jobs:
           RUSTPAT_VERSION=$(awk -F ' = ' '$1 ~ /version/ { gsub(/[\"]/, "", $2); printf("%s",$2) }' rustpat/Cargo.toml)
 
           if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]] ||
-            [[ "$SEMANTIC_VERSION" != "$RUSTPAT_VErSION"]]; then
+            [[ "$SEMANTIC_VERSION" != "$RUSTPAT_VERSION"]]; then
             echo "Mismatch between tag version and package versions."
             echo "tag version: $SEMANTIC_VERSION"
             echo "nodepat version: $NODEPAT_VERSION"
