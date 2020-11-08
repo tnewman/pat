@@ -1,6 +1,6 @@
 {
   "name": "nodepat",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A NodeJS library that makes playing audio simple.",
   "main": "./dist/nodepat.js",
   "types": "./dist/nodepat.d.ts",
