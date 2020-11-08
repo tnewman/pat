@@ -14,6 +14,7 @@ play back audio.
 - [C/C++ (libpat)](libpat/README.md)
 - [NodeJS (nodepat)](nodepat/README.md)
 - [Python (pypat)](pypat/README.md)
+- [Rust (rustpat)](rustpat/README.md)
 
 ## Prerequisites
 - [FFmpeg](https://www.ffmpeg.org/download.html)
