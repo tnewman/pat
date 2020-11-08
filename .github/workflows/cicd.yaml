@@ -127,6 +127,7 @@ jobs:
           mkdir artifacts
           cp nodepat/nodepat-*.tgz artifacts
           cp pypat/dist/pypat-*.tar.gz artifacts
+          cp rustpat/target/package/rustpat-*.crate artifacts
         if: matrix.os == 'ubuntu-latest'
       
       - name: Uploading Artifacts
@@ -150,8 +151,10 @@ jobs:
         run: |
           tar -xzf artifacts/nodepat-*.tgz
           tar -xzf artifacts/pypat-*.tar.gz
+          tar -xzf artifacts/rustpat-*.crate
           mv package nodepat
           mv pypat-* pypat
+          mv rustpat-* rustpat
       
       - name: Install NodeJS
         uses: actions/setup-node@v1
@@ -165,7 +168,10 @@ jobs:
           python-version: '3.x'
 
       - name: Setup Prerequisites
-        run: pip install twine
+        run: |
+          pip install twine
+          sudo apt-get update
+          sudo apt-get install libavutil-dev libswresample-dev libavdevice-dev libavcodec-dev libavformat-dev libswscale-dev libsdl2-dev
 
       - name: Check Version
         run: |
@@ -174,16 +180,16 @@ jobs:
 
           NODEPAT_VERSION=$(node -p -e "require('./nodepat/package.json').version")
           PYPAT_VERSION=$(python pypat/setup.py --version)
-          RUSTPAT_VERSION=$(awk -F ' = ' '$1 ~ /version/ { gsub(/[\"]/, "", $2); printf("%s",$2) }' rustpat/Cargo.toml)
+          RUSTPAT_VERSION=$(awk -F ' = ' '$1 ~ /version/ { gsub(/[\"]/, "", $2); printf("%s",$2) }' rustpat/Cargo.toml.orig)
 
-          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]] ||
-            [[ "$SEMANTIC_VERSION" != "$RUSTPAT_VErSION"]]; then
-            echo "Mismatch between tag version and package versions."
-            echo "tag version: $SEMANTIC_VERSION"
-            echo "nodepat version: $NODEPAT_VERSION"
-            echo "pypat version: $PYPAT_VERSION"
-            echo "rustpat version: $RUSTPAT_VERSION"
-            exit 1
+          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]] || \
+                  [[ "$SEMANTIC_VERSION" != "$RUSTPAT_VERSION" ]]; then
+              echo "Mismatch between tag version and package versions."
+              echo "tag version: $SEMANTIC_VERSION"
+              echo "nodepat version: $NODEPAT_VERSION"
+              echo "pypat version: $PYPAT_VERSION"
+              echo "rustpat version: $RUSTPAT_VERSION"
+              exit 1
           fi
 
       - name: NPM Publish
