@@ -1,4 +1,6 @@
 # libpat
+![cicd](https://github.com/tnewman/pat/workflows/PAT%20CI/CD/badge.svg)
+
 libpat is a C library that makes playing audio simple. libpat uses FFmpeg to provide 
 robust support for virtually any audio format and SDL2 to play back audio.
 

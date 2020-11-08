@@ -1,4 +1,7 @@
 # pypat
+[![pypi](https://img.shields.io/pypi/v/pypat.svg)](https://pypi.org/project/pypat)
+![cicd](https://github.com/tnewman/pat/workflows/PAT%20CI/CD/badge.svg)
+
 pypat is a Python library that makes playing audio simple. pypat uses FFmpeg to provide 
 robust support for virtually any audio format and SDL2 to play back audio.
 

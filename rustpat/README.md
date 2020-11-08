@@ -1,4 +1,7 @@
 # rustpat
+[![crates.io](https://img.shields.io/crates/v/rustpat.svg)](https://crates.io/crates/rustpat)
+![cicd](https://github.com/tnewman/pat/workflows/PAT%20CI/CD/badge.svg)
+
 rustpat is a Rust library that makes playing audio simple. rustpat uses FFmpeg to provide 
 robust support for virtually any audio format and SDL2 to play back audio.
 

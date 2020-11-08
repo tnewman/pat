@@ -1,4 +1,7 @@
 # nodepat
+[![npm](https://img.shields.io/npm/v/nodepat.svg)](https://www.npmjs.com/package/nodepat)
+![cicd](https://github.com/tnewman/pat/workflows/PAT%20CI/CD/badge.svg)
+
 nodepat is a NodeJS library that makes playing audio simple. nodepat uses FFmpeg to provide 
 robust support for virtually any audio format and SDL2 to play back audio.
 
