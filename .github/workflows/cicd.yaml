@@ -113,6 +113,7 @@ jobs:
         working-directory: rustpat
         run: |
           cargo build --release
+          cargo package
 
       - name: Test rustpat
         working-directory: rustpat
@@ -173,12 +174,15 @@ jobs:
 
           NODEPAT_VERSION=$(node -p -e "require('./nodepat/package.json').version")
           PYPAT_VERSION=$(python pypat/setup.py --version)
+          RUSTPAT_VERSION=$(awk -F ' = ' '$1 ~ /version/ { gsub(/[\"]/, "", $2); printf("%s",$2) }' rustpat/Cargo.toml)
 
-          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]]; then
+          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]] ||
+            [[ "$SEMANTIC_VERSION" != "$RUSTPAT_VErSION"]]; then
             echo "Mismatch between tag version and package versions."
             echo "tag version: $SEMANTIC_VERSION"
             echo "nodepat version: $NODEPAT_VERSION"
             echo "pypat version: $PYPAT_VERSION"
+            echo "rustpat version: $RUSTPAT_VERSION"
             exit 1
           fi
 
@@ -202,3 +206,9 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets. PYPI_TOKEN }}
+      
+      - name: crates.io Publish
+        working-directory: rustpat
+        run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets. CARGO_REGISTRY_TOKEN }}
