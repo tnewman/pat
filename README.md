@@ -1,4 +1,7 @@
 # PAT (PAT Audio Technician)
+[![crates.io](https://img.shields.io/crates/v/rustpat.svg)](https://crates.io/crates/rustpat)
+[![npm](https://img.shields.io/npm/v/nodepat.svg)](https://www.npmjs.com/package/nodepat)
+[![pypi](https://img.shields.io/pypi/v/pypat.svg)](https://pypi.org/project/pypat)
 ![PAT CI/CD](https://github.com/tnewman/pat/workflows/PAT%20CI/CD/badge.svg)
 
 PAT is a multi-programming language audio library that makes playing audio simple. Behind the 
