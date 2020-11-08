@@ -4,7 +4,6 @@ robust support for virtually any audio format and SDL2 to play back audio.
 
 ## Prerequisites
 Install [Prerequisites](https://github.com/tnewman/pat#Prerequisites) before installing.
-```
 
 ## Example
 ```rust
