@@ -179,7 +179,7 @@ jobs:
           PYPAT_VERSION=$(python pypat/setup.py --version)
           RUSTPAT_VERSION=$(awk -F ' = ' '$1 ~ /version/ { gsub(/[\"]/, "", $2); printf("%s",$2) }' rustpat/Cargo.toml)
 
-          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]] ||
+          if [[ "$SEMANTIC_VERSION" != "$NODEPAT_VERSION" ]] || [[ "$SEMANTIC_VERSION" != "$PYPAT_VERSION" ]] || \
             [[ "$SEMANTIC_VERSION" != "$RUSTPAT_VERSION"]]; then
             echo "Mismatch between tag version and package versions."
             echo "tag version: $SEMANTIC_VERSION"
