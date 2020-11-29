@@ -6,12 +6,20 @@ use std::sync::Once;
 #[allow(non_upper_case_globals)]
 mod bindings;
 
+/// PAT Audio Technician (PAT)
 pub struct PAT {}
 
 static INIT: Once = Once::new();
 static mut INIT_RESULT: Result<(), PATError> = Err(PATError::UnknownError);
 
 impl PAT {
+
+    /// Creates a new PAT instance and initializes PAT if it has already been initialized.
+    /// 
+    /// # Examples
+    /// ```
+    /// rustpat::PAT::new().unwrap();
+    /// ```
     pub fn new() -> Result<PAT, PATError> {
         unsafe {
             INIT.call_once(|| {
@@ -30,6 +38,16 @@ impl PAT {
         }
     }
 
+    /// Play an audio file.
+    /// 
+    /// The audio file can be a local file or remote file (http:// or https://).
+    /// 
+    /// # Examples
+    /// ```
+    /// let pat = rustpat::PAT::new().unwrap();
+    /// let test_audio = format!("{}/src/libpat/test/test.ogg", env!("CARGO_MANIFEST_DIR"));
+    /// pat.play(&test_audio).unwrap();
+    /// ```
     pub fn play(&self, pat_audio_path: &str) -> Result<(), PATError> {
         let pat_audio_path = match CString::new(pat_audio_path) {
             Ok(pat_audio_path) => pat_audio_path,
@@ -45,6 +63,15 @@ impl PAT {
         PATError::from_pat_result(result)
     }
 
+    /// Skip playback of the current audio file.
+    /// 
+    /// This method does nothing if there is not an audio file playing.
+    /// 
+    /// # Examples
+    /// ```
+    /// let pat = rustpat::PAT::new().unwrap();
+    /// pat.skip().unwrap();
+    /// ```
     pub fn skip(&self) -> Result<(), PATError> {
         let result;
 
@@ -55,6 +82,15 @@ impl PAT {
         PATError::from_pat_result(result)
     }
 
+    /// Pause audio playback.
+    /// 
+    /// This method does nothing if audio playback is already paused.
+    /// 
+    /// # Examples
+    /// ```
+    /// let pat = rustpat::PAT::new().unwrap();
+    /// pat.pause().unwrap();
+    /// ```
     pub fn pause(&self) -> Result<(), PATError> {
         let result;
 
@@ -65,6 +101,15 @@ impl PAT {
         PATError::from_pat_result(result)
     }
 
+    /// Resume audio playback.
+    /// 
+    /// This method does nothing if audio playback is already resumed.
+    /// 
+    /// # Examples
+    /// ```
+    /// let pat = rustpat::PAT::new().unwrap();
+    /// pat.resume().unwrap();
+    /// ```
     pub fn resume(&self) -> Result<(), PATError> {
         let result;
 
