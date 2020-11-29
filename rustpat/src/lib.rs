@@ -13,9 +13,8 @@ static INIT: Once = Once::new();
 static mut INIT_RESULT: Result<(), PATError> = Err(PATError::UnknownError);
 
 impl PAT {
-
     /// Creates a new PAT instance and initializes PAT if it has already been initialized.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// rustpat::PAT::new().unwrap();
@@ -24,24 +23,24 @@ impl PAT {
         unsafe {
             INIT.call_once(|| {
                 let result = PATError::from_pat_result(bindings::pat_init());
-    
+
                 match result {
                     Ok(_) => INIT_RESULT = Ok(()),
-                    Err(error) => INIT_RESULT = Err(error)
+                    Err(error) => INIT_RESULT = Err(error),
                 }
             });
 
             match INIT_RESULT {
                 Ok(_) => Ok(PAT {}),
-                Err(error) => Err(error.clone())
+                Err(error) => Err(error),
             }
         }
     }
 
     /// Play an audio file.
-    /// 
+    ///
     /// The audio file can be a local file or remote file (http:// or https://).
-    /// 
+    ///
     /// # Examples
     /// ```
     /// let pat = rustpat::PAT::new().unwrap();
@@ -64,9 +63,9 @@ impl PAT {
     }
 
     /// Skip playback of the current audio file.
-    /// 
+    ///
     /// This method does nothing if there is not an audio file playing.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// let pat = rustpat::PAT::new().unwrap();
@@ -83,9 +82,9 @@ impl PAT {
     }
 
     /// Pause audio playback.
-    /// 
+    ///
     /// This method does nothing if audio playback is already paused.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// let pat = rustpat::PAT::new().unwrap();
@@ -102,9 +101,9 @@ impl PAT {
     }
 
     /// Resume audio playback.
-    /// 
+    ///
     /// This method does nothing if audio playback is already resumed.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// let pat = rustpat::PAT::new().unwrap();
