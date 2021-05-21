@@ -74,8 +74,8 @@ jobs:
             rm "${FolderName}.zip"
           }
 
-          InstallWebZip https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2020-11-29-12-31/ffmpeg-N-100102-gf194cedfe6-win64-lgpl-shared.zip "ffmpeg-dev"
-          InstallWebZip https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip "sdl2-dev"
+          InstallWebZip https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2021-05-19-12-40/ffmpeg-N-102564-g2261cc6d8a-win64-lgpl-shared.zip "ffmpeg-dev"
+          InstallWebZip https://www.libsdl.org/release/SDL2-devel-2.0.14-VC.zip "sdl2-dev"
 
           $currentLocation =(Get-Location).toString()
           $ffmpegDevRoot = "$currentLocation\ffmpeg-dev"
