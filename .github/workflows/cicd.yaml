@@ -60,7 +60,7 @@ jobs:
 
       - name: Setup Prerequisites (Mac OS)
         run: |
-          brew install --cask blackhole
+          brew install --cask blackhole-16ch
           brew install ffmpeg pkg-config sdl2
         if: matrix.os == 'macos-latest'
 
