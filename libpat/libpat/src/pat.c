@@ -2,18 +2,24 @@
 #include "pat/pat_error.h"
 #include "pat_audio_device.h"
 #include "pat_decode.h"
+#include <libavformat/version.h>
 #include <stdlib.h>
 
 static void pat_close();
 
 PATAudioDevice* pat_audio_device = NULL;
 
+#define FFMPEG_4_AVFORMAT_VERSION 58
+
 PATError pat_init() {
     PATError status;
 
     // Required for older versions of FFmpeg, such as the one bundled with 
     // Ubuntu 18.04.
+    #if LIBAVFORMAT_VERSION_MAJOR < FFMPEG_4_AVFORMAT_VERSION
+    printf("%d", AV_VERSION_MAJOR);
     av_register_all();
+    #endif
 
     pat_init_audio_decoder();
 
