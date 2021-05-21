@@ -17,7 +17,6 @@ PATError pat_init() {
     // Required for older versions of FFmpeg, such as the one bundled with 
     // Ubuntu 18.04.
     #if LIBAVFORMAT_VERSION_MAJOR < FFMPEG_4_AVFORMAT_VERSION
-    printf("%d", AV_VERSION_MAJOR);
     av_register_all();
     #endif
 
