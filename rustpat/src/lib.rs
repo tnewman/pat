@@ -1,16 +1,14 @@
-use std::ffi::CString;
-use std::sync::Once;
+use std::{sync::mpsc::sync_channel, thread, time::Duration};
 
-#[allow(dead_code)]
-#[allow(non_camel_case_types)]
-#[allow(non_upper_case_globals)]
-mod bindings;
+use glib::{Continue, MainLoop, ObjectExt};
+use gstreamer::{Element, State, traits::ElementExt};
+
 
 /// PAT Audio Technician (PAT)
-pub struct PAT {}
-
-static INIT: Once = Once::new();
-static mut INIT_RESULT: Result<(), PATError> = Err(PATError::UnknownError);
+pub struct PAT {
+    main_loop: MainLoop,
+    playbin: Element,
+}
 
 impl PAT {
     /// Creates a new PAT instance and initializes PAT if it has already been initialized.
@@ -20,21 +18,18 @@ impl PAT {
     /// rustpat::PAT::new().unwrap();
     /// ```
     pub fn new() -> Result<PAT, PATError> {
-        unsafe {
-            INIT.call_once(|| {
-                let result = PATError::from_pat_result(bindings::pat_init());
+        gstreamer::init().map_err(|_e| PATError::InitializationError)?;
+        let main_loop = glib::MainLoop::new(None, false);
 
-                match result {
-                    Ok(_) => INIT_RESULT = Ok(()),
-                    Err(error) => INIT_RESULT = Err(error),
-                }
-            });
+        let main_loop_clone = main_loop.clone();
+        thread::spawn(move || main_loop_clone.run());
 
-            match INIT_RESULT {
-                Ok(_) => Ok(PAT {}),
-                Err(error) => Err(error),
-            }
-        }
+        let playbin = gstreamer::ElementFactory::make("playbin", Some("playbin")).map_err(|_e| PATError::InitializationError)?;
+        
+        Ok(PAT{
+            main_loop,
+            playbin,
+        })
     }
 
     /// Play an audio file.
@@ -44,22 +39,43 @@ impl PAT {
     /// # Examples
     /// ```
     /// let pat = rustpat::PAT::new().unwrap();
-    /// let test_audio = format!("{}/src/libpat/test/test.ogg", env!("CARGO_MANIFEST_DIR"));
+    /// let test_audio = format!("{}/tests/test.ogg", env!("CARGO_MANIFEST_DIR"));
     /// pat.play(&test_audio).unwrap();
     /// ```
     pub fn play(&self, pat_audio_path: &str) -> Result<(), PATError> {
-        let pat_audio_path = match CString::new(pat_audio_path) {
-            Ok(pat_audio_path) => pat_audio_path,
-            Err(_) => return Err(PATError::UnknownError),
+        let pat_audio_path = match pat_audio_path.contains("://") {
+            true => pat_audio_path.to_string(),
+            false => format!("file://{}", pat_audio_path),
         };
 
-        let result;
+        self.playbin.set_property("uri", pat_audio_path).map_err(|_e| PATError::FileOpenError)?;
 
-        unsafe {
-            result = bindings::pat_play(pat_audio_path.as_ptr());
-        }
+        let bus = self.playbin.bus().unwrap();
 
-        PATError::from_pat_result(result)
+        let (sender, receiver) = sync_channel::<Result<(), PATError>>(1);
+
+        bus.add_watch(move |_bus, message| {
+            match message.view() {
+                gstreamer::MessageView::Eos(_) => {
+                    sender.send(Ok(())).unwrap();
+                    Continue(false)
+                },
+                gstreamer::MessageView::Error(_) => {
+                    sender.send(Err(PATError::DecodeError)).unwrap();
+                    Continue(false)
+                }
+              _ => Continue(true),
+            }
+        }).map_err(|_e| PATError::FileOpenError)?;
+
+        self.playbin.set_state(State::Playing).map_err(|_e| PATError::DecodeError)?;
+
+        let result = match receiver.recv() {
+            Ok(result) => result,
+            Err(_) => Err(PATError::UnknownError),
+        };
+        
+        result
     }
 
     /// Skip playback of the current audio file.
@@ -72,13 +88,7 @@ impl PAT {
     /// pat.skip().unwrap();
     /// ```
     pub fn skip(&self) -> Result<(), PATError> {
-        let result;
-
-        unsafe {
-            result = bindings::pat_skip();
-        }
-
-        PATError::from_pat_result(result)
+        Ok(())
     }
 
     /// Pause audio playback.
@@ -91,13 +101,7 @@ impl PAT {
     /// pat.pause().unwrap();
     /// ```
     pub fn pause(&self) -> Result<(), PATError> {
-        let result;
-
-        unsafe {
-            result = bindings::pat_pause();
-        }
-
-        PATError::from_pat_result(result)
+        Ok(())
     }
 
     /// Resume audio playback.
@@ -110,18 +114,20 @@ impl PAT {
     /// pat.resume().unwrap();
     /// ```
     pub fn resume(&self) -> Result<(), PATError> {
-        let result;
+        Ok(())
+    }
+}
 
-        unsafe {
-            result = bindings::pat_resume();
-        }
-
-        PATError::from_pat_result(result)
+impl Drop for PAT {
+    fn drop(&mut self) {
+        self.playbin.set_state(State::Null).unwrap();
+        self.main_loop.quit();
     }
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum PATError {
+    InitializationError,
     AudioDeviceError,
     DemuxError,
     DecodeError,
@@ -131,21 +137,4 @@ pub enum PATError {
     ResampleError,
     TerminatedError,
     UnknownError,
-}
-
-impl PATError {
-    fn from_pat_result(pat_result: bindings::PATError) -> Result<(), PATError> {
-        match pat_result {
-            bindings::PATError_PAT_SUCCESS => Ok(()),
-            bindings::PATError_PAT_AUDIO_DEVICE_ERROR => Err(PATError::AudioDeviceError),
-            bindings::PATError_PAT_DEMUX_ERROR => Err(PATError::DemuxError),
-            bindings::PATError_PAT_DECODE_ERROR => Err(PATError::DecodeError),
-            bindings::PATError_PAT_FILE_OPEN_ERROR => Err(PATError::FileOpenError),
-            bindings::PATError_PAT_INTERRUPTED_ERROR => Err(PATError::InterruptedError),
-            bindings::PATError_PAT_MEMORY_ERROR => Err(PATError::MemoryError),
-            bindings::PATError_PAT_RESAMPLE_ERROR => Err(PATError::ResampleError),
-            bindings::PATError_PAT_TERMINATED_ERROR => Err(PATError::TerminatedError),
-            _ => Err(PATError::UnknownError),
-        }
-    }
 }

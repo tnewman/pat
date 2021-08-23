@@ -4,7 +4,7 @@ extern crate rustpat;
 fn test_play_audio() {
     let pat = rustpat::PAT::new().unwrap();
 
-    let test_audio = format!("{}/src/libpat/test/test.ogg", env!("CARGO_MANIFEST_DIR"));
+    let test_audio = format!("file://{}/tests/test.ogg", env!("CARGO_MANIFEST_DIR"));
 
     pat.play(&test_audio).unwrap();
 }
