@@ -1,7 +1,7 @@
-use std::{sync::mpsc::sync_channel, thread, time::Duration};
+use std::{sync::mpsc::sync_channel, thread};
 
 use glib::{Continue, MainLoop, ObjectExt};
-use gstreamer::{Element, State, traits::ElementExt};
+use gstreamer::{ClockTime, Element, GenericFormattedValue, SeekFlags, State, format::Percent, prelude::ElementExtManual, traits::ElementExt};
 
 
 /// PAT Audio Technician (PAT)
@@ -26,6 +26,8 @@ impl PAT {
 
         let playbin = gstreamer::ElementFactory::make("playbin", Some("playbin")).map_err(|_e| PATError::InitializationError)?;
         
+        playbin.set_state(State::Ready).map_err(|_e| PATError::InitializationError)?;
+
         Ok(PAT{
             main_loop,
             playbin,
@@ -56,15 +58,31 @@ impl PAT {
 
         bus.add_watch(move |_bus, message| {
             match message.view() {
+                gstreamer::MessageView::StateChanged(state_changed) => {
+                    match state_changed.current() == State::Null {
+                        true => {
+                            sender.send(Ok(())).unwrap();
+                            Continue(false)
+                        },
+                        false => {
+                            Continue(true)
+                        }
+                    }
+
+                },
                 gstreamer::MessageView::Eos(_) => {
                     sender.send(Ok(())).unwrap();
                     Continue(false)
                 },
-                gstreamer::MessageView::Error(_) => {
+                gstreamer::MessageView::Error(error) => {
+                    println!("{:?}", error.debug());
                     sender.send(Err(PATError::DecodeError)).unwrap();
                     Continue(false)
                 }
-              _ => Continue(true),
+              _ => {
+                  println!("{:?}", message);
+                  Continue(true)
+              }
             }
         }).map_err(|_e| PATError::FileOpenError)?;
 
@@ -88,6 +106,8 @@ impl PAT {
     /// pat.skip().unwrap();
     /// ```
     pub fn skip(&self) -> Result<(), PATError> {
+        self.playbin.set_state(State::Ready).map_err(|_e| PATError::DecodeError)?;
+
         Ok(())
     }
 
@@ -101,6 +121,10 @@ impl PAT {
     /// pat.pause().unwrap();
     /// ```
     pub fn pause(&self) -> Result<(), PATError> {
+        if self.is_state(State::Playing) {
+            self.playbin.set_state(State::Paused).map_err(|_e| PATError::DecodeError)?;
+        }
+
         Ok(())
     }
 
@@ -114,7 +138,17 @@ impl PAT {
     /// pat.resume().unwrap();
     /// ```
     pub fn resume(&self) -> Result<(), PATError> {
+        if self.is_state(State::Paused) {
+            self.playbin.set_state(State::Playing).map_err(|_e| PATError::DecodeError)?;
+        }
+
         Ok(())
+    }
+
+    fn is_state(&self, desired_state: State) -> bool {
+        let (_result, current_state, _pending) = self.playbin.state(ClockTime::from_seconds(0));
+
+        current_state == desired_state
     }
 }
 
