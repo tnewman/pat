@@ -1,4 +1,8 @@
-use std::{sync::Arc, thread, time::{Duration, Instant, SystemTime}};
+use std::{
+    sync::Arc,
+    thread,
+    time::{Duration, Instant, SystemTime},
+};
 
 extern crate rustpat;
 
